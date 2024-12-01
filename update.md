@@ -1,13 +1,62 @@
 # ComfyUI-RMBG Update Log
 
-## Version 1.1.0
+## v1.2.0 (2024/11/29)
+
+### Major Changes
+- Combined three background removal models into one unified node
+- Added support for RMBG-2.0, INSPYRENET, and BEN models
+- Implemented lazy loading for models (only downloads when first used)
+
+![RMBGv1 2 0_node](https://github.com/user-attachments/assets/d36bc90b-8bbe-45af-906f-47503c7cbf61)
+
+### Model Introduction
+- RMBG-2.0 ([https://huggingface.co/briaai/RMBG-2.0](https://huggingface.co/briaai/RMBG-2.0))
+  - Latest version of RMBG model
+  - Excellent performance on complex backgrounds
+  - High accuracy in preserving fine details
+  - Best for general purpose background removal
+
+- INSPYRENET ([https://github.com/plemeri/InSPyReNet](https://github.com/plemeri/InSPyReNet))
+  - Specialized in human portrait segmentation
+  - Fast processing speed
+  - Good edge detection capability
+  - Ideal for portrait photos and human subjects
+
+- BEN (Background Elimination Network) ([https://huggingface.co/PramaLLC/BEN](https://huggingface.co/PramaLLC/BEN))
+  - Robust performance on various image types
+  - Good balance between speed and accuracy
+  - Effective on both simple and complex scenes
+  - Suitable for batch processing
+
+### Features
+- Unified interface for all three models
+- Common parameters for all models:
+  - Sensitivity adjustment
+  - Processing resolution control
+  - Mask blur and offset options
+  - Multiple background color options
+  - Invert output option
+  - Model optimization toggle
+
+### Improvements
+- Optimized memory usage with model clearing
+- Enhanced error handling and user feedback
+- Added detailed tooltips for all parameters
+- Improved mask post-processing
+
+### Dependencies
+- Updated all package dependencies to latest stable versions
+- Added support for transparent-background package
+- Optimized dependency management
+
+## Version 1.1.0 (2024/11/21)
 
 ### New Features
 - Added background color options
   - Alpha (transparent background)
   - Black, White, Green, Blue, Red
     
-![rmbg1 1](https://github.com/user-attachments/assets/4f7d073c-f9cc-4bdb-875c-ba51decc9d5a)
+![rmbg1 Demo](https://github.com/user-attachments/assets/4f7d073c-f9cc-4bdb-875c-ba51decc9d5a)
 
 - Improved mask processing
   - Better detail preservation
