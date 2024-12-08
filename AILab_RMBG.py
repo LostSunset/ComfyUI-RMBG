@@ -1,12 +1,18 @@
-# ComfyUI-RMBG
+# ComfyUI-RMBG v1.2.1
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, and BEN. It leverages deep learning techniques
 # to process images and generate masks for background removal.
 
-# This script is under GPL-3.0 License, it's completely free to use and modify.
-# However, if you make changes and distribute it or include it in other code,
-# please acknowledge the original source. (https://github.com/AILab-AI/ComfyUI-RMBG)
-# Supporting the original authors by acknowledging their work is greatly appreciated.
+# License Notice:
+# - RMBG-2.0: Apache-2.0 License (https://huggingface.co/briaai/RMBG-2.0)
+# - INSPYRENET: MIT License (https://github.com/plemeri/InSPyReNet)
+# - BEN: Apache-2.0 License (https://huggingface.co/PramaLLC/BEN)
+# 
+# This integration script follows GPL-3.0 License.
+# When using or modifying this code, please respect both the original model licenses
+# and this integration's license terms.
+#
+# Source: https://github.com/AILab-AI/ComfyUI-RMBG
 
 import os
 import torch
@@ -151,36 +157,52 @@ class RMBGModel(BaseModelLoader):
             self.model.to(device)
             self.current_model_version = model_name
             
-    def process_image(self, image, model_name, params):
+    def process_image(self, images, model_name, params):
         try:
             self.load_model(model_name)
-            
+
+            # Prepare batch processing
             transform_image = transforms.Compose([
                 transforms.Resize((params["process_res"], params["process_res"])),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ])
-            
-            orig_image = tensor2pil(image)
-            w, h = orig_image.size
-            
-            input_tensor = transform_image(orig_image).unsqueeze(0).to(device)
-            
+
+            # Ensure input is in list format
+            if isinstance(images, torch.Tensor):
+                if len(images.shape) == 3:
+                    images = [images]
+                else:
+                    images = [img for img in images]
+
+            # Store original image sizes
+            original_sizes = [tensor2pil(img).size for img in images]
+
+            # Batch process transformations
+            input_tensors = [transform_image(tensor2pil(img)).unsqueeze(0) for img in images]
+            input_batch = torch.cat(input_tensors, dim=0).to(device)
+
             with torch.no_grad():
-                result = self.model(input_tensor)[-1].sigmoid().cpu()
-                result = result[0].squeeze()
+                results = self.model(input_batch)[-1].sigmoid().cpu()
+                masks = []
                 
-                result = result * (1 + (1 - params["sensitivity"]))
-                result = torch.clamp(result, 0, 1)
-                
-                result = F.interpolate(result.unsqueeze(0).unsqueeze(0), 
-                                     size=(h, w), 
-                                     mode='bilinear').squeeze()
-                
-                return tensor2pil(result)
-                
+                # Process each result and resize back to original dimensions
+                for i, (result, (orig_w, orig_h)) in enumerate(zip(results, original_sizes)):
+                    result = result.squeeze()
+                    result = result * (1 + (1 - params["sensitivity"]))
+                    result = torch.clamp(result, 0, 1)
+                    
+                    # Resize back to original dimensions
+                    result = F.interpolate(result.unsqueeze(0).unsqueeze(0),
+                                         size=(orig_h, orig_w),
+                                         mode='bilinear').squeeze()
+                    
+                    masks.append(tensor2pil(result))
+
+                return masks
+
         except Exception as e:
-            handle_model_error(f"Error in RMBG processing: {str(e)}")
+            handle_model_error(f"Error in batch processing: {str(e)}")
 
 class InspyrenetModel(BaseModelLoader):
     def __init__(self):
