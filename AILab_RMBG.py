@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v1.2.1
+# ComfyUI-RMBG v1.2.2
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, and BEN. It leverages deep learning techniques
 # to process images and generate masks for background removal.
@@ -51,7 +51,7 @@ AVAILABLE_MODELS = {
         "type": "inspyrenet",
         "repo_id": "1038lab/inspyrenet",
         "files": {
-            "inspyrenet.pth": "inspyrenet.pth"
+            "inspyrenet.safetensors": "inspyrenet.safetensors"
         },
         "cache_dir": "INSPYRENET"
     },
@@ -304,6 +304,21 @@ class BENModel(BaseModelLoader):
             handle_model_error(f"Error in BEN processing: {str(e)}")
 
 class RMBG:
+    """
+    RMBG Node: Advanced Background Removal Suite
+    
+    This node provides professional background removal capabilities using three state-of-the-art models:
+    - RMBG-2.0: Latest model with excellent performance on complex backgrounds
+    - INSPYRENET: Specialized for human portrait segmentation
+    - BEN: Versatile model with good balance of speed and accuracy
+    
+    Features:
+    - Batch processing support
+    - Multiple background options
+    - Advanced mask refinement
+    - High-quality edge preservation
+    - Memory-efficient processing
+    """
     def __init__(self):
         self.models = {
             "RMBG-2.0": RMBGModel(),
@@ -423,5 +438,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "RMBG": "RMBG (RMBG-2.0, INSPYRENET, BEN)"
+    "RMBG": "RMBG (Background Remover)"
 } 
