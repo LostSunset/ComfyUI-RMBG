@@ -1,5 +1,67 @@
 # ComfyUI-RMBG Update Log
 
+## v1.3.1 (2024/12/25)
+
+### Bug Fixes
+- Fixed an issue with mask processing when the model returns a list of masks.
+- Improved handling of image formats to prevent processing errors.
+
+## v1.3.0 (2024/12/23)
+
+### New Segment (RMBG) Node
+- Text-Prompted Intelligent Object Segmentation
+  - Use natural language prompts (e.g., "a cat", "red car") to identify and segment target objects
+  - Support for multiple object detection and segmentation
+  - Perfect for precise object extraction and recognition tasks
+
+![rmbg v1.3.0](https://github.com/user-attachments/assets/7607546e-ffcb-45e2-ab90-83267292757e)
+
+### Supported Models
+- SAM (Segment Anything Model)
+  - sam_vit_h: 2.56GB - Highest accuracy
+  - sam_vit_l: 1.25GB - Balanced performance
+  - sam_vit_b: 375MB - Lightweight option
+- GroundingDINO
+  - SwinT: 694MB - Fast and efficient
+  - SwinB: 938MB - Higher precision
+
+### Key Features
+- Intuitive Parameter Controls
+  - Threshold: Adjust detection precision
+  - Mask Blur: Smooth edges
+  - Mask Offset: Expand or shrink selection
+  - Background Options: Alpha/Black/White/Green/Blue/Red
+- Automatic Model Management
+  - Auto-download models on first use
+  - Smart GPU memory handling
+
+### Usage Examples
+1. Tag-Style Prompts
+   - Single object: "cat"
+   - Multiple objects: "cat, dog, person"
+   - With attributes: "red car, blue shirt"
+   - Format: Use commas to separate multiple objects (e.g., "a, b, c")
+
+2. Natural Language Prompts
+   - Simple sentence: "a person wearing a red jacket"
+   - Complex scene: "a woman in a blue dress standing next to a car"
+   - With location: "a cat sitting on the sofa"
+   - Format: Write a natural descriptive sentence
+
+3. Tips for Better Results
+   - For Tag Style:
+     - Separate objects with commas: "chair, table, lamp"
+     - Add attributes before objects: "wooden chair, glass table"
+     - Keep it simple and clear
+   - For Natural Language:
+     - Use complete sentences
+     - Include details like color, position, action
+     - Be as descriptive as needed
+   - Parameter Adjustments:
+     - Threshold: 0.25-0.35 for broad detection, 0.45-0.55 for precision
+     - Use mask blur for smoother edges
+     - Adjust mask offset to fine-tune selection
+
 ## v1.2.2 (2024/12/12)
 ![RMBG1 2 2](https://github.com/user-attachments/assets/cb7b1ad0-a2ca-4369-9401-54957af6c636)
 
@@ -87,8 +149,8 @@ https://github.com/user-attachments/assets/40ec0b27-4fa2-4c99-9aea-5afad9ca62a5
 - Added background color options
   - Alpha (transparent background)
   - Black, White, Green, Blue, Red
-    
-![rmbg1 Demo](https://github.com/user-attachments/assets/4f7d073c-f9cc-4bdb-875c-ba51decc9d5a)
+
+![RMBG_v1 1 0](https://github.com/user-attachments/assets/b7cbadff-5386-4d96-bc34-a19ad34efb4b)
 
 - Improved mask processing
   - Better detail preservation
