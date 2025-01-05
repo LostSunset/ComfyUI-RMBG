@@ -1,5 +1,22 @@
 # ComfyUI-RMBG Update Log
 
+## v1.4.0 (2025/1/2)
+
+### New Clothes Segment Node
+- Added intelligent clothes segmentation functionality
+  - Support for 18 different clothing categories (Hat, Hair, Face, Sunglasses, Upper-clothes, etc.)
+  - Multiple item selection for combined segmentation
+  - Same parameter controls as other RMBG nodes (process_res, mask_blur, mask_offset, background options)
+  - Automatic model downloading and resource management
+
+![rmbg_v1 4 0](https://github.com/user-attachments/assets/978c168b-03a8-4937-aa03-06385f34b820)
+
+## v1.3.2 (2024/12/29)
+
+### Updates
+- Enhanced background handling to support RGBA output when "Alpha" is selected.
+- Ensured RGB output for all other background color selections.
+
 ## v1.3.1 (2024/12/25)
 
 ### Bug Fixes

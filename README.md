@@ -6,6 +6,17 @@ $${\color{red}If\ this\ custom\ node\ helps\ you\ or\ you\ like\ my\ work,\ plea
 $${\color{red}It's\ a\ greatest\ encouragement\ for\ my\ efforts!}$$
 
 ## News & Updates
+- 2025/01/02: Update ComfyUI-RMBG to v1.4.0 with new Clothes Segment node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v140-20250102) )
+![rmbg_v1 4 0](https://github.com/user-attachments/assets/978c168b-03a8-4937-aa03-06385f34b820)
+
+  - Added intelligent clothes segmentation with 18 different categories
+  - Support multiple item selection and combined segmentation
+  - Same parameter controls as other RMBG nodes
+  
+- 2024/12/29: Update ComfyUI-RMBG to v1.3.2 with background handling ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v132-20241229) )
+  - Enhanced background handling to support RGBA output when "Alpha" is selected.
+  - Ensured RGB output for all other background color selections.
+
 - 2024/12/25: Update ComfyUI-RMBG to v1.3.1 with bug fixes ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v131-20241225) )
   - Fixed an issue with mask processing when the model returns a list of masks.
   - Improved handling of image formats to prevent processing errors.
@@ -183,6 +194,7 @@ GroundingDINO is a model for text-prompted object detection and segmentation, of
 - BEN: https://huggingface.co/PramaLLC/BEN
 - SAM: https://huggingface.co/facebook/sam-vit-base
 - GroundingDINO: https://github.com/IDEA-Research/GroundingDINO
+- Clothes Segment: https://huggingface.co/mattmdjaga/segformer_b2_clothes
 - Created by: [1038 Lab](https://github.com/1038lab)
 
 ## License

@@ -1,9 +1,9 @@
-# ComfyUI-RMBG v1.3.1
+# ComfyUI-RMBG v1.4.0
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, and BEN. It leverages deep learning techniques
 # to process images and generate masks for background removal.
 
-# License Notice:
+# Models License Notice:
 # - SAM: MIT License (https://github.com/facebookresearch/segment-anything)
 # - GroundingDINO: MIT License (https://github.com/IDEA-Research/GroundingDINO)
 
@@ -205,6 +205,11 @@ class Segment:
         
         result_image = apply_background_color(image, mask_image, background_color)
         
+        if background_color != "Alpha":
+            result_image = result_image.convert("RGB")
+        else:
+            result_image = result_image.convert("RGBA")
+
         print(f'Successfully created segment for: "{prompt}"')
         return (pil2tensor(result_image), image2mask(mask_image))
 

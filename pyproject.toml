@@ -1,6 +1,6 @@
 [project]
 name = "ComfyUI-RMBG"
-version = "1.3.0
+version = "1.4.0"
 description = "A ComfyUI custom node designed for advanced image background removal utilizing multiple models, including RMBG-2.0, INSPYRENET, and BEN."
 authors = [
     {name = "AILab", email = "ailab@mail.com"}
@@ -20,6 +20,11 @@ dependencies = [
 requires-python = ">=3.8"
 readme = "README.md"
 license = {text = "GPL-3.0"}
+
+[tool.comfy]
+PublisherId = "AILab"
+DisplayName = "ComfyUI-RMBG"
+Icon = ""
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

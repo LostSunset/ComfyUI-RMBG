@@ -1,9 +1,9 @@
-# ComfyUI-RMBG v1.3.1
+# ComfyUI-RMBG v1.4.0
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, and BEN. It leverages deep learning techniques
 # to process images and generate masks for background removal.
 
-# License Notice:
+# Models License Notice:
 # - RMBG-2.0: Apache-2.0 License (https://huggingface.co/briaai/RMBG-2.0)
 # - INSPYRENET: MIT License (https://github.com/plemeri/InSPyReNet)
 # - BEN: Apache-2.0 License (https://huggingface.co/PramaLLC/BEN)
@@ -376,7 +376,7 @@ class RMBG:
                 # Get mask from specific model
                 mask = model_instance.process_image(img, model, params)
                 
-                # check if mask is a list
+                # Ensure mask is in the correct format
                 if isinstance(mask, list):
                     masks = [m.convert("L") for m in mask if isinstance(m, Image.Image)]
                     mask = masks[0] if masks else None
@@ -402,19 +402,22 @@ class RMBG:
                 
                 if params["invert_output"]:
                     mask = Image.fromarray(255 - np.array(mask))
-                
+
                 # Create final image
                 orig_image = tensor2pil(img)
                 orig_rgba = orig_image.convert("RGBA")
                 r, g, b, _ = orig_rgba.split()
                 foreground = Image.merge('RGBA', (r, g, b, mask))
-                
+
                 if params["background"] != "Alpha":
                     bg_color = bg_colors[params["background"]]
                     bg_image = Image.new('RGBA', orig_image.size, (*bg_color, 255))
                     composite_image = Image.alpha_composite(bg_image, foreground)
-                    processed_images.append(pil2tensor(composite_image))
+                    
+                    # Convert to RGB if background is not Alpha
+                    processed_images.append(pil2tensor(composite_image.convert("RGB")))
                 else:
+                    # Keep as RGBA if background is Alpha
                     processed_images.append(pil2tensor(foreground))
                 
                 processed_masks.append(pil2tensor(mask))
@@ -430,5 +433,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "RMBG": "RMBG (Background Remover)"
+    "RMBG": "Remove Background (RMBG)"
 } 
