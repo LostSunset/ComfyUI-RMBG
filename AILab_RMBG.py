@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v1.4.0
+# ComfyUI-RMBG v1.5.0
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, and BEN. It leverages deep learning techniques
 # to process images and generate masks for background removal.
@@ -335,7 +335,7 @@ class RMBG:
                 "process_res": ("INT", {"default": 1024, "min": 256, "max": 2048, "step": 32, "tooltip": tooltips["process_res"]}),
                 "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1, "tooltip": tooltips["mask_blur"]}),
                 "mask_offset": ("INT", {"default": 0, "min": -20, "max": 20, "step": 1, "tooltip": tooltips["mask_offset"]}),
-                "background": (["Alpha", "black", "white", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background"]}),
+                "background": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background"]}),
                 "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
                 "optimize": (["default", "on"], {"default": "default", "tooltip": tooltips["optimize"]})
             }
@@ -355,6 +355,7 @@ class RMBG:
                 "Alpha": None,
                 "black": (0, 0, 0),
                 "white": (255, 255, 255),
+                "gray": (128, 128, 128),
                 "green": (0, 255, 0),
                 "blue": (0, 0, 255),
                 "red": (255, 0, 0)
