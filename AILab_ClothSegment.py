@@ -10,7 +10,7 @@
 # When using or modifying this code, please respect both the original model licenses
 # and this integration's license terms.
 #
-# Source: https://github.com/AILab-AI/ComfyUI-RMBG
+# Source: https://github.com/1038lab/ComfyUI-RMBG
 
 import os
 import torch

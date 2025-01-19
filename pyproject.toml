@@ -1,5 +1,5 @@
 [project]
-name = "ComfyUI-RMBG"
+name = "comfyui-rmbg"
 description = "A ComfyUI custom node designed for advanced image background removal utilizing multiple models, including RMBG-2.0, INSPYRENET, and BEN."
 version = "1.5.0"
 license = {file = "LICENSE"}
@@ -10,6 +10,6 @@ Repository = "https://github.com/1038lab/ComfyUI-RMBG"
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
-PublisherId = "AILab"
+PublisherId = "ailab"
 DisplayName = "ComfyUI-RMBG"
 Icon = ""
