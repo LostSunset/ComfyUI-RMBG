@@ -1,11 +1,20 @@
 # ComfyUI-RMBG
 
-A ComfyUI custom node designed for advanced image background removal and object segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, SAM, and GroundingDINO.
+A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, SAM, and GroundingDINO.
 
 $${\color{red}If\ this\ custom\ node\ helps\ you\ or\ you\ like\ my\ work,\ please\ give\ me⭐on\ this\ repo!}$$
 $${\color{red}It's\ a\ greatest\ encouragement\ for\ my\ efforts!}$$
 
 ## News & Updates
+- 2025/01/22: Update ComfyUI-RMBG to v1.6.0 with new Face Segment custom node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v160-20250122) )
+![RMBG_v1 6 0](https://github.com/user-attachments/assets/9ccefec1-4370-4708-a12d-544c90888bf2)
+
+  - Added a new custom node for face parsing and segmentation
+  - Support for 19 facial feature categories (Skin, Nose, Eyes, Eyebrows, etc.)
+  - Precise facial feature extraction and segmentation
+  - Multiple feature selection for combined segmentation
+  - Same parameter controls as other RMBG nodes
+    
 - 2025/01/05: Update ComfyUI-RMBG to v1.5.0 with new Fashion and accessories Segment custom node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v150-20250105) )
 ![RMBGv_1 5 0](https://github.com/user-attachments/assets/a250c1a6-8425-4902-b902-a6e1a8bfe959)
 

@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v1.5.0
+# ComfyUI-RMBG v1.6.0
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, and BEN. It leverages deep learning techniques
 # to process images and generate masks for background removal.
@@ -10,7 +10,7 @@
 # When using or modifying this code, please respect both the original model licenses
 # and this integration's license terms.
 #
-# Source: https://github.com/1038lab/ComfyUI-RMBG
+# Source: https://github.com/AILab-AI/ComfyUI-RMBG
 
 import os
 import torch

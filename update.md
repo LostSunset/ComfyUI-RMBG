@@ -1,5 +1,18 @@
 # ComfyUI-RMBG Update Log
 
+## v1.6.0 (2025/01/22)
+
+### New Face Segment Custom Node
+- Added a new custom node for face parsing and segmentation
+  - Support for 19 facial feature categories (Skin, Nose, Eyes, Eyebrows, etc.)
+  - Precise facial feature extraction and segmentation
+  - Multiple feature selection for combined segmentation
+  - Same parameter controls as other RMBG nodes
+  - Automatic model downloading and resource management
+  - Perfect for portrait editing and facial feature manipulation
+
+![RMBG_v1 6 0](https://github.com/user-attachments/assets/9ccefec1-4370-4708-a12d-544c90888bf2)
+
 ## v1.5.0 (2025/01/05)
 
 ### New Fashion and accessories Segment Custom Node
@@ -12,7 +25,7 @@
 
 ![RMBGv_1 5 0](https://github.com/user-attachments/assets/a250c1a6-8425-4902-b902-a6e1a8bfe959)
 
-## v1.4.0 (2025/1/2)
+## v1.4.0 (2025/01/02)
 
 ### New Clothes Segment Node
 - Added intelligent clothes segmentation functionality

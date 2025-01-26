@@ -1,9 +1,5 @@
 # ComfyUI-RMBG v1.6.0
-# This custom node for ComfyUI provides functionality for fashion segmentation using segformer-b3-fashion model.
-# It leverages deep learning techniques to process images and generate masks for fashion items segmentation.
-
-# Models License Notice:
-# - sayeed99/segformer-b3-fashion: MIT License (https://huggingface.co/sayeed99/segformer-b3-fashion)
+# This custom node for ComfyUI provides functionality for face parsing using Segformer model.
 # 
 # This integration script follows GPL-3.0 License.
 # When using or modifying this code, please respect both the original model licenses
@@ -29,6 +25,16 @@ def pil2tensor(image: Image.Image) -> torch.Tensor:
 def tensor2pil(image: torch.Tensor) -> Image.Image:
     return Image.fromarray(np.clip(255. * image.cpu().numpy(), 0, 255).astype(np.uint8))
 
+def image2mask(image: Image.Image) -> torch.Tensor:
+    if isinstance(image, Image.Image):
+        image = pil2tensor(image)
+    return image.squeeze()[..., 0]
+
+def mask2image(mask: torch.Tensor) -> Image.Image:
+    if len(mask.shape) == 2:
+        mask = mask.unsqueeze(0)
+    return tensor2pil(mask)
+
 def RGB2RGBA(image: Image.Image, mask: Union[Image.Image, torch.Tensor]) -> Image.Image:
     if isinstance(mask, torch.Tensor):
         mask = mask2image(mask)
@@ -36,145 +42,58 @@ def RGB2RGBA(image: Image.Image, mask: Union[Image.Image, torch.Tensor]) -> Imag
         mask = mask.resize(image.size, Image.Resampling.LANCZOS)
     return Image.merge('RGBA', (*image.convert('RGB').split(), mask.convert('L')))
 
-def mask2image(mask: torch.Tensor) -> Image.Image:
-    if len(mask.shape) == 2:
-        mask = mask.unsqueeze(0)
-    return tensor2pil(mask)
-
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 folder_paths.add_model_folder_path("rmbg", os.path.join(folder_paths.models_dir, "RMBG"))
 
 AVAILABLE_MODELS = {
-    "segformer_fashion": "1038lab/segformer_fashion"
+    "face_parsing": "1038lab/segformer_face"
 }
 
-class FashionSegmentAccessories:
-    @classmethod
-    def INPUT_TYPES(cls):
-        accessories_classes = [
-            # Head accessories
-            "hat",
-            "glasses", 
-            "headband, head covering, hair accessory",
-            # Neck and upper body accessories
-            "scarf",
-            "tie",
-            # Hand accessories
-            "glove",
-            "watch",
-            # Waist accessories
-            "belt",
-            # Leg accessories
-            "leg warmer",
-            # Other accessories
-            "bag, wallet", 
-            "umbrella"
-        ]
-        
-        details_classes = [
-            # Upper body details
-            "collar", 
-            "lapel", 
-            "neckline",
-            "epaulette", 
-            "pocket",
-            # Decorative details
-            "buckle", 
-            "zipper", 
-            "applique", 
-            "bow",
-            "flower", 
-            "bead", 
-            "fringe",
-            "ribbon", 
-            "rivet", 
-            "ruffle", 
-            "sequin", 
-            "tassel"
-        ]
-        
-        return {
-            "required": {},
-            "optional": {
-                **{cls_name: ("BOOLEAN", {"default": False}) 
-                   for cls_name in accessories_classes + details_classes},
-            },
-        }
-
-    RETURN_TYPES = ("ACCESSORIES_OPTIONS",)
-    RETURN_NAMES = ("accessories_options",)
-    FUNCTION = "get_options"
-    CATEGORY = "🧪AILab/🧽RMBG"
-
-    def get_options(self, **class_selections):
-        selected = [name for name, selected in class_selections.items() if selected]
-        return (selected,)
-
-class FashionSegmentClothing:
+class FaceSegment:
     def __init__(self):
         self.processor = None
         self.model = None
-        self.cache_dir = os.path.join(folder_paths.models_dir, "RMBG", "segformer_fashion")
-        self.class_map = {
-            "Unlabelled": 0, "shirt, blouse": 1, "top, t-shirt, sweatshirt": 2, "sweater": 3,
-            "cardigan": 4, "jacket": 5, "vest": 6, "pants": 7, "shorts": 8, "skirt": 9, "coat": 10,
-            "dress": 11, "jumpsuit": 12, "cape": 13, 
-            "glasses": 14, "hat": 15, "headband, head covering, hair accessory": 16, "tie": 17, "glove": 18,
-            "watch": 19, "belt": 20, "leg warmer": 21, "tights, stockings": 22,
-            "sock": 23, "shoe": 24, "bag, wallet": 25, "scarf": 26, "umbrella": 27,
-            "hood": 28, "collar": 29, "lapel": 30, "epaulette": 31, "sleeve": 32,
-            "pocket": 33, "neckline": 34, "buckle": 35, "zipper": 36, "applique": 37,
-            "bead": 38, "bow": 39, "flower": 40, "fringe": 41, "ribbon": 42,
-            "rivet": 43, "ruffle": 44, "sequin": 45, "tassel": 46
-        }
+        self.cache_dir = os.path.join(folder_paths.models_dir, "RMBG", "segformer_face")
     
     @classmethod
     def INPUT_TYPES(cls):
-        clothing_classes = [
-            # Upper body
-            "coat",
-            "jacket",
-            "cardigan",
-            "vest",
-            "sweater",
-            "hood",
-            "shirt, blouse",
-            "top, t-shirt, sweatshirt",
-            "sleeve",
-            # Full body
-            "dress",
-            "jumpsuit",
-            "cape",
-            # Lower body
-            "pants",
-            "shorts",
-            "skirt",
-            # Socks and shoes
-            "tights, stockings",
-            "sock",
-            "shoe"
+        available_classes = [
+            # "Background",  # Not a facial feature
+            "Skin", "Nose", "Eyeglasses", "Left-eye", "Right-eye",
+            "Left-eyebrow", "Right-eyebrow", "Left-ear", "Right-ear", "Mouth",
+            "Upper-lip", "Lower-lip", "Hair", "Earring", "Neck",
+            # "Hat",        # Not a facial feature
+            # "Necklace",   # Not a facial feature
+            # "Clothing"    # Not a facial feature
         ]
+        
+        tooltips = {
+            "process_res": "Processing resolution (higher = more VRAM)",
+            "mask_blur": "Blur amount for mask edges",
+            "mask_offset": "Expand/Shrink mask boundary",
+            "background_color": "Choose background color (Alpha = transparent)",
+            "invert_output": "Invert both image and mask output",
+        }
         
         return {
             "required": {
                 "images": ("IMAGE",),
-                "accessories_options": ("ACCESSORIES_OPTIONS",),
             },
             "optional": {
                 **{cls_name: ("BOOLEAN", {"default": False}) 
-                   for cls_name in clothing_classes},
-                "process_res": ("INT", {"default": 512, "min": 128, "max": 2048, "step": 32}),
-                "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1}),
-                "mask_offset": ("INT", {"default": 0, "min": -20, "max": 20, "step": 1}),
-                "background_color": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha"}),
-                "invert_output": ("BOOLEAN", {"default": False}),
+                   for cls_name in available_classes},
+                "process_res": ("INT", {"default": 512, "min": 128, "max": 2048, "step": 32, "tooltip": tooltips["process_res"]}),
+                "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1, "tooltip": tooltips["mask_blur"]}),
+                "mask_offset": ("INT", {"default": 0, "min": -20, "max": 20, "step": 1, "tooltip": tooltips["mask_offset"]}),
+                "background_color": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background_color"]}),
+                "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
             },
         }
 
     RETURN_TYPES = ("IMAGE", "MASK")
     RETURN_NAMES = ("images", "mask")
-    FUNCTION = "segment_fashion"
+    FUNCTION = "segment_face"
     CATEGORY = "🧪AILab/🧽RMBG"
 
     def check_model_cache(self):
@@ -189,7 +108,7 @@ class FashionSegmentClothing:
         
         missing_files = [f for f in required_files if not os.path.exists(os.path.join(self.cache_dir, f))]
         if missing_files:
-            return False, f"Missing required model files: {', '.join(missing_files)}"
+            return False, f"Required model files missing: {', '.join(missing_files)}"
         return True, "Model cache verified"
 
     def clear_model(self):
@@ -201,7 +120,7 @@ class FashionSegmentClothing:
             torch.cuda.empty_cache()
 
     def download_model_files(self):
-        model_id = AVAILABLE_MODELS["segformer_fashion"]
+        model_id = AVAILABLE_MODELS["face_parsing"]
         model_files = {
             'config.json': 'config.json',
             'model.safetensors': 'model.safetensors',
@@ -209,7 +128,7 @@ class FashionSegmentClothing:
         }
         
         os.makedirs(self.cache_dir, exist_ok=True)
-        print(f"Downloading fashion segmentation model files...")
+        print(f"Downloading face parsing model files...")
         
         try:
             for save_name, repo_path in model_files.items():
@@ -228,10 +147,9 @@ class FashionSegmentClothing:
         except Exception as e:
             return False, f"Error downloading model files: {str(e)}"
 
-    def segment_fashion(self, images, accessories_options, process_res=512, mask_blur=0, mask_offset=0, 
-                       background_color="Alpha", invert_output=False, **class_selections):
+    def segment_face(self, images, process_res=512, mask_blur=0, mask_offset=0, background_color="Alpha", invert_output=False, **class_selections):
         try:
-            # Check and download model
+            # Check and download model if needed
             cache_status, message = self.check_model_cache()
             if not cache_status:
                 print(f"Cache check: {message}")
@@ -248,16 +166,21 @@ class FashionSegmentClothing:
                     param.requires_grad = False
                 self.model.to(device)
 
-            # Get all selected classes
-            selected_classes = []
-            # Add clothing selections
-            selected_classes.extend([name for name, selected in class_selections.items() if selected])
-            # Add accessories selections
-            selected_classes.extend(accessories_options)
-            
-            if not selected_classes:
-                selected_classes = ["shirt, blouse"]
+            # Class mapping for segmentation
+            class_map = {
+                "Background": 0, "Skin": 1, "Nose": 2, "Eyeglasses": 3,
+                "Left-eye": 4, "Right-eye": 5, "Left-eyebrow": 6, "Right-eyebrow": 7,
+                "Left-ear": 8, "Right-ear": 9, "Mouth": 10, "Upper-lip": 11,
+                "Lower-lip": 12, "Hair": 13, "Hat": 14, "Earring": 15,
+                "Necklace": 16, "Neck": 17, "Clothing": 18
+            }
 
+            # Get selected classes
+            selected_classes = [name for name, selected in class_selections.items() if selected]
+            if not selected_classes:
+                selected_classes = ["Skin", "Nose", "Eyes", "Mouth"]
+
+            # Image preprocessing
             transform_image = transforms.Compose([
                 transforms.Resize((process_res, process_res)),
                 transforms.ToTensor(),
@@ -270,13 +193,18 @@ class FashionSegmentClothing:
                 orig_image = tensor2pil(image)
                 w, h = orig_image.size
                 
-                inputs = self.processor(images=orig_image, return_tensors="pt")
-                inputs = {k: v.to(device) for k, v in inputs.items()}
+                input_tensor = transform_image(orig_image)
 
+                if input_tensor.shape[0] == 4:
+                    input_tensor = input_tensor[:3]
+                
+                input_tensor = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(input_tensor)
+                
+                input_tensor = input_tensor.unsqueeze(0).to(device)
+                
                 with torch.no_grad():
-                    outputs = self.model(**inputs)
+                    outputs = self.model(input_tensor)
                     logits = outputs.logits.cpu()
-                    
                     upsampled_logits = nn.functional.interpolate(
                         logits,
                         size=(h, w),
@@ -285,10 +213,10 @@ class FashionSegmentClothing:
                     )
                     pred_seg = upsampled_logits.argmax(dim=1)[0]
 
-                    # Merge masks for selected classes
+                    # Combine selected class masks
                     combined_mask = None
                     for class_name in selected_classes:
-                        mask = (pred_seg == self.class_map[class_name]).float()
+                        mask = (pred_seg == class_map[class_name]).float()
                         if combined_mask is None:
                             combined_mask = mask
                         else:
@@ -309,7 +237,7 @@ class FashionSegmentClothing:
                     if invert_output:
                         mask_image = Image.fromarray(255 - np.array(mask_image))
 
-                    # Process background color
+                    # Handle background color
                     if background_color == "Alpha":
                         rgba_image = RGB2RGBA(orig_image, mask_image)
                         result_image = pil2tensor(rgba_image)
@@ -331,6 +259,7 @@ class FashionSegmentClothing:
                     batch_tensor.append(result_image)
                     batch_masks.append(pil2tensor(mask_image))
 
+            # Prepare final output
             batch_tensor = torch.cat(batch_tensor, dim=0)
             batch_masks = torch.cat(batch_masks, dim=0)
             
@@ -338,20 +267,15 @@ class FashionSegmentClothing:
 
         except Exception as e:
             self.clear_model()
-            raise RuntimeError(f"Error in fashion segmentation: {str(e)}")
+            raise RuntimeError(f"Error in Face Parsing processing: {str(e)}")
         finally:
             if not self.model.training:
                 self.clear_model()
 
-    def __del__(self):
-        self.clear_model()
-
 NODE_CLASS_MAPPINGS = {
-    "FashionSegmentAccessories": FashionSegmentAccessories,
-    "FashionSegmentClothing": FashionSegmentClothing
+    "FaceSegment": FaceSegment
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "FashionSegmentAccessories": "Accessories Segment (RMBG)",
-    "FashionSegmentClothing": "Fashion Segment (RMBG)"
+    "FaceSegment": "Face Segment (RMBG)"
 } 
