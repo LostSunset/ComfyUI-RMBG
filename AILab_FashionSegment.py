@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v1.6.0
+# ComfyUI-RMBG
 # This custom node for ComfyUI provides functionality for fashion segmentation using segformer-b3-fashion model.
 # It leverages deep learning techniques to process images and generate masks for fashion items segmentation.
 

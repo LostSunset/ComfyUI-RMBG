@@ -1,11 +1,22 @@
 # ComfyUI-RMBG
 
-A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, SAM, and GroundingDINO.
+A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, BEN2, BiRefNet-HR, SAM, and GroundingDINO.
 
-$${\color{red}If\ this\ custom\ node\ helps\ you\ or\ you\ like\ my\ work,\ please\ give\ me⭐on\ this\ repo!}$$
-$${\color{red}It's\ a\ greatest\ encouragement\ for\ my\ efforts!}$$
+$$\textcolor{red}{\Huge \text{If this custom node helps you or you like my work, please give me ⭐ on this repo!}}$$  
+$$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
 
 ## News & Updates
+- 2025/02/07: Update ComfyUI-RMBG to v1.8.0 with new BiRefNet-HR model ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v180-20250207) )
+![RMBG-v1 8 0](https://github.com/user-attachments/assets/d4a1309c-a635-443a-97b5-2639fb48c27a)
+
+  - Added a new custom node for BiRefNet-HR model.
+  - Support high resolution image processing (up to 2048x2048)
+
+- 2025/02/04: Update ComfyUI-RMBG to v1.7.0 with new BEN2 model ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v170-20250204) )
+![rmbg_v1 7 0](https://github.com/user-attachments/assets/22053105-f3db-4e24-be66-ae0ad2cc248e)
+
+  - Added a new custom node for BEN2 model.
+
 - 2025/01/22: Update ComfyUI-RMBG to v1.6.0 with new Face Segment custom node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v160-20250122) )
 ![RMBG_v1 6 0](https://github.com/user-attachments/assets/9ccefec1-4370-4708-a12d-544c90888bf2)
 
@@ -57,7 +68,7 @@ $${\color{red}It's\ a\ greatest\ encouragement\ for\ my\ efforts!}$$
 
 ## Features
 - Background Removal (RMBG Node)
-  - Multiple models: RMBG-2.0, INSPYRENET, BEN
+  - Multiple models: RMBG-2.0, INSPYRENET, BEN, BEN2
   - Various background options
   - Batch processing support
   
@@ -89,9 +100,11 @@ install requirment.txt in the ComfyUI-RMBG folder
 
 ### 3. Manually download the models:
 - The model will be automatically downloaded to `ComfyUI/models/RMBG/` when first time using the custom node.
-- Manually download the RMBG-2.0 model by visiting this [link](https://huggingface.co/briaai/RMBG-2.0/tree/main), then download the files and place them in the `/ComfyUI/models/RMBG/RMBG-2.0` folder.
+- Manually download the RMBG-2.0 model by visiting this [link](https://huggingface.co/1038lab/RMBG-2.0), then download the files and place them in the `/ComfyUI/models/RMBG/RMBG-2.0` folder.
 - Manually download the INSPYRENET models by visiting the [link](https://huggingface.co/1038lab/inspyrenet), then download the files and place them in the `/ComfyUI/models/RMBG/INSPYRENET` folder.
-- Manually download the BEN model by visiting the [link](https://huggingface.co/PramaLLC/BEN), then download the files and place them in the `/ComfyUI/models/RMBG/BEN` folder.
+- Manually download the BEN model by visiting the [link](https://huggingface.co/1038lab/BEN), then download the files and place them in the `/ComfyUI/models/RMBG/BEN` folder.
+- Manually download the BEN2 model by visiting the [link](https://huggingface.co/1038lab/BEN2), then download the files and place them in the `/ComfyUI/models/RMBG/BEN2` folder.
+- Manually download the BiRefNet-HR by visiting the [link](https://huggingface.co/1038lab/BiRefNet_HR), then download the files and place them in the `/ComfyUI/models/RMBG/BiRefNet-HR` folder.
 - Manually download the SAM models by visiting the [link](https://huggingface.co/1038lab/sam), then download the files and place them in the `/ComfyUI/models/SAM` folder.
 - Manually download the GroundingDINO models by visiting the [link](https://huggingface.co/1038lab/GroundingDINO), then download the files and place them in the `/ComfyUI/models/grounding-dino` folder.
 - Manually download the Clothes Segment model by visiting the [link](https://huggingface.co/1038lab/segformer_clothes), then download the files and place them in the `/ComfyUI/models/RMBG/segformer_clothes` folder.
@@ -169,12 +182,27 @@ BEN is robust on various image types, offering:
 - Effective on both simple and complex scenes
 - Suitable for batch processing
 
+## BEN2
+BEN2 is a more advanced version of BEN, offering:
+- Improved accuracy and speed
+- Better handling of complex scenes
+- Support for more image types
+- Suitable for batch processing
+
+## BIREFNET-HR
+BIREFNET-HR is a powerful model for image segmentation, offering:
+- High accuracy in complex environments
+- Precise edge detection and preservation
+- Excellent handling of fine details
+- Support for multiple objects in a single image
+
 ## SAM
 SAM is a powerful model for object detection and segmentation, offering:
 - High accuracy in complex environments
 - Precise edge detection and preservation
 - Excellent handling of fine details
 - Support for multiple objects in a single image
+
 - Output Comparison
 - Output with background
 - Batch output for video
@@ -208,9 +236,12 @@ GroundingDINO is a model for text-prompted object detection and segmentation, of
 - RMBG-2.0: https://huggingface.co/briaai/RMBG-2.0
 - INSPYRENET: https://github.com/plemeri/InSPyReNet
 - BEN: https://huggingface.co/PramaLLC/BEN
+- BEN2: https://huggingface.co/PramaLLC/BEN2
+- BiRefNet-HR: https://huggingface.co/ZhengPeng7/BiRefNet_HR
 - SAM: https://huggingface.co/facebook/sam-vit-base
 - GroundingDINO: https://github.com/IDEA-Research/GroundingDINO
 - Clothes Segment: https://huggingface.co/mattmdjaga/segformer_b2_clothes
+
 - Created by: [1038 Lab](https://github.com/1038lab)
 
 ## License

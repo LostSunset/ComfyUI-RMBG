@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v1.6.0
+# ComfyUI-RMBG
 # This custom node for ComfyUI provides functionality for face parsing using Segformer model.
 # 
 # This integration script follows GPL-3.0 License.

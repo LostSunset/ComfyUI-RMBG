@@ -1,5 +1,62 @@
 # ComfyUI-RMBG Update Log
 
+## v1.8.0 (2025/02/07)
+![RMBG-v1 8 0](https://github.com/user-attachments/assets/d4a1309c-a635-443a-97b5-2639fb48c27a)
+
+### New Model Added: BiRefNet-HR
+  - Added support for BiRefNet High Resolution model
+  - Trained with 2048x2048 resolution images
+  - Superior performance metrics (maxFm: 0.925, MAE: 0.026)
+  - Better edge detection and detail preservation
+  - FP16 optimization for faster processing
+  - MIT License for commercial use
+  - 
+![RMBG_v1 8 0](https://github.com/user-attachments/assets/193d8d4b-5fac-475c-a184-9a28fa6252fc)
+
+### Technical Improvements
+- Added FP16 (half-precision) support for better performance
+- Optimized for high-resolution image processing
+- Enhanced memory efficiency
+- Maintained compatibility with existing workflows
+- Simplified model loading through Transformers pipeline
+
+### Performance Comparison
+- BiRefNet-HR vs other models:
+  - Higher resolution support (up to 2048x2048)
+  - Better edge detection accuracy
+  - Improved detail preservation
+  - Optimized for high-resolution images
+  - More efficient memory usage with FP16 support
+
+## v1.7.0 (2025/02/05)
+![rmbg_v1 7 0](https://github.com/user-attachments/assets/22053105-f3db-4e24-be66-ae0ad2cc248e)
+### New Model Added: BEN2
+- Added support for BEN2 (Background Elimination Network 2)
+  - Improved performance over original BEN model
+  - Better edge detection and detail preservation
+  - Enhanced batch processing capabilities (up to 3 images per batch)
+  - Optimized memory usage and processing speed
+
+### Model Changes
+- Updated model repository paths for BEN and BEN2
+- Switched to 1038lab repositories for better maintenance and updates
+- Maintained full compatibility with existing workflows
+
+### Technical Improvements
+- Implemented efficient batch processing for BEN2
+- Optimized memory management for large batches
+- Enhanced error handling and model loading
+- Improved model switching and resource cleanup
+
+### Comparison with Previous Models
+![rmbg_v1 7 0](https://github.com/user-attachments/assets/5370305e-1b31-47ad-a1b4-852991b38f45)
+- BEN2 vs BEN:
+  - Better edge detection
+  - Improved handling of complex backgrounds
+  - More efficient batch processing
+  - Enhanced detail preservation
+  - Faster processing speed
+
 ## v1.6.0 (2025/01/22)
 
 ### New Face Segment Custom Node
