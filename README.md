@@ -1,11 +1,25 @@
 # ComfyUI-RMBG
 
-A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, BEN2, BiRefNet-HR, SAM, and GroundingDINO.
+A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, BEN2, BiRefNet models, SAM, and GroundingDINO.
 
 $$\textcolor{red}{\Huge \text{If this custom node helps you or you like my work, please give me ⭐ on this repo!}}$$  
 $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
 
 ## News & Updates
+- 2025/02/21: Update ComfyUI-RMBG to v1.9.2 with Fast Foreground Color Estimation ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v192-20250221) )
+![RMBG_V1 9 2](https://github.com/user-attachments/assets/aaf51bff-931b-47ef-b20b-0dabddc49873)
+  - Added new foreground refinement feature for better transparency handling
+  - Improved edge quality and detail preservation
+  - Enhanced memory optimization
+
+- 2025/02/20: Update ComfyUI-RMBG to v1.9.1 ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v191-20250220) )
+  - Changed repository for model management to the new repository and Reorganized models files structure for better maintainability.
+ 
+- 2025/02/19: Update ComfyUI-RMBG to v1.9.0 with BiRefNet model improvements ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v190-20250219) )
+![rmbg_v1 9 0](https://github.com/user-attachments/assets/a7649781-42c9-4af4-94c7-6841e9395f5a)
+  - Enhanced BiRefNet model performance and stability
+  - Improved memory management for large images
+
 - 2025/02/07: Update ComfyUI-RMBG to v1.8.0 with new BiRefNet-HR model ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v180-20250207) )
 ![RMBG-v1 8 0](https://github.com/user-attachments/assets/d4a1309c-a635-443a-97b5-2639fb48c27a)
 
@@ -109,6 +123,7 @@ install requirment.txt in the ComfyUI-RMBG folder
 - Manually download the GroundingDINO models by visiting the [link](https://huggingface.co/1038lab/GroundingDINO), then download the files and place them in the `/ComfyUI/models/grounding-dino` folder.
 - Manually download the Clothes Segment model by visiting the [link](https://huggingface.co/1038lab/segformer_clothes), then download the files and place them in the `/ComfyUI/models/RMBG/segformer_clothes` folder.
 - Manually download the Fashion Segment model by visiting the [link](https://huggingface.co/1038lab/segformer_fashion), then download the files and place them in the `/ComfyUI/models/RMBG/segformer_fashion` folder.
+- Manually download BiRefNet models by visiting the [link](https://huggingface.co/1038lab/BiRefNet), then download the files and place them in the `/ComfyUI/models/RMBG/BiRefNet` folder.
 
 ## Usage
 ### RMBG Node
@@ -189,12 +204,16 @@ BEN2 is a more advanced version of BEN, offering:
 - Support for more image types
 - Suitable for batch processing
 
-## BIREFNET-HR
-BIREFNET-HR is a powerful model for image segmentation, offering:
-- High accuracy in complex environments
-- Precise edge detection and preservation
-- Excellent handling of fine details
-- Support for multiple objects in a single image
+## BIREFNET MODELS
+BIREFNET is a powerful model for image segmentation, offering:
+- BiRefNet-general purpose model (balanced performance)
+- BiRefNet_512x512 model (optimized for 512x512 resolution)
+- BiRefNet-portrait model (optimized for portrait/human matting)
+- BiRefNet-matting model (general purpose matting)
+- BiRefNet-HR model (high resolution up to 2560x2560)
+- BiRefNet-HR-matting model (high resolution matting)
+- BiRefNet_lite model (lightweight version for faster processing)
+- BiRefNet_lite-2K model (lightweight version for 2K resolution)
 
 ## SAM
 SAM is a powerful model for object detection and segmentation, offering:
@@ -202,7 +221,6 @@ SAM is a powerful model for object detection and segmentation, offering:
 - Precise edge detection and preservation
 - Excellent handling of fine details
 - Support for multiple objects in a single image
-
 - Output Comparison
 - Output with background
 - Batch output for video
@@ -216,6 +234,16 @@ GroundingDINO is a model for text-prompted object detection and segmentation, of
 - Output Comparison
 - Output with background
 - Batch output for video
+
+## BiRefNet Models
+- BiRefNet-general purpose model (balanced performance)
+- BiRefNet_512x512 model (optimized for 512x512 resolution)
+- BiRefNet-portrait model (optimized for portrait/human matting)
+- BiRefNet-matting model (general purpose matting)
+- BiRefNet-HR model (high resolution up to 2560x2560)
+- BiRefNet-HR-matting model (high resolution matting)
+- BiRefNet_lite model (lightweight version for faster processing)
+- BiRefNet_lite-2K model (lightweight version for 2K resolution)
 </details>
 
 
@@ -237,12 +265,12 @@ GroundingDINO is a model for text-prompted object detection and segmentation, of
 - INSPYRENET: https://github.com/plemeri/InSPyReNet
 - BEN: https://huggingface.co/PramaLLC/BEN
 - BEN2: https://huggingface.co/PramaLLC/BEN2
-- BiRefNet-HR: https://huggingface.co/ZhengPeng7/BiRefNet_HR
+- BiRefNet: https://huggingface.co/ZhengPeng7
 - SAM: https://huggingface.co/facebook/sam-vit-base
 - GroundingDINO: https://github.com/IDEA-Research/GroundingDINO
 - Clothes Segment: https://huggingface.co/mattmdjaga/segformer_b2_clothes
 
-- Created by: [1038 Lab](https://github.com/1038lab)
+- Created by: [AILab](https://github.com/1038lab)
 
 ## License
 GPL-3.0 License

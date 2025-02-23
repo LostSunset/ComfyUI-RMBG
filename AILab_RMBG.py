@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v1.8.0
+# ComfyUI-RMBG v1.9.2
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, BEN, BEN2 and BIREFNET-HR. It leverages deep learning techniques
 # to process images and generate masks for background removal.
@@ -8,13 +8,12 @@
 # - INSPYRENET: MIT License (https://github.com/plemeri/InSPyReNet)
 # - BEN: Apache-2.0 License (https://huggingface.co/PramaLLC/BEN)
 # - BEN2: Apache-2.0 License (https://huggingface.co/PramaLLC/BEN2)
-# - BIREFNET-HR: Apache-2.0 License (https://huggingface.co/ZhengPeng7/BiRefNet_HR)
 #
 # This integration script follows GPL-3.0 License.
 # When using or modifying this code, please respect both the original model licenses
 # and this integration's license terms.
 #
-# Source: https://github.com/AILab-AI/ComfyUI-RMBG
+# Source: https://github.com/1038lab/ComfyUI-RMBG
 
 import os
 import torch
@@ -30,6 +29,7 @@ import sys
 import importlib.util
 from tqdm import tqdm
 from transformers import AutoModelForImageSegmentation
+import cv2
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -74,17 +74,6 @@ AVAILABLE_MODELS = {
             "BEN2.py": "BEN2.py"
         },
         "cache_dir": "BEN2"
-    },
-    "BIREFNET-HR": {
-        "type": "birefnet",
-        "repo_id": "1038lab/BiRefNet_HR",
-        "files": {
-            "birefnet.py": "birefnet.py",
-            "BiRefNet_config.py": "BiRefNet_config.py",
-            "model.safetensors": "model.safetensors",
-            "config.json": "config.json"
-        },
-        "cache_dir": "BIREFNET-HR"
     }
 }
 
@@ -333,26 +322,30 @@ class BEN2Model(BaseModelLoader):
         if self.current_model_version != model_name:
             self.clear_model()
             
-            cache_dir = self.get_cache_dir(model_name)
-            model_path = os.path.join(cache_dir, "BEN2.py")
-            module_name = f"custom_ben2_model_{hash(model_path)}"
-            
-            spec = importlib.util.spec_from_file_location(module_name, model_path)
-            ben2_module = importlib.util.module_from_spec(spec)
-            sys.modules[module_name] = ben2_module
-            spec.loader.exec_module(ben2_module)
-            
-            model_weights_path = os.path.join(cache_dir, "BEN2_Base.pth")
-            self.model = ben2_module.BEN_Base()
-            self.model.loadcheckpoints(model_weights_path)
-            
-            self.model.eval()
-            for param in self.model.parameters():
-                param.requires_grad = False
-            
-            torch.set_float32_matmul_precision('high')
-            self.model.to(device)
-            self.current_model_version = model_name
+            try:
+                cache_dir = self.get_cache_dir(model_name)
+                model_path = os.path.join(cache_dir, "BEN2.py")
+                module_name = f"custom_ben2_model_{hash(model_path)}"
+                
+                spec = importlib.util.spec_from_file_location(module_name, model_path)
+                ben2_module = importlib.util.module_from_spec(spec)
+                sys.modules[module_name] = ben2_module
+                spec.loader.exec_module(ben2_module)
+                
+                model_weights_path = os.path.join(cache_dir, "BEN2_Base.pth")
+                self.model = ben2_module.BEN_Base()
+                self.model.loadcheckpoints(model_weights_path)
+                
+                self.model.eval()
+                for param in self.model.parameters():
+                    param.requires_grad = False
+                
+                torch.set_float32_matmul_precision('high')
+                self.model.to(device)
+                self.current_model_version = model_name
+                
+            except Exception as e:
+                handle_model_error(f"Error loading BEN2 model: {str(e)}")
     
     def process_image(self, images, model_name, params):
         try:
@@ -385,9 +378,12 @@ class BEN2Model(BaseModelLoader):
                     batch_pil_images.append(processed_input)
                 
                 with torch.no_grad():
-                    foregrounds = self.model.inference(batch_pil_images, refine_foreground=False)
-                    if not isinstance(foregrounds, list):
-                        foregrounds = [foregrounds]
+                    try:
+                        foregrounds = self.model.inference(batch_pil_images)
+                        if not isinstance(foregrounds, list):
+                            foregrounds = [foregrounds]
+                    except Exception as e:
+                        handle_model_error(f"Error in BEN2 inference: {str(e)}")
                 
                 for foreground, (orig_w, orig_h) in zip(foregrounds, original_sizes):
                     foreground = foreground.resize((orig_w, orig_h), Image.LANCZOS)
@@ -401,93 +397,42 @@ class BEN2Model(BaseModelLoader):
         except Exception as e:
             handle_model_error(f"Error in BEN2 processing: {str(e)}")
 
-class BiRefNetModel(BaseModelLoader):
-    def __init__(self):
-        super().__init__()
-        
-    def load_model(self, model_name):
-        if self.current_model_version != model_name:
-            self.clear_model()
-            
-            cache_dir = self.get_cache_dir(model_name)
-            model_path = os.path.join(cache_dir, "birefnet.py")
-            config_path = os.path.join(cache_dir, "BiRefNet_config.py")
-            weights_path = os.path.join(cache_dir, "model.safetensors")
-            
-            try:
-                # Fix relative imports in model file
-                with open(model_path, 'r', encoding='utf-8') as f:
-                    model_content = f.read()
-                model_content = model_content.replace("from .BiRefNet_config", "from BiRefNet_config")
-                with open(model_path, 'w', encoding='utf-8') as f:
-                    f.write(model_content)
-                
-                # Load config and model dynamically
-                spec = importlib.util.spec_from_file_location("BiRefNet_config", config_path)
-                config_module = importlib.util.module_from_spec(spec)
-                sys.modules["BiRefNet_config"] = config_module
-                spec.loader.exec_module(config_module)
-                
-                spec = importlib.util.spec_from_file_location("birefnet", model_path)
-                model_module = importlib.util.module_from_spec(spec)
-                sys.modules["birefnet"] = model_module
-                spec.loader.exec_module(model_module)
-                
-                # Initialize model
-                self.model = model_module.BiRefNet(config_module.BiRefNetConfig())
-                
-                # Load weights using safetensors
-                from safetensors.torch import load_file
-                state_dict = load_file(weights_path)
-                self.model.load_state_dict(state_dict)
-                
-                self.model.eval()
-                self.model.half()  # Enable FP16 for better performance
-                torch.set_float32_matmul_precision('high')
-                self.model.to(device)
-                self.current_model_version = model_name
-                
-            except Exception as e:
-                handle_model_error(f"Error loading BiRefNet model: {str(e)}")
+def refine_foreground(image_bchw, masks_b1hw):
+    b, c, h, w = image_bchw.shape
+    if b != masks_b1hw.shape[0]:
+        raise ValueError("images and masks must have the same batch size")
     
-    def process_image(self, images, model_name, params):
-        try:
-            self.load_model(model_name)
+    image_np = image_bchw.cpu().numpy()
+    mask_np = masks_b1hw.cpu().numpy()
+    
+    refined_fg = []
+    for i in range(b):
+        mask = mask_np[i, 0]      
+        thresh = 0.45
+        mask_binary = (mask > thresh).astype(np.float32)
+        
+        edge_blur = cv2.GaussianBlur(mask_binary, (3, 3), 0)
+        transition_mask = np.logical_and(mask > 0.05, mask < 0.95)
+        
+        alpha = 0.85
+        mask_refined = np.where(transition_mask,
+                              alpha * mask + (1-alpha) * edge_blur,
+                              mask_binary)
+        
+        edge_region = np.logical_and(mask > 0.2, mask < 0.8)
+        mask_refined = np.where(edge_region,
+                              mask_refined * 0.98,
+                              mask_refined)
+        
+        result = []
+        for c in range(image_np.shape[1]):
+            channel = image_np[i, c]
+            refined = channel * mask_refined
+            result.append(refined)
             
-            if isinstance(images, torch.Tensor):
-                if len(images.shape) == 3:
-                    images = [images]
-                else:
-                    images = [img for img in images]
-            
-            all_masks = []
-            
-            transform_image = transforms.Compose([
-                transforms.Resize((2048, 2048)),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-            ])
-            
-            for img in images:
-                orig_image = tensor2pil(img)
-                w, h = orig_image.size
-                
-                input_tensor = transform_image(orig_image).unsqueeze(0).to(device).half()
-                
-                with torch.no_grad():
-                    pred = self.model(input_tensor)[-1].sigmoid().cpu()
-                
-                pred = pred[0].squeeze()
-                mask = transforms.ToPILImage()(pred)
-                mask = mask.resize((w, h), Image.LANCZOS)
-                
-                all_masks.append(mask)
-                torch.cuda.empty_cache()
-            
-            return all_masks[0] if len(all_masks) == 1 else all_masks
-            
-        except Exception as e:
-            handle_model_error(f"Error in BiRefNet processing: {str(e)}")
+        refined_fg.append(np.stack(result))
+    
+    return torch.from_numpy(np.stack(refined_fg))
 
 class RMBG:
     def __init__(self):
@@ -495,8 +440,7 @@ class RMBG:
             "RMBG-2.0": RMBGModel(),
             "INSPYRENET": InspyrenetModel(),
             "BEN": BENModel(),
-            "BEN2": BEN2Model(),
-            "BIREFNET-HR": BiRefNetModel()
+            "BEN2": BEN2Model()
         }
     
     @classmethod
@@ -510,7 +454,8 @@ class RMBG:
             "mask_offset": "Adjust the mask boundary (positive values expand the mask, negative values shrink it).",
             "background": "Choose the background color for the final output (Alpha for transparent background).",
             "invert_output": "Enable to invert both the image and mask output (useful for certain effects).",
-            "optimize": "Enable model optimization for faster processing (may affect output quality)."
+            "optimize": "Enable model optimization for faster processing (may affect output quality).",
+            "refine_foreground": "Use Fast Foreground Colour Estimation to optimize transparent background"
         }
         
         return {
@@ -525,7 +470,8 @@ class RMBG:
                 "mask_offset": ("INT", {"default": 0, "min": -20, "max": 20, "step": 1, "tooltip": tooltips["mask_offset"]}),
                 "background": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background"]}),
                 "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
-                "optimize": (["default", "on"], {"default": "default", "tooltip": tooltips["optimize"]})
+                "optimize": (["default", "on"], {"default": "default", "tooltip": tooltips["optimize"]}),
+                "refine_foreground": ("BOOLEAN", {"default": False, "tooltip": tooltips["refine_foreground"]})
             }
         }
 
@@ -592,21 +538,29 @@ class RMBG:
                 if params["invert_output"]:
                     mask = Image.fromarray(255 - np.array(mask))
 
+                # Convert to tensors for refine_foreground
+                img_tensor = torch.from_numpy(np.array(tensor2pil(img))).permute(2, 0, 1).unsqueeze(0) / 255.0
+                mask_tensor = torch.from_numpy(np.array(mask)).unsqueeze(0).unsqueeze(0) / 255.0
+
                 # Create final image
                 orig_image = tensor2pil(img)
-                orig_rgba = orig_image.convert("RGBA")
-                r, g, b, _ = orig_rgba.split()
-                foreground = Image.merge('RGBA', (r, g, b, mask))
+                
+                if params.get("refine_foreground", False):
+                    refined_fg = refine_foreground(img_tensor, mask_tensor)
+                    refined_fg = tensor2pil(refined_fg[0].permute(1, 2, 0))
+                    r, g, b = refined_fg.split()
+                    foreground = Image.merge('RGBA', (r, g, b, mask))
+                else:
+                    orig_rgba = orig_image.convert("RGBA")
+                    r, g, b, _ = orig_rgba.split()
+                    foreground = Image.merge('RGBA', (r, g, b, mask))
 
                 if params["background"] != "Alpha":
                     bg_color = bg_colors[params["background"]]
                     bg_image = Image.new('RGBA', orig_image.size, (*bg_color, 255))
                     composite_image = Image.alpha_composite(bg_image, foreground)
-                    
-                    # Convert to RGB if background is not Alpha
                     processed_images.append(pil2tensor(composite_image.convert("RGB")))
                 else:
-                    # Keep as RGBA if background is Alpha
                     processed_images.append(pil2tensor(foreground))
                 
                 processed_masks.append(pil2tensor(mask))

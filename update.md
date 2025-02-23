@@ -1,5 +1,45 @@
 # ComfyUI-RMBG Update Log
 
+## v1.9.2 (2025/02/21)
+![RMBG_V1 9 2](https://github.com/user-attachments/assets/aaf51bff-931b-47ef-b20b-0dabddc49873)
+### New Features
+- Added Fast Foreground Color Estimation feature
+  - New `refine_foreground` option for optimizing transparent backgrounds
+  - Improved edge quality and detail preservation
+  - Better handling of semi-transparent regions
+
+### Technical Improvements
+- Added OpenCV dependency for advanced image processing
+- Enhanced foreground refinement algorithm
+- Optimized memory usage for large images
+- Improved edge detection accuracy
+
+## v1.9.1 (2025/02/20)
+### Technical Updates
+- Changed repository for model management to the new repository
+- Reorganized models files structure for better maintainability
+
+## v1.9.0 (2025/02/19)
+![rmbg_v1 9 0](https://github.com/user-attachments/assets/a7649781-42c9-4af4-94c7-6841e9395f5a)
+Add and group all BiRefNet models collections into BiRefNet node.
+
+### New BiRefNet Models Adds
+- Added `BiRefNet` general purpose model (balanced performance)
+- Added `BiRefNet_512x512` model (optimized for 512x512 resolution)
+- Added `BiRefNet-portrait` model (optimized for portrait/human matting)
+- Added `BiRefNet-matting` model (general purpose matting)
+- Added `BiRefNet-HR model` (high resolution up to 2560x2560)
+- Added `BiRefNet-HR-matting` model (high resolution matting)
+- Added `BiRefNet_lite` model (lightweight version for faster processing)
+- Added `BiRefNet_lite-2K` model (lightweight version for 2K resolution)
+
+### Technical Improvements
+- Added FP16 (half-precision) support for better performance
+- Optimized for high-resolution image processing
+- Enhanced memory efficiency
+- Maintained compatibility with existing workflows
+- Simplified model loading through Transformers pipeline
+
 ## v1.8.0 (2025/02/07)
 ![RMBG-v1 8 0](https://github.com/user-attachments/assets/d4a1309c-a635-443a-97b5-2639fb48c27a)
 
@@ -10,7 +50,7 @@
   - Better edge detection and detail preservation
   - FP16 optimization for faster processing
   - MIT License for commercial use
-  - 
+
 ![RMBG_v1 8 0](https://github.com/user-attachments/assets/193d8d4b-5fac-475c-a184-9a28fa6252fc)
 
 ### Technical Improvements
