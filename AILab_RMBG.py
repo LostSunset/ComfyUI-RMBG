@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v1.9.2
+# ComfyUI-RMBG v1.9.3
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, BEN, BEN2 and BIREFNET-HR. It leverages deep learning techniques
 # to process images and generate masks for background removal.
@@ -27,7 +27,6 @@ from huggingface_hub import hf_hub_download
 import shutil
 import sys
 import importlib.util
-from tqdm import tqdm
 from transformers import AutoModelForImageSegmentation
 import cv2
 

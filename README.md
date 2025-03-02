@@ -6,6 +6,8 @@ $$\textcolor{red}{\Huge \text{If this custom node helps you or you like my work,
 $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
 
 ## News & Updates
+- 2025/02/24: Update ComfyUI-RMBG to v1.9.3 Clean up the code and fix the issue ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v193-20250224) )
+
 - 2025/02/21: Update ComfyUI-RMBG to v1.9.2 with Fast Foreground Color Estimation ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v192-20250221) )
 ![RMBG_V1 9 2](https://github.com/user-attachments/assets/aaf51bff-931b-47ef-b20b-0dabddc49873)
   - Added new foreground refinement feature for better transparency handling
@@ -21,7 +23,8 @@ $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
   - Improved memory management for large images
 
 - 2025/02/07: Update ComfyUI-RMBG to v1.8.0 with new BiRefNet-HR model ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v180-20250207) )
-![RMBG-v1 8 0](https://github.com/user-attachments/assets/d4a1309c-a635-443a-97b5-2639fb48c27a)
+![BiRefNet-HR](https://github.com/user-attachments/assets/c27bf3c5-92b9-472d-b097-5fed0f182d47)
+** (To ensure compatibility with the old V1.8.0 workflow, we have replaced this image with the new BiRefNet Node) (2025/03/01)
 
   - Added a new custom node for BiRefNet-HR model.
   - Support high resolution image processing (up to 2048x2048)

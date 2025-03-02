@@ -1,5 +1,9 @@
 # ComfyUI-RMBG Update Log
 
+## v1.9.3 (2025/02/24)
+### New Features
+- Clean up the code and fix the transformers version issue `transformers>=4.35.0,<=4.48.3`
+
 ## v1.9.2 (2025/02/21)
 ![RMBG_V1 9 2](https://github.com/user-attachments/assets/aaf51bff-931b-47ef-b20b-0dabddc49873)
 ### New Features
@@ -41,7 +45,8 @@ Add and group all BiRefNet models collections into BiRefNet node.
 - Simplified model loading through Transformers pipeline
 
 ## v1.8.0 (2025/02/07)
-![RMBG-v1 8 0](https://github.com/user-attachments/assets/d4a1309c-a635-443a-97b5-2639fb48c27a)
+![BiRefNet-HR](https://github.com/user-attachments/assets/c27bf3c5-92b9-472d-b097-5fed0f182d47)
+** (To ensure compatibility with the old V1.8.0 workflow, we have replaced this image with the new BiRefNet Node) (2025/03/01)
 
 ### New Model Added: BiRefNet-HR
   - Added support for BiRefNet High Resolution model
@@ -51,7 +56,8 @@ Add and group all BiRefNet models collections into BiRefNet node.
   - FP16 optimization for faster processing
   - MIT License for commercial use
 
-![RMBG_v1 8 0](https://github.com/user-attachments/assets/193d8d4b-5fac-475c-a184-9a28fa6252fc)
+![BiRefNet-HR-2](https://github.com/user-attachments/assets/12441891-0330-4972-95c2-b211fce07069)
+** (To ensure compatibility with the old V1.8.0 workflow, we have replaced this image with the new BiRefNet Node) (2025/03/01)
 
 ### Technical Improvements
 - Added FP16 (half-precision) support for better performance
