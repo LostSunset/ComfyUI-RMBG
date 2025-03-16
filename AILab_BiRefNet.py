@@ -1,10 +1,14 @@
-# ComfyUI-RMBG v1.9.2
+# ComfyUI-RMBG v2.0.0
 # This custom node for ComfyUI provides functionality for background removal using BiRefNet models.
 #
 # Model License Notice:
 # - BiRefNet Models: Apache-2.0 License (https://huggingface.co/ZhengPeng7)
 #
 # This integration script follows GPL-3.0 License.
+# When using or modifying this code, please respect both the original model licenses
+# and this integration's license terms.
+#
+# Source: https://github.com/AILab-AI/ComfyUI-RMBG
 
 import os
 import torch
@@ -316,7 +320,7 @@ class BiRefNetModel:
         except Exception as e:
             handle_model_error(f"Error in BiRefNet processing: {str(e)}")
 
-class BiRefNet:
+class BiRefNetRMBG:
     def __init__(self):
         self.model = BiRefNetModel()
     
@@ -347,7 +351,7 @@ class BiRefNet:
         }
 
     RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("image", "mask")
+    RETURN_NAMES = ("IMAGE", "MASK")
     FUNCTION = "process_image"
     CATEGORY = "🧪AILab/🧽RMBG"
 
@@ -450,9 +454,9 @@ class BiRefNet:
 
 # Node Mapping
 NODE_CLASS_MAPPINGS = {
-    "BiRefNet": BiRefNet
+    "BiRefNetRMBG": BiRefNetRMBG
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "BiRefNet": "BiRefNet (RMBG)"
+    "BiRefNetRMBG": "BiRefNet (RMBG)"
 }

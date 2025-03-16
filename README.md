@@ -1,40 +1,47 @@
 # ComfyUI-RMBG
 
-A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, BEN2, BiRefNet models, SAM, and GroundingDINO.
+A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, BEN2, BiRefNet-HR, SAM, and GroundingDINO.
 
 $$\textcolor{red}{\Huge \text{If this custom node helps you or you like my work, please give me ⭐ on this repo!}}$$  
 $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
 
 ## News & Updates
-- 2025/02/24: Update ComfyUI-RMBG to v1.9.3 Clean up the code and fix the issue ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v193-20250224) )
 
-- 2025/02/21: Update ComfyUI-RMBG to v1.9.2 with Fast Foreground Color Estimation ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v192-20250221) )
+- **2025/03/13**: Update ComfyUI-RMBG to **v2.0.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v200-20250313) )
+![image_mask_preview](https://github.com/user-attachments/assets/5e2b2679-4b63-4db1-a6c1-3b26b6f97df3)
+
+  - Added Image and Mask Tools improved functionality.
+  - Enhanced code structure and documentation for better usability.
+  - Introduced a new category path: `🧪AILab/🛠️UTIL/🖼️IMAGE`.
+
+- **2025/02/24**: Update ComfyUI-RMBG to **v1.9.3** Clean up the code and fix the issue ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v193-20250224) )
+
+- **2025/02/21**: Update ComfyUI-RMBG to **v1.9.2** with Fast Foreground Color Estimation ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v192-20250221) )
 ![RMBG_V1 9 2](https://github.com/user-attachments/assets/aaf51bff-931b-47ef-b20b-0dabddc49873)
   - Added new foreground refinement feature for better transparency handling
   - Improved edge quality and detail preservation
   - Enhanced memory optimization
 
-- 2025/02/20: Update ComfyUI-RMBG to v1.9.1 ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v191-20250220) )
+- **2025/02/20**: Update ComfyUI-RMBG to **v1.9.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v191-20250220) )
   - Changed repository for model management to the new repository and Reorganized models files structure for better maintainability.
- 
-- 2025/02/19: Update ComfyUI-RMBG to v1.9.0 with BiRefNet model improvements ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v190-20250219) )
+
+- **2025/02/19**: Update ComfyUI-RMBG to **v1.9.0** with BiRefNet model improvements ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v190-20250219) )
 ![rmbg_v1 9 0](https://github.com/user-attachments/assets/a7649781-42c9-4af4-94c7-6841e9395f5a)
   - Enhanced BiRefNet model performance and stability
   - Improved memory management for large images
 
-- 2025/02/07: Update ComfyUI-RMBG to v1.8.0 with new BiRefNet-HR model ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v180-20250207) )
-![BiRefNet-HR](https://github.com/user-attachments/assets/c27bf3c5-92b9-472d-b097-5fed0f182d47)
-** (To ensure compatibility with the old V1.8.0 workflow, we have replaced this image with the new BiRefNet Node) (2025/03/01)
+- **2025/02/07**: Update ComfyUI-RMBG to **v1.8.0** with new BiRefNet-HR model ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v180-20250207) )
+![RMBG-v1 8 0](https://github.com/user-attachments/assets/d4a1309c-a635-443a-97b5-2639fb48c27a)
 
   - Added a new custom node for BiRefNet-HR model.
   - Support high resolution image processing (up to 2048x2048)
 
-- 2025/02/04: Update ComfyUI-RMBG to v1.7.0 with new BEN2 model ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v170-20250204) )
+- **2025/02/04**: Update ComfyUI-RMBG to **v1.7.0** with new BEN2 model ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v170-20250204) )
 ![rmbg_v1 7 0](https://github.com/user-attachments/assets/22053105-f3db-4e24-be66-ae0ad2cc248e)
 
   - Added a new custom node for BEN2 model.
 
-- 2025/01/22: Update ComfyUI-RMBG to v1.6.0 with new Face Segment custom node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v160-20250122) )
+- **2025/01/22**: Update ComfyUI-RMBG to **v1.6.0** with new Face Segment custom node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v160-20250122) )
 ![RMBG_v1 6 0](https://github.com/user-attachments/assets/9ccefec1-4370-4708-a12d-544c90888bf2)
 
   - Added a new custom node for face parsing and segmentation
@@ -43,27 +50,27 @@ $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
   - Multiple feature selection for combined segmentation
   - Same parameter controls as other RMBG nodes
     
-- 2025/01/05: Update ComfyUI-RMBG to v1.5.0 with new Fashion and accessories Segment custom node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v150-20250105) )
+- **2025/01/05**: Update ComfyUI-RMBG to **v1.5.0** with new Fashion and accessories Segment custom node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v150-20250105) )
 ![RMBGv_1 5 0](https://github.com/user-attachments/assets/a250c1a6-8425-4902-b902-a6e1a8bfe959)
 
   - Added a new custom node for fashion segmentation.
 
-- 2025/01/02: Update ComfyUI-RMBG to v1.4.0 with new Clothes Segment node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v140-20250102) )
+- **2025/01/02**: Update ComfyUI-RMBG to **v1.4.0** with new Clothes Segment node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v140-20250102) )
 ![rmbg_v1 4 0](https://github.com/user-attachments/assets/978c168b-03a8-4937-aa03-06385f34b820)
 
   - Added intelligent clothes segmentation with 18 different categories
   - Support multiple item selection and combined segmentation
   - Same parameter controls as other RMBG nodes
   
-- 2024/12/29: Update ComfyUI-RMBG to v1.3.2 with background handling ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v132-20241229) )
+- **2024/12/29**: Update ComfyUI-RMBG to **v1.3.2** with background handling ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v132-20241229) )
   - Enhanced background handling to support RGBA output when "Alpha" is selected.
   - Ensured RGB output for all other background color selections.
 
-- 2024/12/25: Update ComfyUI-RMBG to v1.3.1 with bug fixes ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v131-20241225) )
+- **2024/12/25**: Update ComfyUI-RMBG to **v1.3.1** with bug fixes ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v131-20241225) )
   - Fixed an issue with mask processing when the model returns a list of masks.
   - Improved handling of image formats to prevent processing errors.
 
-- 2024/12/23: Update ComfyUI-RMBG to v1.3.0 with new Segment node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v140-20241222) )
+- **2024/12/23**: Update ComfyUI-RMBG to **v1.3.0** with new Segment node ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v140-20241222) )
 ![rmbg v1.3.0](https://github.com/user-attachments/assets/7607546e-ffcb-45e2-ab90-83267292757e)
 
   - Added text-prompted object segmentation
@@ -71,16 +78,16 @@ $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
   - Multiple models: SAM (vit_h/l/b) and GroundingDINO (SwinT/B) (as always model file will be downloaded automatically when first time using the specific model)
   - This update requires install requirements.txt
 
-- 2024/12/12: Update Comfyui-RMBG ComfyUI Custom Node to v1.2.2 ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v122-20241212) )
+- **2024/12/12**: Update Comfyui-RMBG ComfyUI Custom Node to **v1.2.2** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v122-20241212) )
 ![RMBG1 2 2](https://github.com/user-attachments/assets/cb7b1ad0-a2ca-4369-9401-54957af6c636)
 
-- 2024/12/02: Update Comfyui-RMBG ComfyUI Custom Node to v1.2.1 ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.mdv121-20241202) )
+- **2024/12/02**: Update Comfyui-RMBG ComfyUI Custom Node to **v1.2.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.mdv121-20241202) )
 ![GIF_TO_AWEBP](https://github.com/user-attachments/assets/7f8275d5-06e5-4880-adfe-930f045df673)
 
-- 2024/11/29: Update Comfyui-RMBG ComfyUI Custom Node to v1.2.0 ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v120-20241129) )
+- **2024/11/29**: Update Comfyui-RMBG ComfyUI Custom Node to **v1.2.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v120-20241129) )
 ![RMBGv1 2 0](https://github.com/user-attachments/assets/4fd10123-6c95-4f9e-8d25-fdb39b5fc792)
 
-- 2024/11/21: Update Comfyui-RMBG ComfyUI Custom Node to v1.1.0 ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v110-20241121) )
+- **2024/11/21**: Update Comfyui-RMBG ComfyUI Custom Node to **v1.1.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v110-20241121) )
 ![comfyui-rmbg version compare](https://github.com/user-attachments/assets/2d23cf42-ca74-49e5-a8bf-9de377bd71aa)
 
 ## Features
@@ -115,7 +122,19 @@ install requirment.txt in the ComfyUI-RMBG folder
   ./ComfyUI/python_embeded/python -m pip install -r requirements.txt
   ```
 
-### 3. Manually download the models:
+### Method 3: Install via Comfy CLI
+  Ensure `pip install comfy-cli` is installed.
+  Installing ComfyUI `comfy install` (if you don't have ComfyUI Installed)
+  install the ComfyUI-RMBG, use the following command:
+  ```bash
+  comfy node install ComfyUI-RMBG
+  ```
+  install requirment.txt in the ComfyUI-RMBG folder
+  ```bash
+  ./ComfyUI/python_embeded/python -m pip install -r requirements.txt
+  ```
+
+### 4. Manually download the models:
 - The model will be automatically downloaded to `ComfyUI/models/RMBG/` when first time using the custom node.
 - Manually download the RMBG-2.0 model by visiting this [link](https://huggingface.co/1038lab/RMBG-2.0), then download the files and place them in the `/ComfyUI/models/RMBG/RMBG-2.0` folder.
 - Manually download the INSPYRENET models by visiting the [link](https://huggingface.co/1038lab/inspyrenet), then download the files and place them in the `/ComfyUI/models/RMBG/INSPYRENET` folder.
@@ -128,7 +147,7 @@ install requirment.txt in the ComfyUI-RMBG folder
 - Manually download the Fashion Segment model by visiting the [link](https://huggingface.co/1038lab/segformer_fashion), then download the files and place them in the `/ComfyUI/models/RMBG/segformer_fashion` folder.
 - Manually download BiRefNet models by visiting the [link](https://huggingface.co/1038lab/BiRefNet), then download the files and place them in the `/ComfyUI/models/RMBG/BiRefNet` folder.
 
-## Usage
+## Usage  
 ### RMBG Node
 ![RMBG](https://github.com/user-attachments/assets/cd0eb92e-8f2e-4ae4-95f1-899a6d83cab6)
 
@@ -141,6 +160,7 @@ install requirment.txt in the ComfyUI-RMBG folder
 | **Mask Offset**      | Allows for expanding or shrinking the mask boundary. Positive values expand the boundary, while negative values shrink it. | Default value is 0. Adjust based on the specific image, typically fine-tuning between -10 and 10. |
 | **Background**      | Choose output background color | Alpha (transparent background) Black, White, Green, Blue, Red |
 | **Invert Output**      | Flip mask and image output | Invert both image and mask output |
+| **Refine Foreground** | Use Fast Foreground Color Estimation to optimize transparent background | Enable for better edge quality and transparency handling |
 | **Performance Optimization** | Properly setting options can enhance performance when processing multiple images. | If memory allows, consider increasing `process_res` and `mask_blur` values for better results, but be mindful of memory usage. |
 
 ### Basic Usage
@@ -217,7 +237,7 @@ BIREFNET is a powerful model for image segmentation, offering:
 - BiRefNet-HR-matting model (high resolution matting)
 - BiRefNet_lite model (lightweight version for faster processing)
 - BiRefNet_lite-2K model (lightweight version for 2K resolution)
-
+  
 ## SAM
 SAM is a powerful model for object detection and segmentation, offering:
 - High accuracy in complex environments
@@ -262,6 +282,7 @@ GroundingDINO is a model for text-prompted object detection and segmentation, of
   - tqdm>=4.65.0
   - transformers>=4.35.0
   - transparent-background>=1.2.4
+  - opencv-python>=4.7.0
 
 ## Credits
 - RMBG-2.0: https://huggingface.co/briaai/RMBG-2.0

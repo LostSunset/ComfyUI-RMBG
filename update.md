@@ -1,7 +1,22 @@
 # ComfyUI-RMBG Update Log
 
-## v1.9.3 (2025/02/24)
+## v2.0.0 (2025/03/13)
 ### New Features
+- Added Load Image, Preview Image, Preview Mask, and a node that previews both the image and the mask simultaneously. This is the first phase of our toolset, with more useful tools coming in future updates.
+- Reorganized the code structure for better maintainability, making it easier to navigate and update.
+- Renamed certain node classes to prevent conflicts with other repositories.
+- Improved category organization with a new structure: 🧪AILab/🛠️UTIL/🖼️IMAGE, making tools easier to find and use.
+- Integrated predefined workflows into the ComfyUI Browse Template section, allowing users to quickly load and understand each custom node’s functionality.
+
+![image_mask_preview](https://github.com/user-attachments/assets/5e2b2679-4b63-4db1-a6c1-3b26b6f97df3)
+
+### Technical Improvements
+- Optimized utility functions for image and mask conversion
+- Improved error handling and code robustness
+- Updated and changed some variable names for consistency
+- Enhanced compatibility with the latest ComfyUI versions
+
+## v1.9.3 (2025/02/24)
 - Clean up the code and fix the transformers version issue `transformers>=4.35.0,<=4.48.3`
 
 ## v1.9.2 (2025/02/21)

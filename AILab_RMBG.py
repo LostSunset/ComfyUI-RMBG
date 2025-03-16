@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v1.9.3
+# ComfyUI-RMBG v2.0.0
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, BEN, BEN2 and BIREFNET-HR. It leverages deep learning techniques
 # to process images and generate masks for background removal.
@@ -94,7 +94,9 @@ class BaseModelLoader:
         self.base_cache_dir = os.path.join(folder_paths.models_dir, "RMBG")
     
     def get_cache_dir(self, model_name):
-        return os.path.join(self.base_cache_dir, AVAILABLE_MODELS[model_name]["cache_dir"])
+        cache_path = os.path.join(self.base_cache_dir, AVAILABLE_MODELS[model_name]["cache_dir"])
+        os.makedirs(cache_path, exist_ok=True)
+        return cache_path
     
     def check_model_cache(self, model_name):
         model_info = AVAILABLE_MODELS[model_name]
@@ -139,10 +141,13 @@ class BaseModelLoader:
         if self.model is not None:
             self.model.cpu()
             del self.model
-            self.model = None
-            self.current_model_version = None
-            torch.cuda.empty_cache()
-            print("Model cleared from memory")
+            # 实际有用的内存清理
+            import gc
+            gc.collect()
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        self.model = None
+        self.current_model_version = None
 
 class RMBGModel(BaseModelLoader):
     def __init__(self):
@@ -464,9 +469,9 @@ class RMBG:
             },
             "optional": {
                 "sensitivity": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": tooltips["sensitivity"]}),
-                "process_res": ("INT", {"default": 1024, "min": 256, "max": 2048, "step": 32, "tooltip": tooltips["process_res"]}),
+                "process_res": ("INT", {"default": 1024, "min": 256, "max": 2048, "step": 8, "tooltip": tooltips["process_res"]}),
                 "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1, "tooltip": tooltips["mask_blur"]}),
-                "mask_offset": ("INT", {"default": 0, "min": -20, "max": 20, "step": 1, "tooltip": tooltips["mask_offset"]}),
+                "mask_offset": ("INT", {"default": 0, "min": -64, "max": 64, "step": 1, "tooltip": tooltips["mask_offset"]}),
                 "background": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background"]}),
                 "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
                 "optimize": (["default", "on"], {"default": "default", "tooltip": tooltips["optimize"]}),
@@ -474,8 +479,8 @@ class RMBG:
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("image", "mask")
+    RETURN_TYPES = ("IMAGE", "MASK", "IMAGE")
+    RETURN_NAMES = ("IMAGE", "MASK", "MASK_IMAGE")
     FUNCTION = "process_image"
     CATEGORY = "🧪AILab/🧽RMBG"
 
@@ -564,10 +569,23 @@ class RMBG:
                 
                 processed_masks.append(pil2tensor(mask))
 
-            return (torch.cat(processed_images, dim=0), torch.cat(processed_masks, dim=0))
+            # Create mask image for visualization
+            mask_images = []
+            for mask_tensor in processed_masks:
+                # Convert mask to RGB image format for visualization
+                mask_image = mask_tensor.reshape((-1, 1, mask_tensor.shape[-2], mask_tensor.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+                mask_images.append(mask_image)
+            
+            mask_image_output = torch.cat(mask_images, dim=0)
+            
+            return (torch.cat(processed_images, dim=0), torch.cat(processed_masks, dim=0), mask_image_output)
             
         except Exception as e:
             handle_model_error(f"Error in image processing: {str(e)}")
+            # Return original image and empty mask on error
+            empty_mask = torch.zeros((image.shape[0], image.shape[2], image.shape[3]))
+            empty_mask_image = empty_mask.reshape((-1, 1, empty_mask.shape[-2], empty_mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+            return (image, empty_mask, empty_mask_image)
 
 # Node Mapping
 NODE_CLASS_MAPPINGS = {

@@ -1,9 +1,6 @@
 # ComfyUI-RMBG
 # This custom node for ComfyUI provides functionality for fashion segmentation using segformer-b3-fashion model.
 # It leverages deep learning techniques to process images and generate masks for fashion items segmentation.
-
-# Models License Notice:
-# - sayeed99/segformer-b3-fashion: MIT License (https://huggingface.co/sayeed99/segformer-b3-fashion)
 # 
 # This integration script follows GPL-3.0 License.
 # When using or modifying this code, please respect both the original model licenses
@@ -166,7 +163,7 @@ class FashionSegmentClothing:
                    for cls_name in clothing_classes},
                 "process_res": ("INT", {"default": 512, "min": 128, "max": 2048, "step": 32}),
                 "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1}),
-                "mask_offset": ("INT", {"default": 0, "min": -20, "max": 20, "step": 1}),
+                "mask_offset": ("INT", {"default": 0, "min": -64, "max": 64, "step": 1}),
                 "background_color": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha"}),
                 "invert_output": ("BOOLEAN", {"default": False}),
             },
