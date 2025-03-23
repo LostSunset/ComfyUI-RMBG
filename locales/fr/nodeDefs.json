@@ -1,0 +1,618 @@
+{
+  "RMBG": {
+    "display_name": "Retirer l'arrière-plan (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "model": {
+        "name": "Modèle"
+      },
+      "sensitivity": {
+        "name": "Sensibilité"
+      },
+      "process_res": {
+        "name": "Résolution de traitement"
+      },
+      "mask_blur": {
+        "name": "Flou du masque"
+      },
+      "mask_offset": {
+        "name": "Décalage du masque"
+      },
+      "background": {
+        "name": "Arrière-plan"
+      },
+      "invert_output": {
+        "name": "Inverser la sortie"
+      },
+      "optimize": {
+        "name": "Optimiser"
+      },
+      "refine_foreground": {
+        "name": "Affiner le premier plan"
+      }
+    }
+  },
+  "BodySegment": {
+    "display_name": "Segmentation des parties du corps (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "Hair": {
+        "name": "Cheveux"
+      },
+      "Glasses": {
+        "name": "Lunettes"
+      },
+      "Top-clothes": {
+        "name": "Vêtements du haut"
+      },
+      "Bottom-clothes": {
+        "name": "Vêtements du bas"
+      },
+      "Torso-skin": {
+        "name": "Peau du torse"
+      },
+      "Face": {
+        "name": "Visage"
+      },
+      "Left-arm": {
+        "name": "Bras gauche"
+      },
+      "Right-arm": {
+        "name": "Bras droit"
+      },
+      "Left-leg": {
+        "name": "Jambe gauche"
+      },
+      "Right-leg": {
+        "name": "Jambe droite"
+      },
+      "Left-foot": {
+        "name": "Pied gauche"
+      },
+      "Right-foot": {
+        "name": "Pied droit"
+      },
+      "mask_blur": {
+        "name": "Flou du masque"
+      },
+      "mask_offset": {
+        "name": "Décalage du masque"
+      },
+      "background_color": {
+        "name": "Couleur de fond"
+      },
+      "invert_output": {
+        "name": "Inverser la sortie"
+      }
+    }
+  },
+  "BiRefNetRMBG": {
+    "display_name": "Retirer l'arrière-plan BiRefNet (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "model": {
+        "name": "Modèle"
+      },
+      "mask_blur": {
+        "name": "Flou du masque"
+      },
+      "mask_offset": {
+        "name": "Décalage du masque"
+      },
+      "background": {
+        "name": "Arrière-plan"
+      },
+      "invert_output": {
+        "name": "Inverser la sortie"
+      },
+      "refine_foreground": {
+        "name": "Affiner le premier plan"
+      }
+    }
+  },
+  "ClothesSegment": {
+    "display_name": "Segmentation des vêtements (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "Hat": {
+        "name": "Chapeau"
+      },
+      "Hair": {
+        "name": "Cheveux"
+      },
+      "Face": {
+        "name": "Visage"
+      },
+      "Sunglasses": {
+        "name": "Lunettes de soleil"
+      },
+      "Upper-clothes": {
+        "name": "Haut"
+      },
+      "Skirt": {
+        "name": "Jupe"
+      },
+      "Dress": {
+        "name": "Robe"
+      },
+      "Belt": {
+        "name": "Ceinture"
+      },
+      "Pants": {
+        "name": "Pantalon"
+      },
+      "Left-arm": {
+        "name": "Bras gauche"
+      },
+      "Right-arm": {
+        "name": "Bras droit"
+      },
+      "Left-leg": {
+        "name": "Jambe gauche"
+      },
+      "Right-leg": {
+        "name": "Jambe droite"
+      },
+      "Bag": {
+        "name": "Sac"
+      },
+      "Scarf": {
+        "name": "Écharpe"
+      },
+      "Left-shoe": {
+        "name": "Chaussure gauche"
+      },
+      "Right-shoe": {
+        "name": "Chaussure droite"
+      },
+      "Background": {
+        "name": "Arrière-plan"
+      },
+      "process_res": {
+        "name": "Résolution de traitement"
+      },
+      "mask_blur": {
+        "name": "Flou du masque"
+      },
+      "mask_offset": {
+        "name": "Décalage du masque"
+      },
+      "background_color": {
+        "name": "Couleur de fond"
+      },
+      "invert_output": {
+        "name": "Inverser la sortie"
+      }
+    }
+  },
+  "FaceSegment": {
+    "display_name": "Segmentation du visage (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "Skin": {
+        "name": "Peau"
+      },
+      "Nose": {
+        "name": "Nez"
+      },
+      "Eyeglasses": {
+        "name": "Lunettes"
+      },
+      "Left-eye": {
+        "name": "Œil gauche"
+      },
+      "Right-eye": {
+        "name": "Œil droit"
+      },
+      "Left-eyebrow": {
+        "name": "Sourcil gauche"
+      },
+      "Right-eyebrow": {
+        "name": "Sourcil droit"
+      },
+      "Left-ear": {
+        "name": "Oreille gauche"
+      },
+      "Right-ear": {
+        "name": "Oreille droite"
+      },
+      "Mouth": {
+        "name": "Bouche"
+      },
+      "Upper-lip": {
+        "name": "Lèvre supérieure"
+      },
+      "Lower-lip": {
+        "name": "Lèvre inférieure"
+      },
+      "Hair": {
+        "name": "Cheveux"
+      },
+      "Earring": {
+        "name": "Boucle d'oreille"
+      },
+      "Neck": {
+        "name": "Cou"
+      },
+      "process_res": {
+        "name": "Résolution de traitement"
+      },
+      "mask_blur": {
+        "name": "Flou du masque"
+      },
+      "mask_offset": {
+        "name": "Décalage du masque"
+      },
+      "background_color": {
+        "name": "Couleur de fond"
+      },
+      "invert_output": {
+        "name": "Inverser la sortie"
+      }
+    }
+  },
+  "FashionSegmentClothing": {
+    "display_name": "Segmentation de mode (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "accessories_options": {
+        "name": "Options d'accessoires"
+      },
+      "coat": {
+        "name": "Manteau"
+      },
+      "jacket": {
+        "name": "Veste"
+      },
+      "cardigan": {
+        "name": "Gilet"
+      },
+      "vest": {
+        "name": "Gilet"
+      },
+      "sweater": {
+        "name": "Pull"
+      },
+      "hood": {
+        "name": "Capuche"
+      },
+      "shirt, blouse": {
+        "name": "Chemise"
+      },
+      "top, t-shirt, sweatshirt (RMBG)": {
+        "name": "T-shirt"
+      },
+      "sleeve": {
+        "name": "Manche"
+      },
+      "dress": {
+        "name": "Robe"
+      },
+      "jumpsuit": {
+        "name": "Combinaison"
+      },
+      "cape": {
+        "name": "Cape"
+      },
+      "pants": {
+        "name": "Pantalon"
+      },
+      "shorts": {
+        "name": "Shorts"
+      },
+      "skirt": {
+        "name": "Jupe"
+      },
+      "tights, stockings": {
+        "name": "Collants"
+      },
+      "sock": {
+        "name": "Chaussette"
+      },
+      "shoe": {
+        "name": "Chaussure"
+      },
+      "process_res": {
+        "name": "Résolution de traitement"
+      },
+      "mask_blur": {
+        "name": "Flou du masque"
+      },
+      "mask_offset": {
+        "name": "Décalage du masque"
+      },
+      "background_color": {
+        "name": "Couleur de fond"
+      },
+      "invert_output": {
+        "name": "Inverser la sortie"
+      }
+    }
+  },
+  "FashionSegmentAccessories": {
+    "display_name": "Segmentation des accessoires de mode (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "hat": {
+        "name": "Chapeau"
+      },
+      "glasses": {
+        "name": "Lunettes"
+      },
+      "headband, head covering, hair accessory": {
+        "name": "Bandeau"
+      },
+      "scarf": {
+        "name": "Écharpe"
+      },
+      "tie": {
+        "name": "Cravate"
+      },
+      "glove": {
+        "name": "Gant"
+      },
+      "watch": {
+        "name": "Montre"
+      },
+      "belt": {
+        "name": "Ceinture"
+      },
+      "leg warmer": {
+        "name": "Chauffe-jambe"
+      },
+      "bag, wallet": {
+        "name": "Sac"
+      },
+      "umbrella": {
+        "name": "Parapluie"
+      },
+      "collar": {
+        "name": "Col"
+      },
+      "lapel": {
+        "name": "Revers"
+      },
+      "neckline": {
+        "name": "Encolure"
+      },
+      "epaulette": {
+        "name": "Épaule"
+      },
+      "pocket": {
+        "name": "Poche"
+      },
+      "buckle": {
+        "name": "Boucle"
+      },
+      "zipper": {
+        "name": "Fermeture éclair"
+      },
+      "applique": {
+        "name": "Appliqué"
+      },
+      "bow": {
+        "name": "Nœud"
+      },
+      "flower": {
+        "name": "Fleur"
+      },
+      "bead": {
+        "name": "Perle"
+      },
+      "fringe": {
+        "name": "Frange"
+      },
+      "ribbon": {
+        "name": "Ruban"
+      },
+      "rivet": {
+        "name": "Rivet"
+      },
+      "ruffle": {
+        "name": "Volant"
+      },
+      "sequin": {
+        "name": "Paillettes"
+      },
+      "tassel": {
+        "name": "Tassel"
+      }
+    }
+  },
+  "Segment": {
+    "display_name": "Segmentation locale (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "prompt": {
+        "name": "Invite"
+      },
+      "sam_model": {
+        "name": "Modèle SAM"
+      },
+      "dino_model": {
+        "name": "Modèle DINO"
+      },
+      "threshold": {
+        "name": "Seuil"
+      },
+      "mask_blur": {
+        "name": "Flou du masque"
+      },
+      "mask_offset": {
+        "name": "Décalage du masque"
+      },
+      "background_color": {
+        "name": "Couleur de fond"
+      },
+      "invert_output": {
+        "name": "Inverser la sortie"
+      }
+    }
+  },
+  "AiLab_Preview": {
+    "display_name": "Aperçu de l'image/mask (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "mask": {
+        "name": "Masque"
+      }
+    }
+  },
+  "AiLab_ImagePreview": {
+    "display_name": "Aperçu de l'image (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      }
+    }
+  },
+  "AiLab_MaskPreview": {
+    "display_name": "Aperçu du masque (RMBG)",
+    "inputs": {
+      "mask": {
+        "name": "Masque"
+      }
+    }
+  },
+  "AiLab_LoadImage": {
+    "display_name": "Charger l'image (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "mask_channel": {
+        "name": "Canal de masque"
+      },
+      "scale_by": {
+        "name": "Échelle"
+      },
+      "longest_side": {  
+        "name": "Côté le plus long"
+      }
+    }
+  },
+  "AiLab_ImageCombiner": {
+    "display_name": "Combineur d'images (RMBG)",
+    "inputs": {
+      "foreground": {
+        "name": "Premier plan"
+      },
+      "background": {
+        "name": "Arrière-plan"
+      },
+      "mode": {
+        "name": "Mode"
+      },
+      "foreground_opacity": {
+        "name": "Opacité du premier plan"
+      },
+      "foreground_scale": {
+        "name": "Échelle du premier plan"
+      },
+      "position_x": {
+        "name": "Position X"
+      },
+      "position_y": {
+        "name": "Position Y"
+      },
+      "foreground_mask": {
+        "name": "Masque du premier plan"
+      }
+    }
+  },
+  "AiLab_MaskCombiner": {
+    "display_name": "Combineur de masques (RMBG)",
+    "inputs": {
+      "mask_1": {
+        "name": "Masque 1"
+      },
+      "mode": {
+        "name": "Mode"
+      },
+      "mask_2": {
+        "name": "Masque 2"
+      },
+      "mask_3": {
+        "name": "Masque 3"
+      },
+      "mask_4": {
+        "name": "Masque 4"
+      }
+    }
+  },
+  "AiLab_MaskEnhancer": {
+    "display_name": "Améliorateur de masque (RMBG)",
+    "inputs": {
+      "mask": {
+        "name": "Masque" 
+      },
+      "sensitivity": {
+        "name": "Sensibilité"
+      },
+      "mask_blur": {
+        "name": "Flou du masque" 
+      },
+      "mask_offset": {
+        "name": "Décalage du masque"
+      },
+      "smooth": {
+        "name": "Lisser" 
+      },
+      "fill_region": {
+        "name": "Remplir la région"
+      },
+      "invert_output": {
+        "name": "Inverser la sortie"   
+      }
+    }
+  },
+  "AiLab_ImageMaskConvert": {
+    "display_name": "Conversion image/masque (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "mask": {
+        "name": "Masque"
+      },
+      "mask_channel": {
+        "name": "Canal de masque"
+      }
+    }
+  },
+  "AiLab_MaskExtractor": {
+    "display_name": "Extracteur de masque (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "mask": {
+        "name": "Masque"
+      },
+      "mode": {
+        "name": "Mode" 
+      },
+      "background": {
+        "name": "Arrière-plan"
+      }
+    }
+  }
+}

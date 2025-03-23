@@ -1,5 +1,28 @@
 # ComfyUI-RMBG Update Log
 
+## V2.1.1 (2025/03/21)
+Enhanced compatibility with Transformers
+  - Added support for higher versions of the transformers library (≥ 4.49.0)
+  - Resolved conflicts with other models requiring higher version transformers
+  - Improved error handling and more user-friendly error messages
+  - If you encounter issues, you can still revert to the recommended version: `pip install transformers==4.48.3`
+    
+  [Transformers Version Compatibility](https://github.com/1038lab/ComfyUI-RMBG/blob/main/docs/version_compatibility.md)
+
+## V2.1.0 (2025/03/19)
+### New Features
+The integration of internationalization (`i18n`) support significantly enhances ComfyUI-RMBG, enabling users worldwide to utilize background removal features in their preferred languages. This update fosters a more tailored and efficient workflow within ComfyUI-RMBG. The user interface has been improved to facilitate dynamic language switching according to user preferences. All newly introduced features are designed to be fully translatable, thereby improving accessibility for users who do not speak English.
+
+# Supported Languages
+| Language | Custom Nodes `i18n` UI |
+|----------|-------|
+| English  | ![node_en](https://github.com/user-attachments/assets/c20e9031-2f1a-4d7b-9037-fd30171f9d58) |
+| 中文     | ![node_zh](https://github.com/user-attachments/assets/0fb77875-7693-4214-86f4-c6a92ce92497) |
+| 日本語   | ![node_ja](https://github.com/user-attachments/assets/2f655484-6569-47c6-9e7c-1a175e932cc6) |
+| Русский  | ![node_ru](https://github.com/user-attachments/assets/17ffbb5a-6948-460e-84cb-bca05646eb4f) |
+| 한국어   | ![node_ko](https://github.com/user-attachments/assets/3899e487-6620-449b-87f4-ddb51eae9520) |
+| Français | ![node_fr](https://github.com/user-attachments/assets/da45208a-2567-4905-8fe2-ee26f6431c37) |
+
 ## v2.0.0 (2025/03/13)
 ### New Features
 - Added Load Image, Preview Image, Preview Mask, and a node that previews both the image and the mask simultaneously. This is the first phase of our toolset, with more useful tools coming in future updates.

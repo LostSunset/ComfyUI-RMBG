@@ -1,0 +1,618 @@
+{
+  "RMBG": {
+    "display_name": "Удалить фон (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Изображение"
+      },
+      "model": {
+        "name": "Модель"
+      },
+      "sensitivity": {
+        "name": "Чувствительность"
+      },
+      "process_res": {
+        "name": "Разрешение обработки"
+      },
+      "mask_blur": {
+        "name": "Размытие маски"
+      },
+      "mask_offset": {
+        "name": "Смещение маски"
+      },
+      "background": {
+        "name": "Фон"
+      },
+      "invert_output": {
+        "name": "Инвертировать вывод"
+      },
+      "optimize": {
+        "name": "Оптимизация"
+      },
+      "refine_foreground": {
+        "name": "Уточнить передний план"
+      }
+    }
+  },
+  "BodySegment": {
+    "display_name": "Сегментация частей тела (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Изображения"
+      },
+      "Hair": {
+        "name": "Волосы"
+      },
+      "Glasses": {
+        "name": "Очки"
+      },
+      "Top-clothes": {
+        "name": "Верхняя одежда"
+      },
+      "Bottom-clothes": {
+        "name": "Нижняя одежда"
+      },
+      "Torso-skin": {
+        "name": "Кожа торса"
+      },
+      "Face": {
+        "name": "Лицо"
+      },
+      "Left-arm": {
+        "name": "Левая рука"
+      },
+      "Right-arm": {
+        "name": "Правая рука"
+      },
+      "Left-leg": {
+        "name": "Левая нога"
+      },
+      "Right-leg": {
+        "name": "Правая нога"
+      },
+      "Left-foot": {
+        "name": "Левый носок"
+      },
+      "Right-foot": {
+        "name": "Правый носок"
+      },
+      "mask_blur": {
+        "name": "Размытие маски"
+      },
+      "mask_offset": {
+        "name": "Смещение маски"
+      },
+      "background_color": {
+        "name": "Цвет фона"
+      },
+      "invert_output": {
+        "name": "Инвертировать вывод"
+      }
+    }
+  },
+  "BiRefNetRMBG": {
+    "display_name": "Удалить фон BiRefNet (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Изображение"
+      },
+      "model": {
+        "name": "Модель"
+      },
+      "mask_blur": {
+        "name": "Размытие маски"
+      },
+      "mask_offset": {
+        "name": "Смещение маски"
+      },
+      "background": {
+        "name": "Фон"
+      },
+      "invert_output": {
+        "name": "Инвертировать вывод"
+      },
+      "refine_foreground": {
+        "name": "Уточнить передний план"
+      }
+    }
+  },
+  "ClothSegment": {
+    "display_name": "Сегментация одежды (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Изображения"
+      },
+      "Hat": {
+        "name": "Шляпа"
+      },
+      "Hair": {
+        "name": "Волосы"
+      },
+      "Face": {
+        "name": "Лицо"
+      },
+      "Sunglasses": {
+        "name": "Солнцезащитные очки"
+      },
+      "Upper-clothes": {
+        "name": "Верхняя одежда"
+      },
+      "Skirt": {
+        "name": "Юбка"
+      },
+      "Dress": {
+        "name": "Платье"
+      },
+      "Belt": {
+        "name": "Ремень"
+      },
+      "Pants": {
+        "name": "Штаны"
+      },
+      "Left-arm": {
+        "name": "Левая рука"
+      },
+      "Right-arm": {
+        "name": "Правая рука"
+      },
+      "Left-leg": {
+        "name": "Левая нога"
+      },
+      "Right-leg": {
+        "name": "Правая нога"
+      },
+      "Bag": {
+        "name": "Сумка"
+      },
+      "Scarf": {
+        "name": "Шарф"
+      },
+      "Left-shoe": {
+        "name": "Левый ботинок"
+      },
+      "Right-shoe": {
+        "name": "Правый ботинок"
+      },
+      "Background": {
+        "name": "Фон"
+      },
+      "process_res": {
+        "name": "Разрешение обработки"
+      },
+      "mask_blur": {
+        "name": "Размытие маски"
+      },
+      "mask_offset": {
+        "name": "Смещение маски"
+      },
+      "background_color": {
+        "name": "Цвет фона"
+      },
+      "invert_output": {
+        "name": "Инвертировать вывод"
+      }
+    }
+  },
+  "FaceSegment": {
+    "display_name": "Сегментация лица (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Изображения"
+      },
+      "Skin": {
+        "name": "Кожа"
+      },
+      "Nose": {
+        "name": "Нос"
+      },
+      "Eyeglasses": {
+        "name": "Очки"
+      },
+      "Left-eye": {
+        "name": "Левый глаз"
+      },
+      "Right-eye": {
+        "name": "Правый глаз"
+      },
+      "Left-eyebrow": {
+        "name": "Левая бровь"
+      },
+      "Right-eyebrow": {
+        "name": "Правая бровь"
+      },
+      "Left-ear": {
+        "name": "Левое ухо"
+      },
+      "Right-ear": {
+        "name": "Правое ухо"
+      },
+      "Mouth": {
+        "name": "Рот"
+      },
+      "Upper-lip": {
+        "name": "Верхняя губа"
+      },
+      "Lower-lip": {
+        "name": "Нижняя губа"
+      },
+      "Hair": {
+        "name": "Волосы"
+      },
+      "Earring": {
+        "name": "Серьга"
+      },
+      "Neck": {
+        "name": "Шея"
+      },
+      "process_res": {
+        "name": "Разрешение обработки"
+      },
+      "mask_blur": {
+        "name": "Размытие маски"
+      },
+      "mask_offset": {
+        "name": "Смещение маски"
+      },
+      "background_color": {
+        "name": "Цвет фона"
+      },
+      "invert_output": {
+        "name": "Инвертировать вывод"
+      }
+    }
+  },
+  "FashionSegmentClothing": {
+    "display_name": "Сегментация моды (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Изображения"
+      },
+      "accessories_options": {
+        "name": "Опции аксессуаров"
+      },
+      "coat": {
+        "name": "Пальто"
+      },
+      "jacket": {
+        "name": "Куртка"
+      },
+      "cardigan": {
+        "name": "Кардиган"
+      },
+      "vest": {
+        "name": "Жилет"
+      },
+      "sweater": {
+        "name": "Свитер"
+      },
+      "hood": {
+        "name": "Капюшон"
+      },
+      "shirt, blouse": {
+        "name": "Рубашка"
+      },
+      "top, t-shirt, sweatshirt (RMBG)": {
+        "name": "Футболка"
+      },
+      "sleeve": {
+        "name": "Рукав"
+      },
+      "dress": {
+        "name": "Платье"
+      },
+      "jumpsuit": {
+        "name": "Комбинезон"
+      },
+      "cape": {
+        "name": "Плащ"
+      },
+      "pants": {
+        "name": "Штаны"
+      },
+      "shorts": {
+        "name": "Шорты"
+      },
+      "skirt": {
+        "name": "Юбка"
+      },
+      "tights, stockings": {
+        "name": "Колготки"
+      },
+      "sock": {
+        "name": "Носок"
+      },
+      "shoe": {
+        "name": "Обувь"
+      },
+      "process_res": {
+        "name": "Разрешение обработки"
+      },
+      "mask_blur": {
+        "name": "Размытие маски"
+      },
+      "mask_offset": {
+        "name": "Смещение маски"
+      },
+      "background_color": {
+        "name": "Цвет фона"
+      },
+      "invert_output": {
+        "name": "Инвертировать вывод"
+      }
+    }
+  },
+  "FashionSegmentAccessories": {
+    "display_name": "Сегментация модных аксессуаров (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Изображения"
+      },
+      "hat": {
+        "name": "Шляпа"
+      },
+      "glasses": {
+        "name": "Очки"
+      },
+      "headband, head covering, hair accessory": {
+        "name": "Повязка на голову"
+      },
+      "scarf": {
+        "name": "Шарф"
+      },
+      "tie": {
+        "name": "Галстук"
+      },
+      "glove": {
+        "name": "Перчатка"
+      },
+      "watch": {
+        "name": "Часы"
+      },
+      "belt": {
+        "name": "Ремень"
+      },
+      "leg warmer": {
+        "name": "Гетры"
+      },
+      "bag, wallet": {
+        "name": "Сумка"
+      },
+      "umbrella": {
+        "name": "Зонт"
+      },
+      "collar": {
+        "name": "Воротник"
+      },
+      "lapel": {
+        "name": "Реверс"
+      },
+      "neckline": {
+        "name": "Вырез"
+      },
+      "epaulette": {
+        "name": "Эполет"
+      },
+      "pocket": {
+        "name": "Карман"
+      },
+      "buckle": {
+        "name": "Пряжка"
+      },
+      "zipper": {
+        "name": "Молния"
+      },
+      "applique": {
+        "name": "Аппликация"
+      },
+      "bow": {
+        "name": "Бант"
+      },
+      "flower": {
+        "name": "Цветок"
+      },
+      "bead": {
+        "name": "Бусина"
+      },
+      "fringe": {
+        "name": "Кисточка"
+      },
+      "ribbon": {
+        "name": "Лента"
+      },
+      "rivet": {
+        "name": "Заклепка"
+      },
+      "ruffle": {
+        "name": "Рюша"
+      },
+      "sequin": {
+        "name": "Блестка"
+      },
+      "tassel": {
+        "name": "Пуховик"
+      }
+    }
+  },
+  "Segment": {
+    "display_name": "Сегментация тела (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Изображение"
+      },
+      "prompt": {
+        "name": "Подсказка"
+      },
+      "sam_model": {
+        "name": "Модель SAM"
+      },
+      "dino_model": {
+        "name": "Модель DINO"
+      },
+      "threshold": {
+        "name": "Порог"
+      },
+      "mask_blur": {
+        "name": "Размытие маски"
+      },
+      "mask_offset": {
+        "name": "Смещение маски"
+      },
+      "background_color": {
+        "name": "Цвет фона"
+      },
+      "invert_output": {
+        "name": "Инвертировать вывод"
+      }
+    }
+  },
+  "AiLab_Preview": {
+    "display_name": "Предварительный просмотр изображения/маски (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Изображение"
+      },
+      "mask": {
+        "name": "Маска"
+      }
+    }
+  },
+  "AiLab_ImagePreview": {
+    "display_name": "Предварительный просмотр изображения (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Изображение"
+      }
+    }
+  },
+  "AiLab_MaskPreview": {
+    "display_name": "Предварительный просмотр маски (RMBG)",
+    "inputs": {
+      "mask": {
+        "name": "Маска"
+      }
+    }
+  },
+  "AiLab_LoadImage": {
+    "display_name": "Загрузить изображение (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Изображение"
+      },
+      "mask_channel": {
+        "name": "Канал маски"
+      },
+      "scale_by": {
+        "name": "Масштаб"
+      },
+      "longest_side": {  
+        "name": "Длина самой длинной стороны"
+      }
+    }
+  },
+  "AiLab_ImageCombiner": {
+    "display_name": "Комбинировать изображения (RMBG)",
+    "inputs": {
+      "foreground": {
+        "name": "Передний план"
+      },
+      "background": {
+        "name": "Фон"
+      },
+      "mode": {
+        "name": "Режим"
+      },
+      "foreground_opacity": {
+        "name": "Непрозрачность переднего плана"
+      },
+      "foreground_scale": {
+        "name": "Масштаб переднего плана"
+      },
+      "position_x": {
+        "name": "Позиция X"
+      },
+      "position_y": {
+        "name": "Позиция Y"
+      },
+      "foreground_mask": {
+        "name": "Маска переднего плана"
+      }
+    }
+  },
+  "AiLab_MaskCombiner": {
+    "display_name": "Комбинировать маски (RMBG)",
+    "inputs": {
+      "mask_1": {
+        "name": "Маска 1"
+      },
+      "mode": {
+        "name": "Режим"
+      },
+      "mask_2": {
+        "name": "Маска 2"
+      },
+      "mask_3": {
+        "name": "Маска 3"
+      },
+      "mask_4": {
+        "name": "Маска 4"
+      }
+    }
+  },
+  "AiLab_MaskEnhancer": {
+    "display_name": "Улучшение маски (RMBG)",
+    "inputs": {
+      "mask": {
+        "name": "Маска" 
+      },
+      "sensitivity": {
+        "name": "Чувствительность"
+      },
+      "mask_blur": {
+        "name": "Размытие маски" 
+      },
+      "mask_offset": {
+        "name": "Смещение маски"
+      },
+      "smooth": {
+        "name": "Сглаживание" 
+      },
+      "fill_region": {
+        "name": "Заполнение области"
+      },
+      "invert_output": {
+        "name": "Инвертировать вывод"   
+      }
+    }
+  },
+  "AiLab_ImageMaskConvert": {
+    "display_name": "Конвертация изображения/маски (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Изображение"
+      },
+      "mask": {
+        "name": "Маска"
+      },
+      "mask_channel": {
+        "name": "Канал маски"
+      }
+    }
+  },
+  "AiLab_MaskExtractor": {
+    "display_name": "Извлечение маски (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Изображение"
+      },
+      "mask": {
+        "name": "Маска"
+      },
+      "mode": {
+        "name": "Режим" 
+      },
+      "background": {
+        "name": "Фон"
+      }
+    }
+  }
+}

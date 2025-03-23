@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v2.0.0
+# ComfyUI-RMBG
 # This custom node for ComfyUI provides functionality for background removal using BiRefNet models.
 #
 # Model License Notice:

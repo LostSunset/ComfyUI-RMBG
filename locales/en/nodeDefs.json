@@ -1,0 +1,468 @@
+{
+  "RMBG": {
+    "display_name": "Remove Background (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "model": {
+        "name": "Model"
+      },
+      "sensitivity": {
+        "name": "Sensitivity"
+      },
+      "process_res": {
+        "name": "Processing Resolution"
+      },
+      "mask_blur": {
+        "name": "Mask Blur"
+      },
+      "mask_offset": {
+        "name": "Mask Offset"
+      },
+      "background": {
+        "name": "Background"
+      },
+      "invert_output": {
+        "name": "Invert Output"
+      },
+      "optimize": {
+        "name": "Optimize"
+      },
+      "refine_foreground": {
+        "name": "Refine Foreground"
+      }
+    }
+  },
+  "BodySegment": {
+    "display_name": "Body Part Segmentation (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "Hair": {
+        "name": "Hair"
+      },
+      "Glasses": {
+        "name": "Glasses"
+      },
+      "Top-clothes": {
+        "name": "Top Clothes"
+      },
+      "Bottom-clothes": {
+        "name": "Bottom Clothes"
+      },
+      "Torso-skin": {
+        "name": "Torso Skin"
+      },
+      "Face": {
+        "name": "Face"
+      },
+      "Left-arm": {
+        "name": "Left Arm"
+      },
+      "Right-arm": {
+        "name": "Right Arm"
+      },
+      "Left-leg": {
+        "name": "Left Leg"
+      },
+      "Right-leg": {
+        "name": "Right Leg"
+      },
+      "Left-foot": {
+        "name": "Left Foot"
+      },
+      "Right-foot": {
+        "name": "Right Foot"
+      },
+      "mask_blur": {
+        "name": "Mask Blur"
+      },
+      "mask_offset": {
+        "name": "Mask Offset"
+      },
+      "background_color": {
+        "name": "Background Color"
+      },
+      "invert_output": {
+        "name": "Invert Output"
+      }
+    }
+  },
+  "BiRefNetRMBG": {
+    "display_name": "BiRefNet Remove Background (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "model": {
+        "name": "Model"
+      },
+      "mask_blur": {
+        "name": "Mask Blur"
+      },
+      "mask_offset": {
+        "name": "Mask Offset"
+      },
+      "background": {
+        "name": "Background"
+      },
+      "invert_output": {
+        "name": "Invert Output"
+      },
+      "refine_foreground": {
+        "name": "Refine Foreground"
+      }
+    }
+  },
+  "ClothesSegment": {
+    "display_name": "Clothing Segmentation (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "Hat": {
+        "name": "Hat"
+      },
+      "Hair": {
+        "name": "Hair"
+      },
+      "Face": {
+        "name": "Face"
+      },
+      "Sunglasses": {
+        "name": "Sunglasses"
+      },
+      "Upper-clothes": {
+        "name": "Upper Clothes"
+      },
+      "Skirt": {
+        "name": "Skirt"
+      },
+      "Dress": {
+        "name": "Dress"
+      },
+      "Belt": {
+        "name": "Belt"
+      },
+      "Pants": {
+        "name": "Pants"
+      },
+      "Left-arm": {
+        "name": "Left Arm"
+      },
+      "Right-arm": {
+        "name": "Right Arm"
+      },
+      "Left-leg": {
+        "name": "Left Leg"
+      },
+      "Right-leg": {
+        "name": "Right Leg"
+      },
+      "Bag": {
+        "name": "Bag"
+      },
+      "Scarf": {
+        "name": "Scarf"
+      },
+      "Left-shoe": {
+        "name": "Left Shoe"
+      },
+      "Right-shoe": {
+        "name": "Right Shoe"
+      },
+      "Background": {
+        "name": "Background"
+      },
+      "process_res": {
+        "name": "Processing Resolution"
+      },
+      "mask_blur": {
+        "name": "Mask Blur"
+      },
+      "mask_offset": {
+        "name": "Mask Offset"
+      },
+      "background_color": {
+        "name": "Background Color"
+      },
+      "invert_output": {
+        "name": "Invert Output"
+      }
+    }
+  },
+  "FaceSegment": {
+    "display_name": "Face Segmentation (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "Skin": {
+        "name": "Skin"
+      },
+      "Nose": {
+        "name": "Nose"
+      },
+      "Eyeglasses": {
+        "name": "Eyeglasses"
+      },
+      "Left-eye": {
+        "name": "Left Eye"
+      },
+      "Right-eye": {
+        "name": "Right Eye"
+      },
+      "Left-eyebrow": {
+        "name": "Left Eyebrow"
+      },
+      "Right-eyebrow": {
+        "name": "Right Eyebrow"
+      },
+      "Left-ear": {
+        "name": "Left Ear"
+      },
+      "Right-ear": {
+        "name": "Right Ear"
+      },
+      "Mouth": {
+        "name": "Mouth"
+      },
+      "Upper-lip": {
+        "name": "Upper Lip"
+      },
+      "Lower-lip": {
+        "name": "Lower Lip"
+      },
+      "Hair": {
+        "name": "Hair"
+      },
+      "Earring": {
+        "name": "Earring"
+      },
+      "Neck": {
+        "name": "Neck"
+      },
+      "process_res": {
+        "name": "Processing Resolution"
+      },
+      "mask_blur": {
+        "name": "Mask Blur"
+      },
+      "mask_offset": {
+        "name": "Mask Offset"
+      },
+      "background_color": {
+        "name": "Background Color"
+      },
+      "invert_output": {
+        "name": "Invert Output"
+      }
+    }
+  },
+  "FashionSegmentClothing": {
+    "display_name": "Fashion Segmentation (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "accessories_options": {
+        "name": "Accessories Options"
+      },
+      "coat": {
+        "name": "Coat"
+      },
+      "jacket": {
+        "name": "Jacket"
+      },
+      "cardigan": {
+        "name": "Cardigan"
+      },
+      "vest": {
+        "name": "Vest"
+      },
+      "sweater": {
+        "name": "Sweater"
+      },
+      "hood": {
+        "name": "Hood"
+      },
+      "shirt, blouse": {
+        "name": "Shirt"
+      },
+      "top, t-shirt, sweatshirt (RMBG)": {
+        "name": "T-Shirt"
+      },
+      "sleeve": {
+        "name": "Sleeve"
+      },
+      "dress": {
+        "name": "Dress"
+      },
+      "jumpsuit": {
+        "name": "Jumpsuit"
+      },
+      "cape": {
+        "name": "Cape"
+      },
+      "pants": {
+        "name": "Pants"
+      },
+      "shorts": {
+        "name": "Shorts"
+      },
+      "skirt": {
+        "name": "Skirt"
+      },
+      "tights, stockings": {
+        "name": "Tights"
+      },
+      "sock": {
+        "name": "Sock"
+      },
+      "shoe": {
+        "name": "Shoe"
+      },
+      "process_res": {
+        "name": "Processing Resolution"
+      },
+      "mask_blur": {
+        "name": "Mask Blur"
+      },
+      "mask_offset": {
+        "name": "Mask Offset"
+      },
+      "background_color": {
+        "name": "Background Color"
+      },
+      "invert_output": {
+        "name": "Invert Output"
+      }
+    }
+  },
+  "FashionSegmentAccessories": {
+    "display_name": "Fashion Accessories Segmentation (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "hat": {
+        "name": "Hat"
+      },
+      "glasses": {
+        "name": "Glasses"
+      },
+      "headband, head covering, hair accessory": {
+        "name": "Headband"
+      },
+      "scarf": {
+        "name": "Scarf"
+      },
+      "tie": {
+        "name": "Tie"
+      },
+      "glove": {
+        "name": "Glove"
+      },
+      "watch": {
+        "name": "Watch"
+      },
+      "belt": {
+        "name": "Belt"
+      },
+      "leg warmer": {
+        "name": "Leg Warmer"
+      },
+      "bag, wallet": {
+        "name": "Bag"
+      },
+      "umbrella": {
+        "name": "Umbrella"
+      },
+      "collar": {
+        "name": "Collar"
+      },
+      "lapel": {
+        "name": "Lapel"
+      },
+      "neckline": {
+        "name": "Neckline"
+      },
+      "epaulette": {
+        "name": "Epaulette"
+      },
+      "pocket": {
+        "name": "Pocket"
+      },
+      "buckle": {
+        "name": "Buckle"
+      },
+      "zipper": {
+        "name": "Zipper"
+      },
+      "applique": {
+        "name": "Applique"
+      },
+      "bow": {
+        "name": "Bow"
+      },
+      "flower": {
+        "name": "Flower"
+      },
+      "bead": {
+        "name": "Bead"
+      },
+      "fringe": {
+        "name": "Fringe"
+      },
+      "ribbon": {
+        "name": "Ribbon"
+      },
+      "rivet": {
+        "name": "Rivet"
+      },
+      "ruffle": {
+        "name": "Ruffle"
+      },
+      "sequin": {
+        "name": "Sequin"
+      },
+      "tassel": {
+        "name": "Tassel"
+      }
+    }
+  },
+  "Segment": {
+    "display_name": "Segmentation (RMBG)",
+    "inputs": {
+      "image": {
+        "name": "Image"
+      },
+      "prompt": {
+        "name": "Prompt"
+      },
+      "sam_model": {
+        "name": "SAM Model"
+      },
+      "dino_model": {
+        "name": "DINO Model"
+      },
+      "threshold": {
+        "name": "Threshold"
+      },
+      "mask_blur": {
+        "name": "Mask Blur"
+      },
+      "mask_offset": {
+        "name": "Mask Offset"
+      },
+      "background_color": {
+        "name": "Background Color"
+      },
+      "invert_output": {
+        "name": "Invert Output"
+      }
+    }
+  }
+}
