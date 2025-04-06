@@ -289,10 +289,10 @@
         "name": "Capuche"
       },
       "shirt, blouse": {
-        "name": "Chemise"
+        "name": "Chemise, blouse"
       },
-      "top, t-shirt, sweatshirt (RMBG)": {
-        "name": "T-shirt"
+      "top, t-shirt, sweatshirt": {
+        "name": "T-shirt, T-shirt, Sweatshirt"
       },
       "sleeve": {
         "name": "Manche"
@@ -316,7 +316,7 @@
         "name": "Jupe"
       },
       "tights, stockings": {
-        "name": "Collants"
+        "name": "Tights, Stockings"
       },
       "sock": {
         "name": "Chaussette"
@@ -465,7 +465,7 @@
       }
     }
   },
-  "AiLab_Preview": {
+  "AILab_Preview": {
     "display_name": "Aperçu de l'image/mask (RMBG)",
     "inputs": {
       "image": {
@@ -476,7 +476,7 @@
       }
     }
   },
-  "AiLab_ImagePreview": {
+  "AILab_ImagePreview": {
     "display_name": "Aperçu de l'image (RMBG)",
     "inputs": {
       "image": {
@@ -484,7 +484,7 @@
       }
     }
   },
-  "AiLab_MaskPreview": {
+  "AILab_MaskPreview": {
     "display_name": "Aperçu du masque (RMBG)",
     "inputs": {
       "mask": {
@@ -492,7 +492,7 @@
       }
     }
   },
-  "AiLab_LoadImage": {
+  "AILab_LoadImage": {
     "display_name": "Charger l'image (RMBG)",
     "inputs": {
       "image": {
@@ -509,7 +509,7 @@
       }
     }
   },
-  "AiLab_ImageCombiner": {
+  "AILab_ImageCombiner": {
     "display_name": "Combineur d'images (RMBG)",
     "inputs": {
       "foreground": {
@@ -538,7 +538,7 @@
       }
     }
   },
-  "AiLab_MaskCombiner": {
+  "AILab_MaskCombiner": {
     "display_name": "Combineur de masques (RMBG)",
     "inputs": {
       "mask_1": {
@@ -558,7 +558,7 @@
       }
     }
   },
-  "AiLab_MaskEnhancer": {
+  "AILab_MaskEnhancer": {
     "display_name": "Améliorateur de masque (RMBG)",
     "inputs": {
       "mask": {
@@ -584,7 +584,7 @@
       }
     }
   },
-  "AiLab_ImageMaskConvert": {
+  "AILab_ImageMaskConvert": {
     "display_name": "Conversion image/masque (RMBG)",
     "inputs": {
       "image": {
@@ -598,7 +598,7 @@
       }
     }
   },
-  "AiLab_MaskExtractor": {
+  "AILab_MaskExtractor": {
     "display_name": "Extracteur de masque (RMBG)",
     "inputs": {
       "image": {
@@ -612,6 +612,17 @@
       },
       "background": {
         "name": "Arrière-plan"
+      }
+    }
+  },
+  "AILab_ImageStitch": {
+    "display_name": "Image stitch (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "direction": {
+        "name": "Direction"
       }
     }
   }

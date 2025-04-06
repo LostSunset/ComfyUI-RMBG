@@ -289,10 +289,10 @@
         "name": "후드"
       },
       "shirt, blouse": {
-        "name": "셔츠"
+        "name": "셔츠, 블라우스"
       },
-      "top, t-shirt, sweatshirt (RMBG)": {
-        "name": "티셔츠"
+      "top, t-shirt, sweatshirt": {
+        "name": "티셔츠, 티셔츠, 스웨트셔츠"
       },
       "sleeve": {
         "name": "소매"
@@ -316,7 +316,7 @@
         "name": "치마"
       },
       "tights, stockings": {
-        "name": "타이츠"
+        "name": "타이츠, 스톡"
       },
       "sock": {
         "name": "양말"
@@ -465,7 +465,7 @@
       }
     }
   },
-  "AiLab_Preview": {
+  "AILab_Preview": {
     "display_name": "이미지/마스크 미리보기 (RMBG)",
     "inputs": {
       "image": {
@@ -476,7 +476,7 @@
       }
     }
   },
-  "AiLab_ImagePreview": {
+  "AILab_ImagePreview": {
     "display_name": "이미지 미리보기 (RMBG)",
     "inputs": {
       "image": {
@@ -484,7 +484,7 @@
       }
     }
   },
-  "AiLab_MaskPreview": {
+  "AILab_MaskPreview": {
     "display_name": "마스크 미리보기 (RMBG)",
     "inputs": {
       "mask": {
@@ -492,7 +492,7 @@
       }
     }
   },
-  "AiLab_LoadImage": {
+  "AILab_LoadImage": {
     "display_name": "이미지 로드 (RMBG)",
     "inputs": {
       "image": {
@@ -509,7 +509,7 @@
       }
     }
   },
-  "AiLab_ImageCombiner": {
+  "AILab_ImageCombiner": {
     "display_name": "이미지 결합 (RMBG)",
     "inputs": {
       "foreground": {
@@ -538,7 +538,7 @@
       }
     }
   },
-  "AiLab_MaskCombiner": {
+  "AILab_MaskCombiner": {
     "display_name": "마스크 결합 (RMBG)",
     "inputs": {
       "mask_1": {
@@ -558,7 +558,7 @@
       }
     }
   },
-  "AiLab_MaskEnhancer": {
+  "AILab_MaskEnhancer": {
     "display_name": "마스크 강화 (RMBG)",
     "inputs": {
       "mask": {
@@ -584,7 +584,7 @@
       }
     }
   },
-  "AiLab_ImageMaskConvert": {
+  "AILab_ImageMaskConvert": {
     "display_name": "이미지/마스크 변환 (RMBG)",
     "inputs": {
       "image": {
@@ -598,7 +598,7 @@
       }
     }
   },
-  "AiLab_MaskExtractor": {
+  "AILab_MaskExtractor": {
     "display_name": "마스크 추출 (RMBG)",
     "inputs": {
       "image": {
@@ -612,6 +612,17 @@
       },
       "background": {
         "name": "배경"
+      }
+    }
+  },
+  "AILab_ImageStitch": {
+    "display_name": "이미지 결합 (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "이미지"
+      },
+      "direction": {  
+        "name": "방향"
       }
     }
   }

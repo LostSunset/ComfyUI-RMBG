@@ -289,10 +289,10 @@
         "name": "Hood"
       },
       "shirt, blouse": {
-        "name": "Shirt"
+        "name": "Shirt, Blouse"
       },
-      "top, t-shirt, sweatshirt (RMBG)": {
-        "name": "T-Shirt"
+      "top, t-shirt, sweatshirt": {
+        "name": "T-Shirt, T-Shirt, Sweatshirt"
       },
       "sleeve": {
         "name": "Sleeve"
@@ -316,7 +316,7 @@
         "name": "Skirt"
       },
       "tights, stockings": {
-        "name": "Tights"
+        "name": "Tights, Stockings"
       },
       "sock": {
         "name": "Sock"
@@ -462,6 +462,37 @@
       },
       "invert_output": {
         "name": "Invert Output"
+      }
+    }
+  },
+  "ImageCombiner": {
+    "display_name": "Image Combiner (RMBG)",
+    "inputs": {
+      "image1": {
+        "name": "Image 1" 
+      },
+      "image2": {
+        "name": "Image 2"
+      },
+      "mode": {
+        "name": "Mode"
+      },
+      "position": {
+        "name": "Position"
+      },
+      "strength": {
+        "name": "Strength"
+      }
+    }
+  },
+  "ImageStitch": {
+    "display_name": "Image Stitch (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Images"
+      },
+      "direction": {
+        "name": "Direction"
       }
     }
   }

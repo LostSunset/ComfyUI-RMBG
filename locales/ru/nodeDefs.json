@@ -289,10 +289,10 @@
         "name": "Капюшон"
       },
       "shirt, blouse": {
-        "name": "Рубашка"
+        "name": "Рубашка, блузка"
       },
-      "top, t-shirt, sweatshirt (RMBG)": {
-        "name": "Футболка"
+      "top, t-shirt, sweatshirt": {
+        "name": "Футболка, футболка, майка"
       },
       "sleeve": {
         "name": "Рукав"
@@ -354,7 +354,7 @@
         "name": "Очки"
       },
       "headband, head covering, hair accessory": {
-        "name": "Повязка на голову"
+        "name": "Повязка на голову, головной убор, прическа"
       },
       "scarf": {
         "name": "Шарф"
@@ -465,7 +465,7 @@
       }
     }
   },
-  "AiLab_Preview": {
+  "AILab_Preview": {
     "display_name": "Предварительный просмотр изображения/маски (RMBG)",
     "inputs": {
       "image": {
@@ -476,7 +476,7 @@
       }
     }
   },
-  "AiLab_ImagePreview": {
+  "AILab_ImagePreview": {
     "display_name": "Предварительный просмотр изображения (RMBG)",
     "inputs": {
       "image": {
@@ -484,7 +484,7 @@
       }
     }
   },
-  "AiLab_MaskPreview": {
+  "AILab_MaskPreview": {
     "display_name": "Предварительный просмотр маски (RMBG)",
     "inputs": {
       "mask": {
@@ -492,7 +492,7 @@
       }
     }
   },
-  "AiLab_LoadImage": {
+  "AILab_LoadImage": {
     "display_name": "Загрузить изображение (RMBG)",
     "inputs": {
       "image": {
@@ -509,7 +509,7 @@
       }
     }
   },
-  "AiLab_ImageCombiner": {
+  "AILab_ImageCombiner": {
     "display_name": "Комбинировать изображения (RMBG)",
     "inputs": {
       "foreground": {
@@ -538,7 +538,7 @@
       }
     }
   },
-  "AiLab_MaskCombiner": {
+  "AILab_MaskCombiner": {
     "display_name": "Комбинировать маски (RMBG)",
     "inputs": {
       "mask_1": {
@@ -558,7 +558,7 @@
       }
     }
   },
-  "AiLab_MaskEnhancer": {
+  "AILab_MaskEnhancer": {
     "display_name": "Улучшение маски (RMBG)",
     "inputs": {
       "mask": {
@@ -584,7 +584,7 @@
       }
     }
   },
-  "AiLab_ImageMaskConvert": {
+  "AILab_ImageMaskConvert": {
     "display_name": "Конвертация изображения/маски (RMBG)",
     "inputs": {
       "image": {
@@ -598,7 +598,7 @@
       }
     }
   },
-  "AiLab_MaskExtractor": {
+  "AILab_MaskExtractor": {
     "display_name": "Извлечение маски (RMBG)",
     "inputs": {
       "image": {
@@ -614,5 +614,17 @@
         "name": "Фон"
       }
     }
+  },
+  "AILab_ImageStitch": {
+    "display_name": "Сшить изображения (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "Изображения"
+      },
+      "direction": {
+        "name": "Направление"
+      }
+    }
   }
 }
+

@@ -6,6 +6,12 @@ $$\textcolor{red}{\Huge \text{If this custom node helps you or you like my work,
 $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
 
 ## News & Updates
+- **2025/04/05**: Update ComfyUI-RMBG to **v2.2.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v200-20250405) )
+  - Added new nodes: Image Combiner, Image Stitch, Image/Mask Converter, Mask Enhancer, Mask Combiner, and Mask Extractor
+  - Fixed compatibility issues with transformers v4.49+
+  - Fixed i18n translation errors
+  - Added mask image output to segment nodes
+
 - **2025/03/21**: Update ComfyUI-RMBG to **v2.1.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v200-20250321) )
   - Enhanced compatibility with Transformers
 

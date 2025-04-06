@@ -289,10 +289,10 @@
        "name": "帽子"
      }, 
      "shirt, blouse": { 
-       "name": "衬衫"
+       "name": "衬衫, 上衣"
      },
-     "top, t-shirt, sweatshirt (RMBG)": {
-       "name": "T恤"
+     "top, t-shirt, sweatshirt": {
+       "name": "T恤, 卫衣, 背心"
      }, 
      "sleeve": {  
        "name": "袖子"
@@ -316,7 +316,7 @@
        "name": "裙子"
      },
      "tights, stockings": {
-       "name": "紧身裤"
+       "name": "紧身裤, 丝袜"
      }, 
      "sock": {
        "name": "袜子"
@@ -354,7 +354,7 @@
        "name": "眼镜"
      },
      "headband, head covering, hair accessory": {
-       "name": "头带"
+       "name": "头带, 头饰, 发饰"
      },
      "scarf": {
        "name": "围巾"
@@ -375,7 +375,7 @@
        "name": "护腿"
      },
      "bag, wallet": {
-       "name": "包"
+       "name": "包, 钱包"
      },
      "umbrella": {
        "name": "雨伞"
@@ -465,7 +465,7 @@
      }
    }
  },
- "AiLab_Preview": {
+ "AILab_Preview": {
    "display_name": "图像/遮罩 预览 (RMBG)",
    "inputs": {
      "image": {
@@ -476,7 +476,7 @@
      }
    }
  },
- "AiLab_ImagePreview": {
+ "AILab_ImagePreview": {
    "display_name": "图像预览 (RMBG)",
    "inputs": {
      "image": {
@@ -484,7 +484,7 @@
      }
    }
  },
- "AiLab_MaskPreview": {
+ "AILab_MaskPreview": {
    "display_name": "遮罩预览 (RMBG)",
    "inputs": {
      "mask": {
@@ -492,7 +492,7 @@
      }
    }
  },
- "AiLab_LoadImage": {
+ "AILab_LoadImage": {
    "display_name": "加载图像 (RMBG)",
    "inputs": {
      "image": {
@@ -509,7 +509,7 @@
      }
    }
  },
- "AiLab_ImageCombiner": {
+ "AILab_ImageCombiner": {
    "display_name": "图像组合 (RMBG)",
    "inputs": {
      "foreground": {
@@ -538,7 +538,7 @@
      }
    }
  },
- "AiLab_MaskCombiner": {
+ "AILab_MaskCombiner": {
    "display_name": "遮罩组合 (RMBG)",
    "inputs": {
      "mask_1": {
@@ -558,7 +558,7 @@
      }
    }
  },
- "AiLab_MaskEnhancer": {
+ "AILab_MaskEnhancer": {
    "display_name": "遮罩增强 (RMBG)",
    "inputs": {
      "mask": {
@@ -584,7 +584,7 @@
      }
    }
  },
- "AiLab_ImageMaskConvert": {
+ "AILab_ImageMaskConvert": {
    "display_name": "图像/遮罩转换 (RMBG)",
    "inputs": {
      "image": {
@@ -598,7 +598,7 @@
      }
    }
  },
- "AiLab_MaskExtractor": {
+ "AILab_MaskExtractor": {
    "display_name": "遮罩提取 (RMBG)",
    "inputs": {
      "image": {
@@ -612,6 +612,17 @@
      },
      "background": {
        "name": "背景"
+     }
+   }
+ },
+ "AILab_ImageStitch": {
+   "display_name": "图像拼接 (RMBG)",
+   "inputs": {
+     "images": {
+       "name": "图像"
+     },
+     "direction": {
+       "name": "方向"
      }
    }
  }

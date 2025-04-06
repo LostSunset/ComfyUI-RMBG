@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v2.1.1
+# ComfyUI-RMBG v2.2.0
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, BEN, BEN2 and BIREFNET-HR. It leverages deep learning techniques
 # to process images and generate masks for background removal.
@@ -29,6 +29,7 @@ import sys
 import importlib.util
 from transformers import AutoModelForImageSegmentation
 import cv2
+import types
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -159,45 +160,80 @@ class RMBGModel(BaseModelLoader):
             
             cache_dir = self.get_cache_dir(model_name)
             try:
-                self.model = AutoModelForImageSegmentation.from_pretrained(
-                    cache_dir,
-                    trust_remote_code=True,
-                    local_files_only=True
-                )
-            except Exception as e:
-                if "'Config' object has no attribute 'get_text_config'" in str(e):
-                    print("[RMBG WARNING] Detected newer transformers version, attempting compatibility mode...")
-                    try:
-                        from transformers import PreTrainedModel
-                        import json
-                        
-                        config_path = os.path.join(cache_dir, "config.json")
-                        with open(config_path, 'r') as f:
-                            config = json.load(f)
+                # Try standard loading first
+                try:
+                    self.model = AutoModelForImageSegmentation.from_pretrained(
+                        cache_dir,
+                        trust_remote_code=True,
+                        local_files_only=True
+                    )
+                except AttributeError as ae:
+                    if "'Config' object has no attribute 'get_text_config'" in str(ae):
+                        print("[RMBG WARNING] Detected newer transformers version, using compatibility mode...")
+                        try:
+                            from transformers import PreTrainedModel
+                            import json
                             
-                        birefnet_path = os.path.join(cache_dir, "birefnet.py")
-                        module_name = f"custom_birefnet_model_{hash(birefnet_path)}"
-                        spec = importlib.util.spec_from_file_location(module_name, birefnet_path)
-                        birefnet_module = importlib.util.module_from_spec(spec)
-                        sys.modules[module_name] = birefnet_module
-                        spec.loader.exec_module(birefnet_module)
-                        
-                        for attr_name in dir(birefnet_module):
-                            attr = getattr(birefnet_module, attr_name)
-                            if isinstance(attr, type) and issubclass(attr, PreTrainedModel) and attr != PreTrainedModel:
-                                config_class = getattr(birefnet_module, "BiRefNet_config", None)
-                                if config_class:
-                                    model_config = config_class()
+                            config_path = os.path.join(cache_dir, "config.json")
+                            with open(config_path, 'r') as f:
+                                config = json.load(f)
+                            
+                            birefnet_path = os.path.join(cache_dir, "birefnet.py")
+                            BiRefNetConfig_path = os.path.join(cache_dir, "BiRefNet_config.py")
+                            
+                            # Load the BiRefNetConfig
+                            config_spec = importlib.util.spec_from_file_location("BiRefNetConfig", BiRefNetConfig_path)
+                            config_module = importlib.util.module_from_spec(config_spec)
+                            sys.modules["BiRefNetConfig"] = config_module
+                            config_spec.loader.exec_module(config_module)
+                            
+                            # Fix and load birefnet module
+                            with open(birefnet_path, 'r') as f:
+                                birefnet_content = f.read()
+                            
+                            birefnet_content = birefnet_content.replace(
+                                "from .BiRefNet_config import BiRefNetConfig", 
+                                "from BiRefNetConfig import BiRefNetConfig"
+                            )
+                            
+                            module_name = f"custom_birefnet_model_{hash(birefnet_path)}"
+                            module = types.ModuleType(module_name)
+                            sys.modules[module_name] = module
+                            exec(birefnet_content, module.__dict__)
+                            
+                            for attr_name in dir(module):
+                                attr = getattr(module, attr_name)
+                                if isinstance(attr, type) and issubclass(attr, PreTrainedModel) and attr != PreTrainedModel:
+                                    BiRefNetConfig = getattr(config_module, "BiRefNetConfig")
+                                    model_config = BiRefNetConfig()
                                     self.model = attr(model_config)
-                                    self.model.load_state_dict(torch.load(os.path.join(cache_dir, "model.safetensors")))
+                                    
+                                    weights_path = os.path.join(cache_dir, "model.safetensors")
+                                    try:
+                                        try:
+                                            import safetensors.torch
+                                            self.model.load_state_dict(safetensors.torch.load_file(weights_path))
+                                        except ImportError:
+                                            from transformers.modeling_utils import load_state_dict
+                                            state_dict = load_state_dict(weights_path)
+                                            self.model.load_state_dict(state_dict)
+                                    except Exception as load_error:
+                                        pytorch_weights = os.path.join(cache_dir, "pytorch_model.bin")
+                                        if os.path.exists(pytorch_weights):
+                                            self.model.load_state_dict(torch.load(pytorch_weights, map_location="cpu"))
+                                        else:
+                                            raise RuntimeError(f"Failed to load weights: {str(load_error)}")
                                     break
-                        
-                        if self.model is None:
-                            raise RuntimeError("Could not find suitable model class")
-                    except Exception as custom_e:
-                        handle_model_error(f"Failed to load model in compatibility mode: {str(custom_e)}\nConsider downgrading transformers to version 4.48.3: pip install transformers==4.48.3")
-                else:
-                    raise e
+                            
+                            if self.model is None:
+                                raise RuntimeError("Could not find suitable model class")
+                                
+                        except Exception as custom_e:
+                            handle_model_error(f"Failed to load model in compatibility mode: {str(custom_e)}\nConsider downgrading transformers to version 4.48.3: pip install transformers==4.48.3")
+                    else:
+                        raise ae
+            except Exception as e:
+                handle_model_error(f"Error loading model: {str(e)}")
             
             self.model.eval()
             for param in self.model.parameters():

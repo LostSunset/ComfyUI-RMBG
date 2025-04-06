@@ -1,27 +1,38 @@
 # ComfyUI-RMBG Update Log
 
+## v2.2.0 (2025/04/05)
+- Added the following nodes:
+  - `Image Combiner`: Image Combiner, used to merge two images into one with various blending modes and positioning options.
+  - `Image Stitch`: Image Stitch, used to stitch multiple images together in different directions (top, bottom, left, right).
+  - `Image/Mask Converter`: used for converting between images and masks.
+  - `Mask Enhancer`: an independent node for enhancing mask output.
+  - `Mask Combiner`: Mask Combiner, used to combine multiple masks into one.
+  - `Mask Extractor`: Mask Extractor, used to extract masks from images.
+
+### Bug Fixes
+- Fixed compatibility issues with transformers version 4.49+ dependencies.
+- Fixed i18n translation errors in multiple languages.
+
+### Improvements
+- Added mask image output to each segment nodes, making mask output as images more convenient.
+
 ## V2.1.1 (2025/03/21)
 Enhanced compatibility with Transformers
   - Added support for higher versions of the transformers library (≥ 4.49.0)
   - Resolved conflicts with other models requiring higher version transformers
   - Improved error handling and more user-friendly error messages
   - If you encounter issues, you can still revert to the recommended version: `pip install transformers==4.48.3`
-    
-  [Transformers Version Compatibility](https://github.com/1038lab/ComfyUI-RMBG/blob/main/docs/version_compatibility.md)
 
 ## V2.1.0 (2025/03/19)
 ### New Features
 The integration of internationalization (`i18n`) support significantly enhances ComfyUI-RMBG, enabling users worldwide to utilize background removal features in their preferred languages. This update fosters a more tailored and efficient workflow within ComfyUI-RMBG. The user interface has been improved to facilitate dynamic language switching according to user preferences. All newly introduced features are designed to be fully translatable, thereby improving accessibility for users who do not speak English.
 
 # Supported Languages
-| Language | Custom Nodes `i18n` UI |
-|----------|-------|
-| English  | ![node_en](https://github.com/user-attachments/assets/c20e9031-2f1a-4d7b-9037-fd30171f9d58) |
-| 中文     | ![node_zh](https://github.com/user-attachments/assets/0fb77875-7693-4214-86f4-c6a92ce92497) |
-| 日本語   | ![node_ja](https://github.com/user-attachments/assets/2f655484-6569-47c6-9e7c-1a175e932cc6) |
-| Русский  | ![node_ru](https://github.com/user-attachments/assets/17ffbb5a-6948-460e-84cb-bca05646eb4f) |
-| 한국어   | ![node_ko](https://github.com/user-attachments/assets/3899e487-6620-449b-87f4-ddb51eae9520) |
-| Français | ![node_fr](https://github.com/user-attachments/assets/da45208a-2567-4905-8fe2-ee26f6431c37) |
+| Custom Nodes `i18n` UI |
+| ---------- |
+| English, 中文, 日本語, Русский, 한국어, Français | 
+
+ https://github.com/user-attachments/assets/62b80465-ba51-4c8f-b257-e3653ada0dc2
 
 ## v2.0.0 (2025/03/13)
 ### New Features

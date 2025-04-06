@@ -289,10 +289,10 @@
         "name": "フード"
       },
       "shirt, blouse": {
-        "name": "シャツ"
+        "name": "シャツ, ブルゾン"
       },
-      "top, t-shirt, sweatshirt (RMBG)": {
-        "name": "Tシャツ"
+      "top, t-shirt, sweatshirt": {
+        "name": "Tシャツ, Tシャツ, スウォッチ"
       },
       "sleeve": {
         "name": "袖"
@@ -316,7 +316,7 @@
         "name": "スカート"
       },
       "tights, stockings": {
-        "name": "タイツ"
+        "name": "タイツ, ストッキング"
       },
       "sock": {
         "name": "靴下"
@@ -465,7 +465,7 @@
       }
     }
   },
-  "AiLab_Preview": {
+  "AILab_Preview": {
     "display_name": "画像/マスク プレビュー (RMBG)",
     "inputs": {
       "image": {
@@ -476,7 +476,7 @@
       }
     }
   },
-  "AiLab_ImagePreview": {
+  "AILab_ImagePreview": {
     "display_name": "画像プレビュー (RMBG)",
     "inputs": {
       "image": {
@@ -484,7 +484,7 @@
       }
     }
   },
-  "AiLab_MaskPreview": {
+  "AILab_MaskPreview": {
     "display_name": "マスクプレビュー (RMBG)",
     "inputs": {
       "mask": {
@@ -492,7 +492,7 @@
       }
     }
   },
-  "AiLab_LoadImage": {
+  "AILab_LoadImage": {
     "display_name": "画像を読み込む (RMBG)",
     "inputs": {
       "image": {
@@ -509,7 +509,7 @@
       }
     }
   },
-  "AiLab_ImageCombiner": {
+  "AILab_ImageCombiner": {
     "display_name": "画像コンビネーション (RMBG)",
     "inputs": {
       "foreground": {
@@ -538,7 +538,7 @@
       }
     }
   },
-  "AiLab_MaskCombiner": {
+  "AILab_MaskCombiner": {
     "display_name": "マスクコンビネーション (RMBG)",
     "inputs": {
       "mask_1": {
@@ -558,7 +558,7 @@
       }
     }
   },
-  "AiLab_MaskEnhancer": {
+  "AILab_MaskEnhancer": {
     "display_name": "マスク強化 (RMBG)",
     "inputs": {
       "mask": {
@@ -584,7 +584,7 @@
       }
     }
   },
-  "AiLab_ImageMaskConvert": {
+  "AILab_ImageMaskConvert": {
     "display_name": "画像/マスク変換 (RMBG)",
     "inputs": {
       "image": {
@@ -598,7 +598,7 @@
       }
     }
   },
-  "AiLab_MaskExtractor": {
+  "AILab_MaskExtractor": {
     "display_name": "マスク抽出 (RMBG)",
     "inputs": {
       "image": {
@@ -612,6 +612,17 @@
       },
       "background": {
         "name": "背景"
+      }
+    }
+  },
+  "AILab_ImageStitch": {
+    "display_name": "画像スティッチ (RMBG)",
+    "inputs": {
+      "images": {
+        "name": "画像"
+      },
+      "direction": {
+        "name": "方向"
       }
     }
   }
