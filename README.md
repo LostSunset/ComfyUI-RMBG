@@ -6,21 +6,23 @@ $$\textcolor{red}{\Huge \text{If this custom node helps you or you like my work,
 $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
 
 ## News & Updates
-- **2025/04/05**: Update ComfyUI-RMBG to **v2.2.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v200-20250405) )
+- **2025/04/05**: Update ComfyUI-RMBG to **v2.2.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v221-20250405) )
+- **2025/04/05**: Update ComfyUI-RMBG to **v2.2.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v220-20250405) )
+![Comfyu-rmbg_v2 2 1_node_sample](https://github.com/user-attachments/assets/68f4233c-b992-473e-aa30-ca32086f5221)
   - Added new nodes: Image Combiner, Image Stitch, Image/Mask Converter, Mask Enhancer, Mask Combiner, and Mask Extractor
   - Fixed compatibility issues with transformers v4.49+
   - Fixed i18n translation errors
   - Added mask image output to segment nodes
 
-- **2025/03/21**: Update ComfyUI-RMBG to **v2.1.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v200-20250321) )
+- **2025/03/21**: Update ComfyUI-RMBG to **v2.1.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v211-20250321) )
   - Enhanced compatibility with Transformers
 
-- **2025/03/19**: Update ComfyUI-RMBG to **v2.1.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v200-20250319) )
-![RMBG_i18n](https://github.com/user-attachments/assets/96b28ef0-4996-4fb2-a497-383d83eff52a)
+- **2025/03/19**: Update ComfyUI-RMBG to **v2.1.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v210-20250319) )
   - Integrated internationalization (i18n) support for multiple languages.
   - Improved user interface for dynamic language switching.
   - Enhanced accessibility for non-English speaking users with fully translatable features.
 
+https://github.com/user-attachments/assets/7faa00d3-bbe2-42b8-95ed-2c830a1ff04f
 
 - **2025/03/13**: Update ComfyUI-RMBG to **v2.0.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v200-20250313) )
 ![image_mask_preview](https://github.com/user-attachments/assets/5e2b2679-4b63-4db1-a6c1-3b26b6f97df3)

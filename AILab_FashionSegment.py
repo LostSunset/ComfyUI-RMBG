@@ -156,9 +156,9 @@ class FashionSegmentClothing:
         return {
             "required": {
                 "images": ("IMAGE",),
-                "accessories_options": ("ACCESSORIES_OPTIONS",),
             },
             "optional": {
+                "accessories_options": ("ACCESSORIES_OPTIONS",),
                 **{cls_name: ("BOOLEAN", {"default": False}) 
                    for cls_name in clothing_classes},
                 "process_res": ("INT", {"default": 512, "min": 128, "max": 2048, "step": 32}),
@@ -169,8 +169,8 @@ class FashionSegmentClothing:
             },
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("images", "mask")
+    RETURN_TYPES = ("IMAGE", "MASK", "IMAGE")
+    RETURN_NAMES = ("IMAGE", "MASK", "MASK_IMAGE")
     FUNCTION = "segment_fashion"
     CATEGORY = "🧪AILab/🧽RMBG"
 
@@ -328,10 +328,19 @@ class FashionSegmentClothing:
                     batch_tensor.append(result_image)
                     batch_masks.append(pil2tensor(mask_image))
 
+            # Create mask image for visualization
+            mask_images = []
+            for mask_tensor in batch_masks:
+                # Convert mask to RGB image format for visualization
+                mask_image = mask_tensor.reshape((-1, 1, mask_tensor.shape[-2], mask_tensor.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+                mask_images.append(mask_image)
+            
+            mask_image_output = torch.cat(mask_images, dim=0)
+            
             batch_tensor = torch.cat(batch_tensor, dim=0)
             batch_masks = torch.cat(batch_masks, dim=0)
             
-            return (batch_tensor, batch_masks)
+            return (batch_tensor, batch_masks, mask_image_output)
 
         except Exception as e:
             self.clear_model()

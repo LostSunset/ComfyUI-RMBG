@@ -1,5 +1,9 @@
 # ComfyUI-RMBG Update Log
 
+## v2.2.1 (2025/04/05)
+- Bug Fixed
+
+
 ## v2.2.0 (2025/04/05)
 - Added the following nodes:
   - `Image Combiner`: Image Combiner, used to merge two images into one with various blending modes and positioning options.
@@ -8,6 +12,8 @@
   - `Mask Enhancer`: an independent node for enhancing mask output.
   - `Mask Combiner`: Mask Combiner, used to combine multiple masks into one.
   - `Mask Extractor`: Mask Extractor, used to extract masks from images.
+
+![Comfyu-rmbg_v2 2 1_node_sample](https://github.com/user-attachments/assets/68f4233c-b992-473e-aa30-ca32086f5221)
 
 ### Bug Fixes
 - Fixed compatibility issues with transformers version 4.49+ dependencies.

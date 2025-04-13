@@ -350,8 +350,8 @@ class BiRefNetRMBG:
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("IMAGE", "MASK")
+    RETURN_TYPES = ("IMAGE", "MASK", "IMAGE")
+    RETURN_NAMES = ("IMAGE", "MASK", "MASK_IMAGE")
     FUNCTION = "process_image"
     CATEGORY = "🧪AILab/🧽RMBG"
 
@@ -447,7 +447,16 @@ class BiRefNetRMBG:
                 
                 processed_masks.append(pil2tensor(mask))
 
-            return (torch.cat(processed_images, dim=0), torch.cat(processed_masks, dim=0))
+            # Create mask image for visualization
+            mask_images = []
+            for mask_tensor in processed_masks:
+                # Convert mask to RGB image format for visualization
+                mask_image = mask_tensor.reshape((-1, 1, mask_tensor.shape[-2], mask_tensor.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+                mask_images.append(mask_image)
+            
+            mask_image_output = torch.cat(mask_images, dim=0)
+
+            return (torch.cat(processed_images, dim=0), torch.cat(processed_masks, dim=0), mask_image_output)
             
         except Exception as e:
             handle_model_error(f"Error in image processing: {str(e)}")

@@ -129,8 +129,7 @@ class BaseModelLoader:
                 hf_hub_download(
                     repo_id=model_info["repo_id"],
                     filename=filename,
-                    local_dir=cache_dir,
-                    local_dir_use_symlinks=False
+                    local_dir=cache_dir
                 )
                     
             return True, "Model files downloaded successfully"
@@ -229,7 +228,7 @@ class RMBGModel(BaseModelLoader):
                                 raise RuntimeError("Could not find suitable model class")
                                 
                         except Exception as custom_e:
-                            handle_model_error(f"Failed to load model in compatibility mode: {str(custom_e)}\nConsider downgrading transformers to version 4.48.3: pip install transformers==4.48.3")
+                            handle_model_error(f"Failed to load model in compatibility mode: {str(custom_e)}")
                     else:
                         raise ae
             except Exception as e:

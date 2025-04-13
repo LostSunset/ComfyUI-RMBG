@@ -91,8 +91,8 @@ class FaceSegment:
             },
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("IMAGE", "MASK")
+    RETURN_TYPES = ("IMAGE", "MASK", "IMAGE")
+    RETURN_NAMES = ("IMAGE", "MASK", "MASK_IMAGE")
     FUNCTION = "segment_face"
     CATEGORY = "🧪AILab/🧽RMBG"
 
@@ -178,7 +178,12 @@ class FaceSegment:
             # Get selected classes
             selected_classes = [name for name, selected in class_selections.items() if selected]
             if not selected_classes:
-                selected_classes = ["Skin", "Nose", "Eyes", "Mouth"]
+                selected_classes = ["Skin", "Nose", "Left-eye", "Right-eye", "Mouth"]
+            
+            # Validate selected classes
+            invalid_classes = [cls for cls in selected_classes if cls not in class_map]
+            if invalid_classes:
+                raise ValueError(f"Invalid class selections: {', '.join(invalid_classes)}. Valid classes are: {', '.join(class_map.keys())}")
 
             # Image preprocessing
             transform_image = transforms.Compose([
@@ -259,17 +264,26 @@ class FaceSegment:
                     batch_tensor.append(result_image)
                     batch_masks.append(pil2tensor(mask_image))
 
+            # Create mask image for visualization
+            mask_images = []
+            for mask_tensor in batch_masks:
+                # Convert mask to RGB image format for visualization
+                mask_image = mask_tensor.reshape((-1, 1, mask_tensor.shape[-2], mask_tensor.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+                mask_images.append(mask_image)
+            
+            mask_image_output = torch.cat(mask_images, dim=0)
+            
             # Prepare final output
             batch_tensor = torch.cat(batch_tensor, dim=0)
             batch_masks = torch.cat(batch_masks, dim=0)
             
-            return (batch_tensor, batch_masks)
+            return (batch_tensor, batch_masks, mask_image_output)
 
         except Exception as e:
             self.clear_model()
             raise RuntimeError(f"Error in Face Parsing processing: {str(e)}")
         finally:
-            if not self.model.training:
+            if self.model is not None and not self.model.training:
                 self.clear_model()
 
 NODE_CLASS_MAPPINGS = {
