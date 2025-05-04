@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v2.2.0
+# ComfyUI-RMBG v2.3.1
 #
 # This node facilitates background removal using various models, including RMBG-2.0, INSPYRENET, BEN, BEN2, and BIREFNET-HR.
 # It utilizes advanced deep learning techniques to process images and generate accurate masks for background removal.
@@ -23,7 +23,9 @@
 # 4. Image Processing Nodes:
 #    - ImageCombiner: Combines foreground and background images with various blending modes and positioning options.
 #    - ImageStitch: Stitches multiple images together in various directions.
-#
+#    - ImageCrop: Crops an image to a specified size and position.
+#    - ICLoRAConcat: Concatenates images with a mask using IC LoRA.
+
 # These nodes are crafted to streamline common image and mask operations within ComfyUI workflows.
 
 import os
@@ -33,6 +35,7 @@ import numpy as np
 import hashlib
 import torch
 import cv2
+from nodes import MAX_RESOLUTION
 from PIL import Image, ImageFilter, ImageOps, ImageSequence, ImageChops
 import torchvision.transforms.functional as T
 from comfy.utils import common_upscale
@@ -56,6 +59,38 @@ def blend_overlay(img_1, img_2):
     result[mask] = 2 * arr1[mask] * arr2[mask]
     result[~mask] = 1 - 2 * (1 - arr1[~mask]) * (1 - arr2[~mask])
     return Image.fromarray(np.clip(result * 255, 0, 255).astype(np.uint8))
+
+def fill_mask(width, height, mask, box=(0, 0), color=0):
+    bg = Image.new("L", (width, height), color)
+    bg.paste(mask, box, mask)
+    return bg
+
+def empty_image(width, height, batch_size=1):
+    return torch.zeros([batch_size, height, width, 3])
+
+def upscale_mask(mask, width, height):
+    if mask.ndim == 3:
+        mask = mask.unsqueeze(1)
+    mask = common_upscale(mask, width, height, 'bicubic', 'disabled')
+    mask = mask.squeeze(1)
+    return mask
+
+def extract_alpha_mask(image):
+    alpha = image[..., 3]
+    if alpha.max() > 1.0:
+        alpha = alpha / 255.0
+    if len(alpha.shape) == 4:
+        alpha = alpha[:, :, :, 0]
+    return alpha.unsqueeze(1) if alpha.ndim == 3 else alpha
+
+def ensure_mask_shape(mask):
+    if mask is None:
+        return None
+    if mask.ndim == 2:
+        return mask.unsqueeze(0)
+    if mask.ndim == 4 and mask.shape[1] == 1:
+        return mask.squeeze(1)
+    return mask
 
 # Base class for preview
 class AILab_PreviewBase:
@@ -84,18 +119,18 @@ class AILab_PreviewBase:
                     for i in range(image.shape[0]):
                         full_output_path, file = self.get_unique_filename(filename_prefix)
                         img = Image.fromarray(np.clip(image[i].cpu().numpy() * 255, 0, 255).astype(np.uint8))
-                        img.save(full_output_path)
-                        results.append({"filename": full_output_path, "subfolder": "", "type": self.type})
+                        img.save(full_output_path)        
+                        results.append({"filename": file, "subfolder": "", "type": self.type})
                 else:
                     full_output_path, file = self.get_unique_filename(filename_prefix)
                     img = Image.fromarray(np.clip(image.cpu().numpy() * 255, 0, 255).astype(np.uint8))
                     img.save(full_output_path)
-                    results.append({"filename": full_output_path, "subfolder": "", "type": self.type})
+                    results.append({"filename": file, "subfolder": "", "type": self.type})
             else:
                 full_output_path, file = self.get_unique_filename(filename_prefix)
                 image.save(full_output_path)
-                results.append({"filename": full_output_path, "subfolder": "", "type": self.type})
-            
+                results.append({"filename": file, "subfolder": "", "type": self.type})
+
             return {
                 "ui": {"images": results},
             }
@@ -123,7 +158,7 @@ class AILab_Preview(AILab_PreviewBase):
     RETURN_NAMES = ("IMAGE", "MASK")
     FUNCTION = "preview"
     OUTPUT_NODE = True
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
 
     def preview(self, image=None, mask=None, prompt=None, extra_pnginfo=None):
         results = []
@@ -161,7 +196,7 @@ class AILab_MaskPreview(AILab_PreviewBase):
     RETURN_NAMES = ("MASK",)
     FUNCTION = "preview_mask"
     OUTPUT_NODE = True
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
 
     def preview_mask(self, mask, prompt=None, extra_pnginfo=None):
         preview = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
@@ -188,7 +223,7 @@ class AILab_ImagePreview(AILab_PreviewBase):
     RETURN_NAMES = ("IMAGE",)
     FUNCTION = "preview_image"
     OUTPUT_NODE = True
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
 
     def preview_image(self, image, prompt=None, extra_pnginfo=None):
         result = self.save_image(image, "image_preview", prompt, extra_pnginfo)
@@ -213,7 +248,7 @@ class AILab_ImageMaskConvert:
     RETURN_TYPES = ("IMAGE", "MASK")
     RETURN_NAMES = ("IMAGE", "MASK")
     FUNCTION = "convert"
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
 
     def convert(self, image=None, mask=None, mask_channel="alpha"):
         # Case 1: No inputs
@@ -277,7 +312,7 @@ class AILab_MaskEnhancer:
             "mask_blur": "Specify the amount of blur to apply to the mask edges (0 for no blur, higher values for more blur).",
             "mask_offset": "Adjust the mask boundary (positive values expand the mask, negative values shrink it).",
             "smooth": "Smooth the mask edges (0 for no smoothing, higher values create smoother edges).",
-            "fill_region": "Enable to fill holes in the mask.",
+            "fill_holes": "Enable to fill holes in the mask.",
             "invert_output": "Enable to invert the mask output (useful for certain effects)."
         }
         
@@ -290,7 +325,7 @@ class AILab_MaskEnhancer:
                 "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1, "tooltip": tooltips["mask_blur"]}),
                 "mask_offset": ("INT", {"default": 0, "min": -64, "max": 64, "step": 1, "tooltip": tooltips["mask_offset"]}),
                 "smooth": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 128.0, "step": 0.5, "tooltip": tooltips["smooth"]}),
-                "fill_region": ("BOOLEAN", {"default": False, "tooltip": tooltips["fill_region"]}),
+                "fill_holes": ("BOOLEAN", {"default": False, "tooltip": tooltips["fill_holes"]}),
                 "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
             }
         }
@@ -298,7 +333,7 @@ class AILab_MaskEnhancer:
     RETURN_TYPES = ("MASK",)
     RETURN_NAMES = ("MASK",)
     FUNCTION = "process_mask"
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
 
     def fill_mask_region(self, mask_pil):
         """Fill holes in the mask"""
@@ -310,7 +345,7 @@ class AILab_MaskEnhancer:
         return Image.fromarray(filled_mask)
 
     def process_mask(self, mask, sensitivity=1.0, mask_blur=0, mask_offset=0, smooth=0.0, 
-                    fill_region=False, invert_output=False):
+                    fill_holes=False, invert_output=False):
         processed_masks = []
         
         for mask_item in mask:
@@ -324,7 +359,7 @@ class AILab_MaskEnhancer:
                 final_mask = (blurred_mask > 0.5).astype(np.float32)
                 m = torch.from_numpy(final_mask)
             
-            if fill_region:
+            if fill_holes:
                 mask_pil = tensor2pil(m)
                 mask_pil = self.fill_mask_region(mask_pil)
                 m = pil2tensor(mask_pil).squeeze(0)
@@ -367,7 +402,7 @@ class AILab_MaskCombiner:
             }
         }
 
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
     RETURN_TYPES = ("MASK",)
     FUNCTION = "combine_masks"
 
@@ -435,35 +470,54 @@ class AILab_LoadImage:
             "required": {
                 "image": (sorted(files) or [""], {"image_upload": True}),
                 "mask_channel": (["alpha", "red", "green", "blue"], {"default": "alpha", "tooltip": "Select channel to extract mask from"}),
-                "scale_by": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 8.0, "step": 0.01, "tooltip": "Scale image by this factor (ignored if longest_side > 0)"}),
-                "longest_side": ("INT", {"default": 0, "min": 0, "max": 8192, "step": 8, "tooltip": "Resize image so longest side equals this value (0 = disabled)"}),
+                "scale_by": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 8.0, "step": 0.01, "tooltip": "Scale image by this factor (ignored if size > 0)"}),
+                "resize_mode": (["longest_side", "shortest_side", "width", "height"], {"default": "longest_side", "tooltip": "Choose how to resize the image"}),
+                "size": ("INT", {"default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1, "tooltip": "Target size for the selected resize mode (0 = keep original size)"}),
             },
             "hidden": {
                 "extra_pnginfo": "EXTRA_PNGINFO",
             },
         }
 
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
     RETURN_TYPES = ("IMAGE", "MASK", "IMAGE", "INT", "INT")
     RETURN_NAMES = ("IMAGE", "MASK", "MASK_IMAGE", "WIDTH", "HEIGHT")
     FUNCTION = "load_image"
     OUTPUT_NODE = False
 
-    def load_image(self, image, mask_channel="alpha", scale_by=1.0, longest_side=0, extra_pnginfo=None):
+    def load_image(self, image, mask_channel="alpha", scale_by=1.0, resize_mode="longest_side", size=0, extra_pnginfo=None):
         try:
             image_path = folder_paths.get_annotated_filepath(image)
             img = Image.open(image_path)
             
             orig_width, orig_height = img.size
-            if longest_side > 0:
-                if orig_width >= orig_height:
-                    new_width = longest_side
-                    new_height = int(orig_height * (longest_side / orig_width))
+            
+            # Image resizing logic
+            if size > 0:
+                if resize_mode == "longest_side":
+                    if orig_width >= orig_height:
+                        new_width = size
+                        new_height = int(orig_height * (size / orig_width))
+                    else:
+                        new_height = size
+                        new_width = int(orig_width * (size / orig_height))
                     img = img.resize((new_width, new_height), Image.LANCZOS)
-                else:
-                    new_height = longest_side
-                    new_width = int(orig_width * (longest_side / orig_height))
-                img = img.resize((new_width, new_height), Image.LANCZOS)
+                elif resize_mode == "shortest_side":
+                    if orig_width <= orig_height:
+                        new_width = size
+                        new_height = int(orig_height * (size / orig_width))
+                    else:
+                        new_height = size
+                        new_width = int(orig_width * (size / orig_height))
+                    img = img.resize((new_width, new_height), Image.LANCZOS)
+                elif resize_mode == "width":
+                    new_width = size
+                    new_height = int(orig_height * (size / orig_width))
+                    img = img.resize((new_width, new_height), Image.LANCZOS)
+                elif resize_mode == "height":
+                    new_height = size
+                    new_width = int(orig_width * (size / orig_height))
+                    img = img.resize((new_width, new_height), Image.LANCZOS)
             elif scale_by != 1.0:
                 new_width = int(orig_width * scale_by)
                 new_height = int(orig_height * scale_by)
@@ -520,7 +574,7 @@ class AILab_LoadImage:
             return (empty_image, empty_mask, empty_mask_image, 64, 64)
     
     @classmethod
-    def IS_CHANGED(cls, image, mask_channel="alpha", scale_by=1.0, longest_side=0, extra_pnginfo=None):
+    def IS_CHANGED(cls, image, mask_channel="alpha", scale_by=1.0, resize_mode="longest_side", size=0, extra_pnginfo=None):
         image_path = folder_paths.get_annotated_filepath(image)
         m = hashlib.sha256()
         with open(image_path, 'rb') as f:
@@ -528,7 +582,7 @@ class AILab_LoadImage:
         return m.digest().hex()
     
     @classmethod
-    def VALIDATE_INPUTS(cls, image, mask_channel="alpha", scale_by=1.0, longest_side=0, extra_pnginfo=None):
+    def VALIDATE_INPUTS(cls, image, mask_channel="alpha", scale_by=1.0, resize_mode="longest_side", size=0, extra_pnginfo=None):
         if not folder_paths.exists_annotated_filepath(image):
             return f"Invalid image file: {image}"
         
@@ -554,7 +608,7 @@ class AILab_ImageCombiner:
             }
         }
 
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "combine_images"
     
@@ -642,7 +696,8 @@ class AILab_ImageCombiner:
             output_images.append(pil2tensor(result))
         
         return (torch.cat(output_images, dim=0),)
-    
+
+# Mask extractor node
 class AILab_MaskExtractor:
     @classmethod
     def INPUT_TYPES(cls):
@@ -655,7 +710,7 @@ class AILab_MaskExtractor:
             }
         }
 
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "extract_masked_area"
 
@@ -753,7 +808,7 @@ class AILab_ImageStitch:
 
     RETURN_TYPES = ("IMAGE",)
     FUNCTION = "stitch_images"
-    CATEGORY = "🧪AILab/🛠️UTIL/🖼️IMAGE"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
 
     def stitch_images(self, image1, image2, concat_direction):
         if image1.shape[0] != image2.shape[0]:
@@ -804,7 +859,226 @@ class AILab_ImageStitch:
         img = image.movedim(-1, 1)
         resized = common_upscale(img, width, height, "lanczos", "disabled")
         return resized.movedim(1, -1)
-        
+
+# Image Crop node
+class AILab_ImageCrop:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "image": ("IMAGE",),
+                "width": ("INT", {"default": 256, "min": 0, "max": MAX_RESOLUTION, "step": 8, "tooltip": "Width of the crop region in pixels. Will be clamped to image width."}),
+                "height": ("INT", {"default": 256, "min": 0, "max": MAX_RESOLUTION, "step": 8, "tooltip": "Height of the crop region in pixels. Will be clamped to image height."}),
+                "x_offset": ("INT", {"default": 0, "min": -99999, "step": 1, "tooltip": "Horizontal offset (in pixels) added to the crop position. Positive values move right, negative left."}),
+                "y_offset": ("INT", {"default": 0, "min": -99999, "step": 1, "tooltip": "Vertical offset (in pixels) added to the crop position. Positive values move down, negative up."}),
+                "split": ("BOOLEAN", {"default": False, "tooltip": "If True, output the cropped region and the rest of the image with the crop area set to zero. If False, the rest is a zero image."}),
+                "position": (["top-left", "top-center", "top-right", "right-center", "bottom-right", "bottom-center", "bottom-left", "left-center", "center"], {"tooltip": "Anchor position for the crop region. Determines where the crop is placed relative to the image."}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE", "IMAGE")
+    RETURN_NAMES = ("CROP", "REST")
+    FUNCTION = "execute"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
+
+    def execute(self, image, width, height, position, x_offset, y_offset, split=False):
+        _, oh, ow, _ = image.shape
+
+        width = min(ow, width)
+        height = min(oh, height)
+
+        if "center" in position:
+            x = round((ow-width) / 2)
+            y = round((oh-height) / 2)
+        if "top" in position:
+            y = 0
+        if "bottom" in position:
+            y = oh-height
+        if "left" in position:
+            x = 0
+        if "right" in position:
+            x = ow-width
+
+        x += x_offset
+        y += y_offset
+
+        x2 = x+width
+        y2 = y+height
+
+        if x2 > ow:
+            x2 = ow
+        if x < 0:
+            x = 0
+        if y2 > oh:
+            y2 = oh
+        if y < 0:
+            y = 0
+
+        crop = image[:, y:y2, x:x2, :]
+        rest = None
+        if split:
+            top = image[:, 0:y, :, :] if y > 0 else None
+            bottom = image[:, y2:oh, :, :] if y2 < oh else None
+            left = image[:, y:y2, 0:x, :] if x > 0 else None
+            right = image[:, y:y2, x2:ow, :] if x2 < ow else None
+
+            parts = []
+            if top is not None:
+                parts.append(top)
+            if left is not None or right is not None:
+                row_parts = []
+                if left is not None:
+                    row_parts.append(left)
+                if right is not None:
+                    row_parts.append(right)
+                if row_parts:
+                    row = torch.cat(row_parts, dim=2)
+                    parts.append(row)
+            if bottom is not None:
+                parts.append(bottom)
+            if parts:
+                rest = torch.cat(parts, dim=1)
+            else:
+                rest = torch.zeros_like(image[:, :0, :0, :])
+        else:
+            rest = image.clone()
+            rest[:] = 0
+        return (crop, rest)
+
+# ICLoRA Concat node
+class AILab_ICLoRAConcat:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "object_image": ("IMAGE",{"tooltip": ("The main image to be used as the foreground (object) in the concatenation.\nIf the image has 4 channels (RGBA), the alpha channel will be automatically extracted and used as the object mask if no mask is provided.")}),
+                "layout": (["top-bottom", "left-right"], {"default": "left-right", "tooltip": "The direction in which to concatenate the images: top-bottom or left-right."}),
+                "custom_size": ("INT", {"default": 0, "max": MAX_RESOLUTION, "min": 0, "step": 8, "tooltip": "If 0, the output image size is unchanged. Otherwise, sets the base image height (for left-right) or base image width (for top-bottom) in pixels for the concatenation. The object image will be scaled proportionally to match the base image in the concatenation direction."}),
+            },
+            "optional": {
+                "object_mask": ("MASK", {"tooltip": "Mask for the object_image. Defines the region of the object_image to be blended into the base_image."}),
+                "base_image": ("IMAGE", {"tooltip": "The background image to be concatenated with the object_image.\nIf the image has 4 channels (RGBA), the alpha channel will be automatically extracted and used as the base mask if no mask is provided."}),
+                "base_mask": ("MASK", {"tooltip": "Mask for the base_image. Defines the region of the base_image to be blended with the object_image."}),
+            },
+        }
+
+    CATEGORY = "🧪AILab/🖼️IMAGE"
+    FUNCTION = "create"
+    RETURN_TYPES = ("IMAGE", "MASK", "MASK", "INT", "INT", "INT", "INT")
+    RETURN_NAMES = ("IMAGE", "OBJECT_MASK", "BASE_MASK", "WIDTH", "HEIGHT", "X", "Y")
+
+    def create(self, object_image, layout, custom_size=0, base_image=None, object_mask=None, base_mask=None):
+        if object_image.shape[-1] == 4 and object_mask is None:
+            object_mask = extract_alpha_mask(object_image)
+            object_image = object_image[..., :3]
+        if base_image is not None and base_image.shape[-1] == 4 and base_mask is None:
+            base_mask = extract_alpha_mask(base_image)
+            base_image = base_image[..., :3]
+
+        if base_image is None:
+            base_image = empty_image(object_image.shape[2], object_image.shape[1])
+            base_mask = torch.full((1, object_image.shape[1], object_image.shape[2]), 1, dtype=torch.float32, device="cpu")
+        elif base_image is not None and base_mask is None:
+            raise ValueError("base_mask is required when base_image is provided")
+
+        object_mask = ensure_mask_shape(object_mask)
+        base_mask = ensure_mask_shape(base_mask)
+
+        _, base_h, base_w, base_c = base_image.shape
+        _, obj_h, obj_w, obj_c = object_image.shape
+
+        if layout == 'left-right':
+            if custom_size > 0:
+                new_base_h = custom_size
+                new_base_w = int(base_w * (custom_size / base_h))
+                base_image = base_image.movedim(-1, 1)
+                base_image = common_upscale(base_image, new_base_w, new_base_h, 'bicubic', 'disabled')
+                base_image = base_image.movedim(1, -1)
+                if base_mask is not None:
+                    base_mask = upscale_mask(base_mask, new_base_w, new_base_h)
+                base_h, base_w = new_base_h, new_base_w
+
+            scale = base_h / obj_h
+            new_obj_w = int(obj_w * scale)
+            object_image = object_image.movedim(-1, 1)
+            object_image = common_upscale(object_image, new_obj_w, base_h, 'bicubic', 'disabled')
+            object_image = object_image.movedim(1, -1)
+            if object_mask is not None:
+                object_mask = upscale_mask(object_mask, new_obj_w, base_h)
+            else:
+                object_mask = torch.full((1, base_h, new_obj_w), 1, dtype=torch.float32, device="cpu")
+
+            if object_image.shape[-1] != base_image.shape[-1]:
+                min_c = min(object_image.shape[-1], base_image.shape[-1])
+                object_image = object_image[..., :min_c]
+                base_image = base_image[..., :min_c]
+            
+            image = torch.cat((object_image, base_image), dim=2)
+            batch = object_mask.shape[0]
+            out_h = base_h
+            out_w = new_obj_w + base_w
+            object_mask_resized = object_mask
+            base_mask_resized = base_mask
+            
+            if object_mask_resized.shape[-2:] != (base_h, new_obj_w):
+                object_mask_resized = upscale_mask(object_mask_resized, new_obj_w, base_h)
+            if base_mask_resized.shape[-2:] != (base_h, base_w):
+                base_mask_resized = upscale_mask(base_mask_resized, base_w, base_h)
+            
+            OBJECT_MASK = torch.zeros((batch, out_h, out_w), dtype=object_mask_resized.dtype, device=object_mask_resized.device)
+            BASE_MASK = torch.zeros((batch, out_h, out_w), dtype=base_mask_resized.dtype, device=base_mask_resized.device)
+            OBJECT_MASK[:, :, :new_obj_w] = object_mask_resized
+            BASE_MASK[:, :, new_obj_w:] = base_mask_resized
+
+        elif layout == 'top-bottom':
+            if custom_size > 0:
+                new_base_w = custom_size
+                new_base_h = int(base_h * (custom_size / base_w))
+                base_image = base_image.movedim(-1, 1)
+                base_image = common_upscale(base_image, new_base_w, new_base_h, 'bicubic', 'disabled')
+                base_image = base_image.movedim(1, -1)
+                if base_mask is not None:
+                    base_mask = upscale_mask(base_mask, new_base_w, new_base_h)
+                base_h, base_w = new_base_h, new_base_w
+
+            scale = base_w / obj_w
+            new_obj_h = int(obj_h * scale)
+            object_image = object_image.movedim(-1, 1)
+            object_image = common_upscale(object_image, base_w, new_obj_h, 'bicubic', 'disabled')
+            object_image = object_image.movedim(1, -1)
+            if object_mask is not None:
+                object_mask = upscale_mask(object_mask, base_w, new_obj_h)
+            else:
+                object_mask = torch.full((1, new_obj_h, base_w), 1, dtype=torch.float32, device="cpu")
+
+            if object_image.shape[-1] != base_image.shape[-1]:
+                min_c = min(object_image.shape[-1], base_image.shape[-1])
+                object_image = object_image[..., :min_c]
+                base_image = base_image[..., :min_c]
+            
+            image = torch.cat((object_image, base_image), dim=1)
+            batch = object_mask.shape[0]
+            out_h = new_obj_h + base_h
+            out_w = base_w
+            object_mask_resized = object_mask
+            base_mask_resized = base_mask
+            
+            if object_mask_resized.shape[-2:] != (new_obj_h, base_w):
+                object_mask_resized = upscale_mask(object_mask_resized, base_w, new_obj_h)
+            if base_mask_resized.shape[-2:] != (base_h, base_w):
+                base_mask_resized = upscale_mask(base_mask_resized, base_w, base_h)
+            
+            OBJECT_MASK = torch.zeros((batch, out_h, out_w), dtype=object_mask_resized.dtype, device=object_mask_resized.device)
+            BASE_MASK = torch.zeros((batch, out_h, out_w), dtype=base_mask_resized.dtype, device=base_mask_resized.device)
+            OBJECT_MASK[:, :new_obj_h, :] = object_mask_resized
+            BASE_MASK[:, new_obj_h:, :] = base_mask_resized
+
+        x = object_image.shape[2] if layout == 'left-right' else 0
+        y = object_image.shape[1] if layout == 'top-bottom' else 0
+
+        return (image, OBJECT_MASK, BASE_MASK, out_w, out_h, x, y)
+    
+            
 # Node class mappings
 NODE_CLASS_MAPPINGS = {
     "AILab_LoadImage": AILab_LoadImage,
@@ -817,6 +1091,8 @@ NODE_CLASS_MAPPINGS = {
     "AILab_ImageCombiner": AILab_ImageCombiner,
     "AILab_MaskExtractor": AILab_MaskExtractor,
     "AILab_ImageStitch": AILab_ImageStitch,
+    "AILab_ImageCrop": AILab_ImageCrop,
+    "AILab_ICLoRAConcat": AILab_ICLoRAConcat,
 }
 
 # Node display name mappings
@@ -831,4 +1107,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "AILab_ImageCombiner": "Image Combiner (RMBG) 🖼️",
     "AILab_MaskExtractor": "Mask Extractor (RMBG) 🎭",
     "AILab_ImageStitch": "Image Stitch (RMBG) 🖼️",
-} 
+    "AILab_ImageCrop": "Image Crop (RMBG) 🖼️",
+    "AILab_ICLoRAConcat": "IC LoRA Concat (RMBG) 🖼️🎭",
+}

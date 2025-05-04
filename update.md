@@ -1,8 +1,18 @@
 # ComfyUI-RMBG Update Log
 
+## v2.3.1 (2025/05/02)
+- Enhanced ICLoRA Concat node to fully support the native ComfyUI Load Image node, addressing previous limitations with mask scaling. ICLoRA Concat is now compatible with both the RMBG and native image loaders.
+  
+## v2.3.0 (2025/05/01)
+- Added `Image Crop` node: Flexible cropping tool for images, supporting multiple anchor positions, offsets, and split output for precise region extraction.
+- Added `ICLoRA Concat` node: Enables mask-based image concatenation with customizable direction (left-right or top-bottom), size, and region, suitable for advanced image composition and layout.
+- Added resizing options for Load Image: Longest Side, Shortest Side, Width, and Height, enhancing flexibility.
+- Fixed an issue where the preview node did not display images on Ubuntu.
+
+![v2 3 0_node](https://github.com/user-attachments/assets/f53be704-bb53-4fdf-9e7f-fad00dcd5add)
+
 ## v2.2.1 (2025/04/05)
 - Bug Fixed
-
 
 ## v2.2.0 (2025/04/05)
 - Added the following nodes:

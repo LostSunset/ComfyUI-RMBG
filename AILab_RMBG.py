@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v2.2.0
+# ComfyUI-RMBG v2.3.1
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, BEN, BEN2 and BIREFNET-HR. It leverages deep learning techniques
 # to process images and generate masks for background removal.
