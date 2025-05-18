@@ -1,5 +1,14 @@
 # ComfyUI-RMBG Update Log
 
+## v2.3.2 (2025/05/15)
+- Added support for more segmentation models in Segment node:
+  - SAM HQ models (vit_h, vit_l, vit_b)
+- Changed background color input to color picker for better color selection
+- Updated and standardized `i18n` format for all nodes, improving multilingual compatibility and fixing some translation display issues
+- Added node appearance style options, allowing customization of node appearance in the ComfyUI graph for better visual distinction and user experience
+
+![v 2 3 2](https://github.com/user-attachments/assets/fc852183-6796-4ef7-a41a-499dbe6a4519)
+
 ## v2.3.1 (2025/05/02)
 - Enhanced ICLoRA Concat node to fully support the native ComfyUI Load Image node, addressing previous limitations with mask scaling. ICLoRA Concat is now compatible with both the RMBG and native image loaders.
   

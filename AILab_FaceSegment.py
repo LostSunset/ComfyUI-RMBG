@@ -59,23 +59,18 @@ class FaceSegment:
     @classmethod
     def INPUT_TYPES(cls):
         available_classes = [
-            # "Background",  # Not a facial feature
             "Skin", "Nose", "Eyeglasses", "Left-eye", "Right-eye",
             "Left-eyebrow", "Right-eyebrow", "Left-ear", "Right-ear", "Mouth",
             "Upper-lip", "Lower-lip", "Hair", "Earring", "Neck",
-            # "Hat",        # Not a facial feature
-            # "Necklace",   # Not a facial feature
-            # "Clothing"    # Not a facial feature
         ]
-        
         tooltips = {
             "process_res": "Processing resolution (higher = more VRAM)",
             "mask_blur": "Blur amount for mask edges",
             "mask_offset": "Expand/Shrink mask boundary",
-            "background_color": "Choose background color (Alpha = transparent)",
             "invert_output": "Invert both image and mask output",
+            "background": "Choose background type: Alpha (transparent) or Color (custom background color).",
+            "background_color": "Choose background color (Alpha = transparent)"
         }
-        
         return {
             "required": {
                 "images": ("IMAGE",),
@@ -86,8 +81,9 @@ class FaceSegment:
                 "process_res": ("INT", {"default": 512, "min": 128, "max": 2048, "step": 32, "tooltip": tooltips["process_res"]}),
                 "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1, "tooltip": tooltips["mask_blur"]}),
                 "mask_offset": ("INT", {"default": 0, "min": -64, "max": 64, "step": 1, "tooltip": tooltips["mask_offset"]}),
-                "background_color": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background_color"]}),
                 "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
+                "background": (["Alpha", "Color"], {"default": "Alpha", "tooltip": tooltips["background"]}),
+                "background_color": ("COLOR", {"default": "#222222", "tooltip": tooltips["background_color"]}),
             },
         }
 
@@ -147,7 +143,7 @@ class FaceSegment:
         except Exception as e:
             return False, f"Error downloading model files: {str(e)}"
 
-    def segment_face(self, images, process_res=512, mask_blur=0, mask_offset=0, background_color="Alpha", invert_output=False, **class_selections):
+    def segment_face(self, images, process_res=512, mask_blur=0, mask_offset=0, background="Alpha", background_color="#222222", invert_output=False, **class_selections):
         try:
             # Check and download model if needed
             cache_status, message = self.check_model_cache()
@@ -243,21 +239,23 @@ class FaceSegment:
                         mask_image = Image.fromarray(255 - np.array(mask_image))
 
                     # Handle background color
-                    if background_color == "Alpha":
+                    if background == "Alpha":
                         rgba_image = RGB2RGBA(orig_image, mask_image)
                         result_image = pil2tensor(rgba_image)
                     else:
-                        bg_colors = {
-                            "black": (0, 0, 0),
-                            "white": (255, 255, 255),
-                            "gray": (128, 128, 128),
-                            "green": (0, 255, 0),
-                            "blue": (0, 0, 255),
-                            "red": (255, 0, 0)
-                        }
-                        
+                        def hex_to_rgba(hex_color):
+                            hex_color = hex_color.lstrip('#')
+                            if len(hex_color) == 6:
+                                r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+                                a = 255
+                            elif len(hex_color) == 8:
+                                r, g, b, a = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16), int(hex_color[6:8], 16)
+                            else:
+                                raise ValueError("Invalid color format")
+                            return (r, g, b, a)
                         rgba_image = RGB2RGBA(orig_image, mask_image)
-                        bg_image = Image.new('RGBA', orig_image.size, (*bg_colors[background_color], 255))
+                        rgba = hex_to_rgba(background_color)
+                        bg_image = Image.new('RGBA', orig_image.size, rgba)
                         composite_image = Image.alpha_composite(bg_image, rgba_image)
                         result_image = pil2tensor(composite_image.convert('RGB'))
 

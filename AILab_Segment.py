@@ -41,6 +41,18 @@ SAM_MODELS = {
     "sam_vit_b (375MB)": {
         "model_url": "https://huggingface.co/1038lab/sam/resolve/main/sam_vit_b.pth",
         "model_type": "vit_b"
+    },
+    "sam_hq_vit_h (2.57GB)": {
+        "model_url": "https://huggingface.co/1038lab/sam/resolve/main/sam_hq_vit_h.pth",
+        "model_type": "vit_h"
+    },
+    "sam_hq_vit_l (1.25GB)": {
+        "model_url": "https://huggingface.co/1038lab/sam/resolve/main/sam_hq_vit_l.pth",
+        "model_type": "vit_l"
+    },
+    "sam_hq_vit_b (379MB)": {
+        "model_url": "https://huggingface.co/1038lab/sam/resolve/main/sam_hq_vit_b.pth",
+        "model_type": "vit_b"
     }
 }
 
@@ -114,23 +126,19 @@ def image2mask(image: Image.Image) -> torch.Tensor:
     return image.squeeze()
 
 def apply_background_color(image: Image.Image, mask_image: Image.Image, 
-                         background_color: str = "Alpha") -> Image.Image:
-    bg_colors = {
-        "Alpha": None,
-        "black": (0, 0, 0),
-        "white": (255, 255, 255),
-        "gray": (128, 128, 128),
-        "green": (0, 255, 0),
-        "blue": (0, 0, 255),
-        "red": (255, 0, 0)
-    }
-
+                         background: str = "Alpha",
+                         background_color: str = "#222222") -> Image.Image:
     rgba_image = image.copy().convert('RGBA')
     rgba_image.putalpha(mask_image.convert('L'))
-
-    if background_color != "Alpha":
-        bg_color = bg_colors[background_color]
-        bg_image = Image.new('RGBA', image.size, (*bg_color, 255))
+    
+    if background == "Color":
+        def hex_to_rgba(hex_color):
+            hex_color = hex_color.lstrip('#')
+            r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+            return (r, g, b, 255)
+            
+        rgba = hex_to_rgba(background_color)
+        bg_image = Image.new('RGBA', image.size, rgba)
         composite_image = Image.alpha_composite(bg_image, rgba_image)
         return composite_image.convert('RGB')
     
@@ -144,8 +152,9 @@ class Segment:
             "threshold": "Adjust mask detection strength (higher = more strict)",
             "mask_blur": "Apply Gaussian blur to mask edges (0 = disabled)",
             "mask_offset": "Expand/Shrink mask boundary (positive = expand, negative = shrink)",
-            "background_color": "Choose background color (Alpha = transparent)",
             "invert_output": "Invert the mask output",
+            "background": (["Alpha", "Color"], {"default": "Alpha", "tooltip": "Choose background type"}),
+            "background_color": "Choose background color (Alpha = transparent)",
         }
         return {
             "required": {
@@ -155,16 +164,17 @@ class Segment:
                 "dino_model": (list(DINO_MODELS.keys()),),
             },
             "optional": {
-                "threshold": ("FLOAT", {"default": 0.35, "min": 0.05, "max": 0.95, "step": 0.01, "tooltip": tooltips["threshold"]}),
+                "threshold": ("FLOAT", {"default": 0.30, "min": 0.05, "max": 0.95, "step": 0.01, "tooltip": tooltips["threshold"]}),
                 "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1, "tooltip": tooltips["mask_blur"]}),
                 "mask_offset": ("INT", {"default": 0, "min": -64, "max": 64, "step": 1, "tooltip": tooltips["mask_offset"]}),
-                "background_color": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background_color"]}),
-                "invert_output": ("BOOLEAN", {"default": False}),
+                "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
+                "background": (["Alpha", "Color"], {"default": "Alpha", "tooltip": tooltips["background"]}),
+                "background_color": ("COLOR", {"default": "#222222", "tooltip": tooltips["background_color"]}),
             }
         }
 
-    RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("IMAGE", "MASK")
+    RETURN_TYPES = ("IMAGE", "MASK", "IMAGE")
+    RETURN_NAMES = ("IMAGE", "MASK", "MASK_IMAGE")
     FUNCTION = "segment"
     CATEGORY = "🧪AILab/🧽RMBG"
 
@@ -180,8 +190,8 @@ class Segment:
         self.build_model = build_model
 
     def segment(self, image, prompt, sam_model, dino_model, threshold=0.35,
-                mask_blur=0, mask_offset=0, background_color="Alpha", 
-                invert_output=False):
+                mask_blur=0, mask_offset=0, background="Alpha", 
+                background_color="#222222", invert_output=False):
         print(f'Processing create segment for: "{prompt}"...')
         
         image = Image.fromarray(np.clip(255. * image[0].cpu().numpy(), 0, 255).astype(np.uint8)).convert('RGBA')
@@ -193,34 +203,52 @@ class Segment:
             print(f'No objects found for: "{prompt}"')
             width, height = image.size
             empty_mask = torch.zeros((1, height, width), dtype=torch.uint8, device="cpu")
-            return (empty_mask, empty_mask)
+            # Create empty RGB mask for visualization
+            empty_mask_rgb = empty_mask.reshape((-1, 1, height, width)).movedim(1, -1).expand(-1, -1, -1, 3)
+            return (pil2tensor(image), empty_mask, empty_mask_rgb)
         
         masks = self.generate_masks(sam_model, image, boxes)
         if masks is None:
             print(f'Failed to generate mask for: "{prompt}"')
             width, height = image.size
             empty_mask = torch.zeros((1, height, width), dtype=torch.uint8, device="cpu")
-            return (empty_mask, empty_mask)
+            # Create empty RGB mask for visualization
+            empty_mask_rgb = empty_mask.reshape((-1, 1, height, width)).movedim(1, -1).expand(-1, -1, -1, 3)
+            return (pil2tensor(image), empty_mask, empty_mask_rgb)
 
         mask_image = Image.fromarray((masks[1][0].numpy() * 255).astype(np.uint8))
         mask_image = process_mask(mask_image, invert_output, mask_blur, mask_offset)
         
-        result_image = apply_background_color(image, mask_image, background_color)
+        result_image = apply_background_color(image, mask_image, background, background_color)
         
-        if background_color != "Alpha":
+        if background == "Color":
             result_image = result_image.convert("RGB")
         else:
             result_image = result_image.convert("RGBA")
+            
+        mask_tensor = image2mask(mask_image).unsqueeze(0)
 
         print(f'Successfully created segment for: "{prompt}"')
-        return (pil2tensor(result_image), image2mask(mask_image))
+        
+        # Create mask image for visualization (similar to other nodes)
+        mask_images = []
+        # Convert mask to RGB image format for visualization
+        mask_image_vis = mask_tensor.reshape((-1, 1, mask_image.height, mask_image.width)).movedim(1, -1).expand(-1, -1, -1, 3)
+        mask_images.append(mask_image_vis)
+        
+        mask_image_output = torch.cat(mask_images, dim=0)
+        
+        return (pil2tensor(result_image), mask_tensor, mask_image_output)
 
     def load_sam(self, model_name):
         sam_checkpoint_path = self.get_local_filepath(
             SAM_MODELS[model_name]["model_url"], "sam")
         model_type = SAM_MODELS[model_name]["model_type"]
         
-        sam = sam_model_registry[model_type](checkpoint=sam_checkpoint_path)
+        sam = sam_model_registry[model_type]()
+        state_dict = torch.load(sam_checkpoint_path)
+        sam.load_state_dict(state_dict, strict=False)
+        
         sam_device = comfy.model_management.get_torch_device()
         sam.to(device=sam_device)
         sam.eval()

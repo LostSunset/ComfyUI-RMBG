@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v2.3.1
+# ComfyUI-RMBG
 # This custom node for ComfyUI provides functionality for background removal using various models,
 # including RMBG-2.0, INSPYRENET, BEN, BEN2 and BIREFNET-HR. It leverages deep learning techniques
 # to process images and generate masks for background removal.
@@ -545,9 +545,9 @@ class RMBG:
             "process_res": "Set the processing resolution (higher values require more VRAM and may increase processing time).",
             "mask_blur": "Specify the amount of blur to apply to the mask edges (0 for no blur, higher values for more blur).",
             "mask_offset": "Adjust the mask boundary (positive values expand the mask, negative values shrink it).",
-            "background": "Choose the background color for the final output (Alpha for transparent background).",
+            "background": "Choose output type: Alpha (transparent) or Color (custom background color).",
+            "background_color": "Pick background color (supports alpha, use color picker).",
             "invert_output": "Enable to invert both the image and mask output (useful for certain effects).",
-            "optimize": "Enable model optimization for faster processing (may affect output quality).",
             "refine_foreground": "Use Fast Foreground Colour Estimation to optimize transparent background"
         }
         
@@ -561,10 +561,10 @@ class RMBG:
                 "process_res": ("INT", {"default": 1024, "min": 256, "max": 2048, "step": 8, "tooltip": tooltips["process_res"]}),
                 "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1, "tooltip": tooltips["mask_blur"]}),
                 "mask_offset": ("INT", {"default": 0, "min": -64, "max": 64, "step": 1, "tooltip": tooltips["mask_offset"]}),
-                "background": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background"]}),
                 "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
-                "optimize": (["default", "on"], {"default": "default", "tooltip": tooltips["optimize"]}),
-                "refine_foreground": ("BOOLEAN", {"default": False, "tooltip": tooltips["refine_foreground"]})
+                "refine_foreground": ("BOOLEAN", {"default": False, "tooltip": tooltips["refine_foreground"]}),
+                "background": (["Alpha", "Color"], {"default": "Alpha", "tooltip": tooltips["background"]}),
+                "background_color": ("COLOR", {"default": "#222222", "tooltip": tooltips["background_color"]}),
             }
         }
 
@@ -577,16 +577,6 @@ class RMBG:
         try:
             processed_images = []
             processed_masks = []
-            
-            bg_colors = {
-                "Alpha": None,
-                "black": (0, 0, 0),
-                "white": (255, 255, 255),
-                "gray": (128, 128, 128),
-                "green": (0, 255, 0),
-                "blue": (0, 0, 255),
-                "red": (255, 0, 0)
-            }
             
             model_instance = self.models[model]
             
@@ -648,9 +638,19 @@ class RMBG:
                     r, g, b, _ = orig_rgba.split()
                     foreground = Image.merge('RGBA', (r, g, b, mask))
 
-                if params["background"] != "Alpha":
-                    bg_color = bg_colors[params["background"]]
-                    bg_image = Image.new('RGBA', orig_image.size, (*bg_color, 255))
+                if params["background"] == "Color":
+                    def hex_to_rgba(hex_color):
+                        hex_color = hex_color.lstrip('#')
+                        if len(hex_color) == 6:
+                            r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+                            a = 255
+                        elif len(hex_color) == 8:
+                            r, g, b, a = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16), int(hex_color[6:8], 16)
+                        else:
+                            raise ValueError("Invalid color format")
+                        return (r, g, b, a)
+                    rgba = hex_to_rgba(params["background_color"])
+                    bg_image = Image.new('RGBA', orig_image.size, rgba)
                     composite_image = Image.alpha_composite(bg_image, foreground)
                     processed_images.append(pil2tensor(composite_image.convert("RGB")))
                 else:

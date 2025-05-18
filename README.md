@@ -6,6 +6,8 @@ $$\textcolor{red}{\Huge \text{If this custom node helps you or you like my work,
 $$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
 
 ## News & Updates
+- **2025/05/15**: Update ComfyUI-RMBG to **v2.3.2** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v232-20250515) )
+![v 2 3 2](https://github.com/user-attachments/assets/fc852183-6796-4ef7-a41a-499dbe6a4519)
 - **2025/05/02**: Update ComfyUI-RMBG to **v2.3.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v231-20250502) )
 - **2025/05/01**: Update ComfyUI-RMBG to **v2.3.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v230-20250501) )
 ![v2 3 0_node](https://github.com/user-attachments/assets/f53be704-bb53-4fdf-9e7f-fad00dcd5add)

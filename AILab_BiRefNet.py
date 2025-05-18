@@ -331,11 +331,11 @@ class BiRefNetRMBG:
             "model": "Select the BiRefNet model variant to use.",
             "mask_blur": "Specify the amount of blur to apply to the mask edges (0 for no blur, higher values for more blur).",
             "mask_offset": "Adjust the mask boundary (positive values expand the mask, negative values shrink it).",
-            "background": "Choose the background color for the final output (Alpha for transparent background).",
             "invert_output": "Enable to invert both the image and mask output (useful for certain effects).",
-            "refine_foreground": "Use Fast Foreground Colour Estimation to optimize transparent background"
+            "refine_foreground": "Use Fast Foreground Colour Estimation to optimize transparent background",
+            "background": "Choose background type: Alpha (transparent) or Color (custom background color).",
+            "background_color": "Choose background color (Alpha = transparent)"
         }
-        
         return {
             "required": {
                 "image": ("IMAGE", {"tooltip": tooltips["image"]}),
@@ -344,9 +344,10 @@ class BiRefNetRMBG:
             "optional": {
                 "mask_blur": ("INT", {"default": 0, "min": 0, "max": 64, "step": 1, "tooltip": tooltips["mask_blur"]}),
                 "mask_offset": ("INT", {"default": 0, "min": -20, "max": 20, "step": 1, "tooltip": tooltips["mask_offset"]}),
-                "background": (["Alpha", "black", "white", "gray", "green", "blue", "red"], {"default": "Alpha", "tooltip": tooltips["background"]}),
                 "invert_output": ("BOOLEAN", {"default": False, "tooltip": tooltips["invert_output"]}),
-                "refine_foreground": ("BOOLEAN", {"default": False, "tooltip": tooltips["refine_foreground"]})
+                "refine_foreground": ("BOOLEAN", {"default": False, "tooltip": tooltips["refine_foreground"]}),
+                "background": (["Alpha", "Color"], {"default": "Alpha", "tooltip": tooltips["background"]}),
+                "background_color": ("COLOR", {"default": "#222222", "tooltip": tooltips["background_color"]}),
             }
         }
 
@@ -358,35 +359,16 @@ class BiRefNetRMBG:
     def process_image(self, image, model, **params):
         try:
             model_config = MODEL_CONFIG[model]
-            
-            # Always use model's default resolution
             process_res = model_config.get("default_res", 1024)
-            
-            # Handle special resolution requirements
             if model_config.get("force_res", False):
                 base_res = 512
                 process_res = ((process_res + base_res - 1) // base_res) * base_res
             else:
                 process_res = process_res // 32 * 32
-            
             print(f"Using {model} model with {process_res} resolution")
-            
             params["process_res"] = process_res
-            
             processed_images = []
             processed_masks = []
-            
-            bg_colors = {
-                "Alpha": None,
-                "black": (0, 0, 0),
-                "white": (255, 255, 255),
-                "gray": (128, 128, 128),
-                "green": (0, 255, 0),
-                "blue": (0, 0, 255),
-                "red": (255, 0, 0)
-            }
-            
-            # Check and download model if needed
             cache_status, message = self.model.check_model_cache(model)
             if not cache_status:
                 print(f"Cache check: {message}")
@@ -395,18 +377,11 @@ class BiRefNetRMBG:
                 if not download_status:
                     handle_model_error(download_message)
                 print("Model files downloaded successfully")
-            
-            # Load model if needed
             self.model.load_model(model)
-            
             for img in image:
-                # Get mask from model
                 mask = self.model.process_image(img, params)
-                
-                # Post-process mask
                 if params["mask_blur"] > 0:
                     mask = mask.filter(ImageFilter.GaussianBlur(radius=params["mask_blur"]))
-                
                 if params["mask_offset"] != 0:
                     if params["mask_offset"] > 0:
                         for _ in range(params["mask_offset"]):
@@ -414,19 +389,12 @@ class BiRefNetRMBG:
                     else:
                         for _ in range(-params["mask_offset"]):
                             mask = mask.filter(ImageFilter.MinFilter(3))
-                
                 if params["invert_output"]:
                     mask = Image.fromarray(255 - np.array(mask))
-
-                # Convert to tensors for refine_foreground
                 img_tensor = torch.from_numpy(np.array(tensor2pil(img))).permute(2, 0, 1).unsqueeze(0) / 255.0
                 mask_tensor = torch.from_numpy(np.array(mask)).unsqueeze(0).unsqueeze(0) / 255.0
-                
                 if params.get("refine_foreground", False):
-                    refined_fg = refine_foreground(
-                        img_tensor, 
-                        mask_tensor
-                    )
+                    refined_fg = refine_foreground(img_tensor, mask_tensor)
                     refined_fg = tensor2pil(refined_fg[0].permute(1, 2, 0))
                     orig_image = tensor2pil(img)
                     r, g, b = refined_fg.split()
@@ -436,28 +404,30 @@ class BiRefNetRMBG:
                     orig_rgba = orig_image.convert("RGBA")
                     r, g, b, _ = orig_rgba.split()
                     foreground = Image.merge('RGBA', (r, g, b, mask))
-
-                if params["background"] != "Alpha":
-                    bg_color = bg_colors[params["background"]]
-                    bg_image = Image.new('RGBA', orig_image.size, (*bg_color, 255))
+                if params["background"] == "Alpha":
+                    processed_images.append(pil2tensor(foreground))
+                else:
+                    def hex_to_rgba(hex_color):
+                        hex_color = hex_color.lstrip('#')
+                        if len(hex_color) == 6:
+                            r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
+                            a = 255
+                        elif len(hex_color) == 8:
+                            r, g, b, a = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16), int(hex_color[6:8], 16)
+                        else:
+                            raise ValueError("Invalid color format")
+                        return (r, g, b, a)
+                    rgba = hex_to_rgba(params["background_color"])
+                    bg_image = Image.new('RGBA', orig_image.size, rgba)
                     composite_image = Image.alpha_composite(bg_image, foreground)
                     processed_images.append(pil2tensor(composite_image.convert("RGB")))
-                else:
-                    processed_images.append(pil2tensor(foreground))
-                
                 processed_masks.append(pil2tensor(mask))
-
-            # Create mask image for visualization
             mask_images = []
             for mask_tensor in processed_masks:
-                # Convert mask to RGB image format for visualization
                 mask_image = mask_tensor.reshape((-1, 1, mask_tensor.shape[-2], mask_tensor.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
                 mask_images.append(mask_image)
-            
             mask_image_output = torch.cat(mask_images, dim=0)
-
             return (torch.cat(processed_images, dim=0), torch.cat(processed_masks, dim=0), mask_image_output)
-            
         except Exception as e:
             handle_model_error(f"Error in image processing: {str(e)}")
 
