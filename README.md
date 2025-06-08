@@ -2,10 +2,10 @@
 
 A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, BEN2, BiRefNet-HR, SAM, and GroundingDINO.
 
-$$\textcolor{red}{\Huge \text{If this custom node helps you or you like my work, please give me ⭐ on this repo!}}$$  
-$$\textcolor{red}{\Huge \text{It's a great encouragement for my efforts!}}$$
-
 ## News & Updates
+- **2025/06/01**: Update ComfyUI-RMBG to **v2.4.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v240-20250601) )
+![ComfyUI-RMBG_V2 4 0 new nodes](https://github.com/user-attachments/assets/7ab023e7-70b4-4b97-910a-e608c03841cf)
+  - Added `CropObject`, `ImageCompare`, `ColorInput` nodes and new Segment V2 (see update.md for details)
 - **2025/05/15**: Update ComfyUI-RMBG to **v2.3.2** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v232-20250515) )
 ![v 2 3 2](https://github.com/user-attachments/assets/fc852183-6796-4ef7-a41a-499dbe6a4519)
 - **2025/05/02**: Update ComfyUI-RMBG to **v2.3.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v231-20250502) )
@@ -319,6 +319,8 @@ GroundingDINO is a model for text-prompted object detection and segmentation, of
 - Clothes Segment: https://huggingface.co/mattmdjaga/segformer_b2_clothes
 
 - Created by: [AILab](https://github.com/1038lab)
+
+If this custom node helps you or you like my work, please give me ⭐ on this repo! It's a great encouragement for my efforts!
 
 ## License
 GPL-3.0 License

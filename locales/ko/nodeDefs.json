@@ -193,7 +193,7 @@
     }
   },
   "Segment": {
-    "display_name": "신체 분할 (RMBG)",
+    "display_name": "신체 분할 V1 (RMBG)",
     "inputs": {
       "image": { "name": "이미지" },
       "prompt": { "name": "프롬프트" },
@@ -210,6 +210,24 @@
       "2": { "name": "마스크 이미지" }
     }
   },
+  "SegmentV2": {
+    "display_name": "신체 분할 V2 (RMBG)",
+    "inputs": {
+      "image": { "name": "이미지" },
+      "prompt": { "name": "프롬프트" },
+      "sam_model": { "name": "SAM 모델" },
+      "dino_model": { "name": "DINO 모델" },
+      "threshold": { "name": "임계값" },
+      "mask_blur": { "name": "마스크 블러" },
+      "mask_offset": { "name": "마스크 오프셋" },
+      "invert_output": { "name": "출력 반전" },
+      "background": { "name": "배경" },
+      "background_color": { "name": "배경 색상" }
+    },
+    "outputs": {
+      "2": { "name": "마스크 이미지" }
+    }
+  },  
   "AILab_Preview": {
     "display_name": "이미지/마스크 미리보기 (RMBG) 🖼️🎭",
     "inputs": {
@@ -359,6 +377,21 @@
     },
     "outputs": {
       "0": { "name": "이미지" }
+    }
+  },
+  "AILab_ColorInput": {
+    "display_name": "색상 입력 (RMBG) 🎨",
+    "inputs": {
+      "color": { "name": "색상" }
+    }
+  },
+  "AILab_ObjectRemover": {
+    "display_name": "객체 제거 (RMBG) 🖼️🎭",
+    "inputs": {
+      "images": { "name": "이미지" },
+      "masks": { "name": "마스크" },
+      "removal_strength": { "name": "제거 강도" },
+      "edge_smoothness": { "name": "가장자리 부드러움" }
     }
   }
 }

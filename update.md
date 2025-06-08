@@ -1,5 +1,31 @@
 # ComfyUI-RMBG Update Log
 
+## v2.4.0 (2025/06/01)
+- Added `CropObject` node for cropping to object based on mask or alpha channel **(User request [#61](https://github.com/1038lab/ComfyUI-RMBG/issues/61) )**
+- Added `ImageCompare` node for side-by-side image comparison with annotations
+- Added `ColorInput` node pick preset color or input RGB color code in #000000 or #000 format **(User request [#62](https://github.com/1038lab/ComfyUI-RMBG/issues/62) )**
+- Updated `MaskExtractor` node added color picker and support RGBA images by extracting and using the alpha channel as mask
+- Updated `ImageCombiner` node added WIDTH and HEIGHT output
+
+![ComfyUI-RMBG_V2 4 0 new nodes](https://github.com/user-attachments/assets/7ab023e7-70b4-4b97-910a-e608c03841cf)
+
+### New Segment V2 (Recommended)
+- Uses Hugging Face transformers library
+- Better compatibility with newer PyTorch (2.x) and CUDA versions
+- Recommended for users with modern GPU setups
+- No groundingdino-py dependency required
+
+**(User request [#66](https://github.com/1038lab/ComfyUI-RMBG/issues/66) )**
+### Segment V1 (Legacy)
+- Uses original groundingdino-py implementation
+- May have compatibility issues with newer PyTorch/CUDA versions
+- Consider using V2 if you encounter installation issues
+
+### Installation
+Choose the appropriate version based on your setup:
+- For modern systems (PyTorch 2.x, CUDA 12.x+), use Segment V2
+- For legacy systems or if you specifically need groundingdino-py, use Segment V1
+
 ## v2.3.2 (2025/05/15)
 - Added support for more segmentation models in Segment node:
   - SAM HQ models (vit_h, vit_l, vit_b)

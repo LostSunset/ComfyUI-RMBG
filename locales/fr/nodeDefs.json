@@ -193,7 +193,25 @@
     }
   },
   "Segment": {
-    "display_name": "Segmentation locale (RMBG)",
+    "display_name": "Segmentation V1 (RMBG)",
+    "inputs": {
+      "image": { "name": "Image" },
+      "prompt": { "name": "Invite" },
+      "sam_model": { "name": "Modèle SAM" },
+      "dino_model": { "name": "Modèle DINO" },
+      "threshold": { "name": "Seuil" },
+      "mask_blur": { "name": "Flou du masque" },
+      "mask_offset": { "name": "Décalage du masque" },
+      "invert_output": { "name": "Inverser la sortie" },
+      "background": { "name": "Arrière-plan" },
+      "background_color": { "name": "Couleur de fond" }
+    },
+    "outputs": {
+      "2": { "name": "IMAGE MASQUE" }
+    }
+  },
+  "SegmentV2": {
+    "display_name": "Segmentation V2 (RMBG)",
     "inputs": {
       "image": { "name": "Image" },
       "prompt": { "name": "Invite" },
@@ -359,6 +377,21 @@
     },
     "outputs": {
       "0": { "name": "Image" }
+    }
+  },
+  "AILab_ColorInput": {
+    "display_name": "Couleur d'entrée (RMBG) 🎨",
+    "inputs": {
+      "color": { "name": "Couleur" }
+    }
+  },
+  "AILab_ObjectRemover": {
+    "display_name": "Supprimer l'objet (RMBG) 🖼️🎭",
+    "inputs": {
+      "images": { "name": "Images" },
+      "masks": { "name": "Masques" },
+      "removal_strength": { "name": "Intensité de suppression" },
+      "edge_smoothness": { "name": "Lissage des bords" }
     }
   }
 }

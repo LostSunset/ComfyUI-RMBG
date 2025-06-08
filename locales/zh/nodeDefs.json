@@ -193,7 +193,25 @@
    }
  },
  "Segment": {
-   "display_name": "局部分割 (RMBG)",
+   "display_name": "局部分割 V1 (RMBG)",
+   "inputs": {
+     "image": { "name": "图像" },
+     "prompt": { "name": "提示" },
+     "sam_model": { "name": "SAM模型" },
+     "dino_model": { "name": "DINO模型" },
+     "threshold": { "name": "阈值" },
+     "mask_blur": { "name": "遮罩模糊" },
+     "mask_offset": { "name": "遮罩偏移" },
+     "invert_output": { "name": "反转输出" },
+     "background": { "name": "背景类型" },
+     "background_color": { "name": "背景颜色" }
+   },
+   "outputs": {
+     "2": { "name": "遮罩图像" }
+   }
+ },
+ "SegmentV2": {
+   "display_name": "局部分割 V2 (RMBG)",
    "inputs": {
      "image": { "name": "图像" },
      "prompt": { "name": "提示" },
@@ -359,6 +377,21 @@
    },
    "outputs": {
      "0": { "name": "图像" }
+   }
+ },
+ "AILab_ColorInput": {
+   "display_name": "颜色输入 (RMBG) 🎨",
+   "inputs": {
+     "color": { "name": "颜色" }
+   }
+ },
+ "AILab_ObjectRemover": {
+   "display_name": "对象去除 (RMBG) 🖼️🎭",
+   "inputs": {
+     "images": { "name": "图像" },
+     "masks": { "name": "遮罩" },
+     "removal_strength": { "name": "去除强度" },
+     "edge_smoothness": { "name": "边缘平滑" }
    }
  }
 }

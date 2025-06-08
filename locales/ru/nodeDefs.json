@@ -193,7 +193,7 @@
     }
   },
   "Segment": {
-    "display_name": "Сегментация тела (RMBG)",
+    "display_name": "Сегментация V1 (RMBG)",
     "inputs": {
       "image": { "name": "Изображение" },
       "prompt": { "name": "Подсказка" },
@@ -202,6 +202,24 @@
       "threshold": { "name": "Порог" },
       "mask_blur": { "name": "Размытие маски" },
       "mask_offset": { "name": "Смещение маски" },
+      "invert_output": { "name": "Инвертировать вывод" },
+      "background": { "name": "Фон" },
+      "background_color": { "name": "Цвет фона" }
+    },
+    "outputs": {
+      "2": { "name": "МАСКА ИЗОБРАЖЕНИЯ" }
+    }
+  },
+  "SegmentV2": {
+    "display_name": "Сегментация V2 (RMBG)",
+    "inputs": {
+      "image": { "name": "Изображение" },
+      "prompt": { "name": "Подсказка" },
+      "sam_model": { "name": "Модель SAM" },
+      "dino_model": { "name": "Модель DINO" },
+      "threshold": { "name": "Порог" },
+      "mask_blur": { "name": "Размытие маски" },
+      "mask_offset": { "name": "Смещение маски" },  
       "invert_output": { "name": "Инвертировать вывод" },
       "background": { "name": "Фон" },
       "background_color": { "name": "Цвет фона" }
@@ -359,6 +377,21 @@
     },
     "outputs": {
       "0": { "name": "ИЗОБРАЖЕНИЕ" }
+    }
+  },
+  "AILab_ColorInput": {
+    "display_name": "Цвет ввода (RMBG) 🎨",
+    "inputs": {
+      "color": { "name": "Цвет" }
+    }
+  },
+  "AILab_ObjectRemover": {
+    "display_name": "Удалить объект (RMBG) 🖼️🎭",
+    "inputs": {
+      "images": { "name": "Изображения" },
+      "masks": { "name": "Маски" },
+      "removal_strength": { "name": "Степень удаления" },
+      "edge_smoothness": { "name": "Сглаживание краев" }
     }
   }
 }

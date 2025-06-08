@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v2.3.1
+# ComfyUI-RMBG v2.4.0
 #
 # This node facilitates background removal using various models, including RMBG-2.0, INSPYRENET, BEN, BEN2, and BIREFNET-HR.
 # It utilizes advanced deep learning techniques to process images and generate accurate masks for background removal.
@@ -15,6 +15,7 @@
 #
 # 2. Conversion Node:
 #    - ImageMaskConvert: Converts between image and mask formats and extracts masks from image channels.
+#    - ColorInput: A node for inputting colors in various formats.
 #
 # 3. Mask Processing Nodes:
 #    - MaskEnhancer: Refines masks through techniques such as blur, smoothing, expansion/contraction, and hole filling.
@@ -25,6 +26,8 @@
 #    - ImageStitch: Stitches multiple images together in various directions.
 #    - ImageCrop: Crops an image to a specified size and position.
 #    - ICLoRAConcat: Concatenates images with a mask using IC LoRA.
+#    - CropObject: Crops an image to the object in the image.
+#    - ImageCompare: Compares two images and returns a mask of the differences.
 
 # These nodes are crafted to streamline common image and mask operations within ComfyUI workflows.
 
@@ -36,7 +39,7 @@ import hashlib
 import torch
 import cv2
 from nodes import MAX_RESOLUTION
-from PIL import Image, ImageFilter, ImageOps, ImageSequence, ImageChops
+from PIL import Image, ImageFilter, ImageOps, ImageSequence, ImageChops, ImageDraw, ImageFont
 import torchvision.transforms.functional as T
 from comfy.utils import common_upscale
 from scipy import ndimage
@@ -91,6 +94,38 @@ def ensure_mask_shape(mask):
     if mask.ndim == 4 and mask.shape[1] == 1:
         return mask.squeeze(1)
     return mask
+
+def resize_image(img: Image.Image, width: int, height: int) -> Image.Image:
+    return img.resize((width, height), Image.Resampling.LANCZOS)
+
+COLOR_PRESETS = {
+    "black": "#000000", "white": "#FFFFFF", "red": "#FF0000", "green": "#00FF00", "blue": "#0000FF",
+    "yellow": "#FFFF00", "cyan": "#00FFFF", "magenta": "#FF00FF", "gray": "#808080", "silver": "#C0C0C0",
+    "maroon": "#800000", "olive": "#808000", "purple": "#800080", "teal": "#008080", "navy": "#000080",
+    "orange": "#FFA500", "pink": "#FFC0CB", "brown": "#A52A2A", "violet": "#EE82EE", "indigo": "#4B0082",
+    "light_gray": "#D3D3D3", "dark_gray": "#A9A9A9", "light_blue": "#ADD8E6", "dark_blue": "#00008B",
+    "light_blue": "#ADD8E6", "dark_blue": "#00008B", "light_green": "#90EE90", "dark_green": "#006400"
+}
+
+def fix_color_format(color: str) -> str:
+    """Fix color format to valid hex code"""
+    if not color:
+        return ""
+    
+    color = color.strip().upper()
+    if not color.startswith('#'):
+        color = f"#{color}"
+        
+    color = color[1:]
+    if len(color) == 3:
+        r, g, b = color[0], color[1], color[2]
+        return f"#{r}{r}{g}{g}{b}{b}"
+    elif len(color) < 6:
+        raise ValueError(f"Invalid color format: {color}")
+    elif len(color) > 6:
+        color = color[:6]
+        
+    return f"#{color}"
 
 # Base class for preview
 class AILab_PreviewBase:
@@ -609,7 +644,8 @@ class AILab_ImageCombiner:
         }
 
     CATEGORY = "🧪AILab/🖼️IMAGE"
-    RETURN_TYPES = ("IMAGE",)
+    RETURN_TYPES = ("IMAGE", "INT", "INT")
+    RETURN_NAMES = ("IMAGE", "WIDTH", "HEIGHT")
     FUNCTION = "combine_images"
     
     def combine_images(self, foreground, background, mode="normal", foreground_opacity=1.0, 
@@ -695,7 +731,11 @@ class AILab_ImageCombiner:
             
             output_images.append(pil2tensor(result))
         
-        return (torch.cat(output_images, dim=0),)
+        final_image = torch.cat(output_images, dim=0)
+        width = final_image.shape[2]
+        height = final_image.shape[1]
+        
+        return (final_image, width, height)
 
 # Mask extractor node
 class AILab_MaskExtractor:
@@ -704,9 +744,12 @@ class AILab_MaskExtractor:
         return {
             "required": {
                 "image": ("IMAGE",),
+                "mode": (["extract_masked_area", "apply_mask", "invert_mask"], {"default": "extract_masked_area"}),
+                "background": (["Alpha", "original", "Color"], {"default": "Alpha", "tooltip": "Choose background type"}),
+                "background_color": ("COLOR", {"default": "#FFFFFF", "tooltip": "Choose background color (Alpha = transparent)"})
+            },
+            "optional": {
                 "mask": ("MASK",),
-                "mode": (["extract_masked_area", "apply_mask", "invert_mask"], {"default": "invert_mask"}),
-                "background": (["transparent", "black", "white", "original"], {"default": "transparent"})
             }
         }
 
@@ -736,8 +779,22 @@ class AILab_MaskExtractor:
             print(f"Error in _prepare_mask: {str(e)}")
             raise e
 
-    def extract_masked_area(self, image, mask, mode="extract_masked_area", background="transparent"):
+    def hex_to_rgb(self, hex_color):
+        hex_color = hex_color.lstrip('#')
+        r = int(hex_color[0:2], 16) / 255.0
+        g = int(hex_color[2:4], 16) / 255.0
+        b = int(hex_color[4:6], 16) / 255.0
+        return (r, g, b)
+
+    def extract_masked_area(self, image, mode="extract_masked_area", background="Alpha", background_color="#FFFFFF", mask=None):
         try:
+            if mask is None and image.shape[-1] == 4:
+                alpha = image[..., 3]
+                mask = 1.0 - alpha
+                image = image[..., :3]
+            elif mask is None:
+                mask = torch.ones((image.shape[0], image.shape[1], image.shape[2]), dtype=torch.float32)
+
             pil_image = tensor2pil(image)
             image_np = np.array(pil_image).astype(np.float32) / 255.0
             mask_np = self._prepare_mask(mask, image_np.shape)
@@ -745,7 +802,7 @@ class AILab_MaskExtractor:
             
             if mode == "extract_masked_area":
                 result_np = image_np * mask_np
-                if background == "transparent":
+                if background == "Alpha":
                     if pil_image.mode != "RGBA":
                         pil_image = pil_image.convert("RGBA")
                     result_rgba = np.zeros((*image_np.shape[:2], 4), dtype=np.float32)
@@ -753,16 +810,15 @@ class AILab_MaskExtractor:
                     result_rgba[:, :, 3] = mask_np[..., 0]
                     result_pil = Image.fromarray((result_rgba * 255).astype(np.uint8), mode="RGBA")
                     return (torch.from_numpy(np.array(result_pil).astype(np.float32) / 255.0).unsqueeze(0),)
-                elif background == "black":
-                    pass  # Already done with image_np * mask_np
-                elif background == "white":
-                    result_np = result_np + (1 - mask_np)
                 elif background == "original":
                     result_np = image_np * mask_np
+                elif background == "Color":
+                    r, g, b = self.hex_to_rgb(background_color)
+                    result_np = result_np + (1 - mask_np) * np.array([r, g, b])
             
             elif mode == "apply_mask":
                 result_np = image_np * mask_np
-                if background == "transparent":
+                if background == "Alpha":
                     if pil_image.mode != "RGBA":
                         pil_image = pil_image.convert("RGBA")
                     result_rgba = np.zeros((*image_np.shape[:2], 4), dtype=np.float32)
@@ -770,14 +826,15 @@ class AILab_MaskExtractor:
                     result_rgba[:, :, 3] = mask_np[..., 0]
                     result_pil = Image.fromarray((result_rgba * 255).astype(np.uint8), mode="RGBA")
                     return (torch.from_numpy(np.array(result_pil).astype(np.float32) / 255.0).unsqueeze(0),)
-                elif background == "white":
-                    result_np = result_np + (1 - mask_np)
                 elif background == "original":
                     result_np = image_np * mask_np + image_np * (1 - mask_np)
+                elif background == "Color":
+                    r, g, b = self.hex_to_rgb(background_color)
+                    result_np = result_np + (1 - mask_np) * np.array([r, g, b])
             
             elif mode == "invert_mask":
                 result_np = image_np * (1 - mask_np)
-                if background == "transparent":
+                if background == "Alpha":
                     if pil_image.mode != "RGBA":
                         pil_image = pil_image.convert("RGBA")
                     result_rgba = np.zeros((*image_np.shape[:2], 4), dtype=np.float32)
@@ -785,10 +842,11 @@ class AILab_MaskExtractor:
                     result_rgba[:, :, 3] = (1 - mask_np)[..., 0]
                     result_pil = Image.fromarray((result_rgba * 255).astype(np.uint8), mode="RGBA")
                     return (torch.from_numpy(np.array(result_pil).astype(np.float32) / 255.0).unsqueeze(0),)
-                elif background == "white":
-                    result_np = result_np + mask_np
                 elif background == "original":
                     result_np = image_np * (1 - mask_np) + image_np * mask_np
+                elif background == "Color":
+                    r, g, b = self.hex_to_rgb(background_color)
+                    result_np = result_np + mask_np * np.array([r, g, b])
             
             result_pil = Image.fromarray(np.clip(result_np * 255, 0, 255).astype(np.uint8))
             return (pil2tensor(result_pil),)
@@ -979,8 +1037,9 @@ class AILab_ICLoRAConcat:
             base_image = empty_image(object_image.shape[2], object_image.shape[1])
             base_mask = torch.full((1, object_image.shape[1], object_image.shape[2]), 1, dtype=torch.float32, device="cpu")
         elif base_image is not None and base_mask is None:
-            raise ValueError("base_mask is required when base_image is provided")
-
+            # raise ValueError("base_mask is required when base_image is provided")
+            base_mask = torch.full((1, object_image.shape[1], object_image.shape[2]), 1, dtype=torch.float32, device="cpu")
+            
         object_mask = ensure_mask_shape(object_mask)
         base_mask = ensure_mask_shape(base_mask)
 
@@ -1077,8 +1136,204 @@ class AILab_ICLoRAConcat:
         y = object_image.shape[1] if layout == 'top-bottom' else 0
 
         return (image, OBJECT_MASK, BASE_MASK, out_w, out_h, x, y)
-    
+
+class AILab_CropObject:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "optional": {
+                "image": ("IMAGE",),
+                "mask": ("MASK",),
+                "padding": ("INT", {
+                    "default": 0,
+                    "min": 0,
+                    "max": 256,
+                    "step": 1
+                }),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE", "MASK")
+    RETURN_NAMES = ("IMAGE", "MASK")
+    FUNCTION = "crop_object"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
+
+    def get_bbox_from_tensor(self, tensor, padding):
+        rows = torch.any(tensor > 0, dim=1)
+        cols = torch.any(tensor > 0, dim=0)
+        if not torch.any(rows) or not torch.any(cols):
+            return None
+        rmin, rmax = torch.where(rows)[0][[0, -1]]
+        cmin, cmax = torch.where(cols)[0][[0, -1]]
+        rmin = max(0, rmin - padding)
+        rmax = min(tensor.shape[0] - 1, rmax + padding)
+        cmin = max(0, cmin - padding)
+        cmax = min(tensor.shape[1] - 1, cmax + padding)
+        return rmin, rmax, cmin, cmax
+
+    def crop_object(self, image=None, mask=None, padding=0):
+        if mask is None and image is None:
+            raise ValueError("At least one of image or mask must be provided")
+        bbox = None
+        if mask is not None:
+            mask_tensor = mask.squeeze()
+            bbox = self.get_bbox_from_tensor(mask_tensor, padding)
+        elif image is not None and image.shape[-1] == 4:
+            alpha = image[0, :, :, 3]
+            bbox = self.get_bbox_from_tensor(alpha, padding)
+        if bbox is None:
+            return (image, mask)
+        rmin, rmax, cmin, cmax = bbox
+        if mask is not None:
+            cropped_mask = mask[:, rmin:rmax+1, cmin:cmax+1]
+        else:
+            if image is not None and image.shape[-1] == 4:
+                alpha = image[0, rmin:rmax+1, cmin:cmax+1, 3]
+                cropped_mask = alpha.unsqueeze(0)
+            else:
+                cropped_mask = None
+        if image is not None:
+            cropped_image = image[:, rmin:rmax+1, cmin:cmax+1, :]
+        else:
+            cropped_image = None
+        return (
+            cropped_image if image is not None else image,
+            cropped_mask if mask is not None else mask
+        )
+
+# Image Compare node
+class AILab_ImageCompare:
+    def __init__(self):
+        self.font_size = 20
+        self.padding = 10
+        self.bg_color = "white"
+        self.font_color = "black"
+        self.text_align = "center"
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "image1": ("IMAGE",),
+                "image2": ("IMAGE",),
+                "text1": ("STRING", {"default": "image 1"}),
+                "text2": ("STRING", {"default": "image 2"}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    FUNCTION = "generate"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
+
+    def get_font(self) -> ImageFont.FreeTypeFont:
+        try:
+            if os.name == 'nt':
+                return ImageFont.truetype("arial.ttf", self.font_size)
+            else:
+                return ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", self.font_size)
+        except:
+            base_font = ImageFont.load_default()
+            scale_factor = self.font_size / 10
+            return ImageFont.TransposedFont(base_font, scale=scale_factor)
+
+    def create_text_panel(self, width: int, text: str) -> Image.Image:
+        font = self.get_font()
+        
+        temp_img = Image.new('RGB', (width, self.font_size * 4), self.bg_color)
+        temp_draw = ImageDraw.Draw(temp_img)
+        
+        text_bbox = temp_draw.textbbox((0, self.font_size), text, font=font)
+        text_width = text_bbox[2] - text_bbox[0]
+        text_height = text_bbox[3] - text_bbox[1]
+        
+        final_height = int(text_height * 1.5)
+        panel = Image.new('RGB', (width, final_height), self.bg_color)
+        draw = ImageDraw.Draw(panel)
+        
+        x = (width - text_width) // 2
+        y = (final_height - text_height) // 2
+        
+        draw.text((x, y), text, font=font, fill=self.font_color)
+        return panel
+
+    def process_image(self, img: Image.Image, target_size: tuple) -> Image.Image:
+        target_width, target_height = target_size
+        img_width, img_height = img.size
+        
+        scale_width = target_width / img_width
+        scale_height = target_height / img_height
+        scale = max(scale_width, scale_height)
+        
+        new_width = int(img_width * scale)
+        new_height = int(img_height * scale)
+        
+        resized = resize_image(img, new_width, new_height)
+        left = (new_width - target_width) // 2
+        top = (new_height - target_height) // 2
+        right = left + target_width
+        bottom = top + target_height
+        
+        return resized.crop((left, top, right, bottom))
+
+    def generate(self, image1, image2, text1, text2):
+        img1 = tensor2pil(image1)
+        img2 = tensor2pil(image2)
+        
+        if img2.size != img1.size:
+            img2 = resize_image(img2, img1.size[0], img1.size[1])
+        
+        panel1 = None if not text1.strip() else self.create_text_panel(img1.width, text1)
+        panel2 = None if not text2.strip() else self.create_text_panel(img2.width, text2)
+        
+        total_width = img1.width + img2.width + self.padding * 3
+        img_height = img1.height
+        panel_height = (panel1.height if panel1 else 0) if (panel1 or panel2) else 0
+        total_height = img_height + (panel_height + self.padding if panel_height > 0 else 0) + self.padding * 2
+        
+        result = Image.new('RGB', (total_width, total_height), self.bg_color)
+
+        x1 = self.padding
+        x2 = x1 + img1.width + self.padding
+        y = self.padding
+        
+        result.paste(img1, (x1, y))
+        result.paste(img2, (x2, y))
+        
+        if panel1:
+            result.paste(panel1, (x1, y + img_height + self.padding))
+        if panel2:
+            result.paste(panel2, (x2, y + img_height + self.padding))
+        
+        return (pil2tensor(result),)
+
+# Color Input node
+class AILab_ColorInput:
+    @classmethod
+    def INPUT_TYPES(self):
+        return {
+            "required": {
+                "preset": (list(COLOR_PRESETS.keys()),),
+                "color": ("STRING", {"default": "", "placeholder": "Enter color code (e.g. #FF0000 or #F00)"}),
+            },
+        }
+
+    RETURN_TYPES = ("COLOR",)
+    RETURN_NAMES = ("COLOR",)
+    FUNCTION = 'get_color'
+    CATEGORY = '🧪AILab/🛠️UTIL/🔄IO'
+
+    def get_color(self, preset, color):
+        if not color:
+            return (COLOR_PRESETS[preset],)
             
+        try:
+            fixed_color = fix_color_format(color)
+            if not all(c in '0123456789ABCDEFabcdef' for c in fixed_color[1:]):
+                raise ValueError(f"Invalid hex characters in {color}")
+            return (fixed_color,)
+        except Exception as e:
+            raise RuntimeError(f"Invalid color format: {color}. Please use format like #FF0000 or #F00")
+
 # Node class mappings
 NODE_CLASS_MAPPINGS = {
     "AILab_LoadImage": AILab_LoadImage,
@@ -1093,12 +1348,15 @@ NODE_CLASS_MAPPINGS = {
     "AILab_ImageStitch": AILab_ImageStitch,
     "AILab_ImageCrop": AILab_ImageCrop,
     "AILab_ICLoRAConcat": AILab_ICLoRAConcat,
+    "AILab_CropObject": AILab_CropObject,
+    "AILab_ImageCompare": AILab_ImageCompare,
+    "AILab_ColorInput": AILab_ColorInput
 }
 
 # Node display name mappings
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AILab_LoadImage": "Load Image (RMBG) 🖼️",
-    "AILab_Preview": "Preview (RMBG) 🖼️🎭",
+    "AILab_Preview": "Image / Mask Preview (RMBG) 🖼️🎭",
     "AILab_ImagePreview": "Image Preview (RMBG) 🖼️",
     "AILab_MaskPreview": "Mask Preview (RMBG) 🎭",
     "AILab_ImageMaskConvert": "Image/Mask Converter (RMBG) 🖼️🎭",
@@ -1109,4 +1367,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "AILab_ImageStitch": "Image Stitch (RMBG) 🖼️",
     "AILab_ImageCrop": "Image Crop (RMBG) 🖼️",
     "AILab_ICLoRAConcat": "IC LoRA Concat (RMBG) 🖼️🎭",
+    "AILab_CropObject": "Crop To Object (RMBG) 🖼️🎭",
+    "AILab_ImageCompare": "Image Compare (RMBG) 🖼️🖼️",
+    "AILab_ColorInput": "Color Input (RMBG) 🎨"
 }

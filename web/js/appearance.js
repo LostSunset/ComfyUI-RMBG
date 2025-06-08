@@ -1,14 +1,15 @@
 import { app } from "/scripts/app.js";
 
 const COLOR_THEMES = {
-    segment: { nodeColor: "#222e40", nodeBgColor: "#364254", width: 320},
-    utility: { nodeColor: "#2e3e57", nodeBgColor: "#4b5b73"},
+    segment: { nodeColor: "#222e40", nodeBgColor: "#364254", width: 340},
+    utility: { nodeColor: "#2e3e57", nodeBgColor: "#4b5b73", width: 320},
 };
 
 const NODE_COLORS = {
     // Segmentation nodes
     "RMBG": "segment",
     "Segment": "segment",
+    "SegmentV2": "segment",
     "FaceSegment": "segment",
     "ClothesSegment": "segment",
     "BodySegment": "segment",
@@ -29,9 +30,10 @@ const NODE_COLORS = {
     "AILab_MaskExtractor": "utility",
     "AILab_ImageStitch": "utility",
     "AILab_ImageCrop": "utility",
-    "AILab_ImageCropObject": "utility",
     "AILab_ICLoRAConcat": "utility",
+    "AILab_CropObject": "utility",
     "AILab_ImageCompare": "utility",
+    "AILab_ColorInput": "utility",
 };
 
 function setNodeColors(node, theme) {

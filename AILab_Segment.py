@@ -373,5 +373,5 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "Segment": "Segment (RMBG)"
+    "Segment": "Segmentation V1 (RMBG)"
 }

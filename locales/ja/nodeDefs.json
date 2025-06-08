@@ -193,7 +193,25 @@
     }
   },
   "Segment": {
-    "display_name": "局所セグメンテーション (RMBG)",
+    "display_name": "局所セグメンテーション V1 (RMBG)",
+    "inputs": {
+      "image": { "name": "画像" },
+      "prompt": { "name": "プロンプト" },
+      "sam_model": { "name": "SAMモデル" },
+      "dino_model": { "name": "DINOモデル" },
+      "threshold": { "name": "しきい値" },
+      "mask_blur": { "name": "マスクぼかし" },
+      "mask_offset": { "name": "マスクオフセット" },
+      "invert_output": { "name": "出力を反転" },
+      "background": { "name": "背景" },
+      "background_color": { "name": "背景色" }
+    },
+    "outputs": {
+      "2": { "name": "マスク画像" }
+    }
+  },
+  "SegmentV2": {
+    "display_name": "局所セグメンテーション V2 (RMBG)",
     "inputs": {
       "image": { "name": "画像" },
       "prompt": { "name": "プロンプト" },
@@ -359,6 +377,21 @@
     },
     "outputs": {
       "0": { "name": "画像" }
+    }
+  },
+  "AILab_ColorInput": {
+    "display_name": "色入力 (RMBG) 🎨",
+    "inputs": {
+      "color": { "name": "色" }
+    }
+  },
+  "AILab_ObjectRemover": {
+    "display_name": "オブジェクトを削除 (RMBG) 🖼️🎭",
+    "inputs": {
+      "images": { "name": "画像" },
+      "masks": { "name": "マスク" },
+      "removal_strength": { "name": "削除強度" },
+      "edge_smoothness": { "name": "エッジの滑らかさ" }
     }
   }
 }
