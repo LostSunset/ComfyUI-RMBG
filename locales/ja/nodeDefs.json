@@ -385,13 +385,35 @@
       "color": { "name": "色" }
     }
   },
-  "AILab_ObjectRemover": {
+  "AILab_LamaRemover": {
     "display_name": "オブジェクトを削除 (RMBG) 🖼️🎭",
     "inputs": {
       "images": { "name": "画像" },
       "masks": { "name": "マスク" },
       "removal_strength": { "name": "削除強度" },
       "edge_smoothness": { "name": "エッジの滑らかさ" }
+    }
+  },
+  "AILab_ImageMaskResize": {
+    "display_name": "画像/マスクリサイズ (RMBG) 🖼️🎭",
+    "inputs": {
+      "image": { "name": "画像" },
+      "mask": { "name": "マスク" },
+      "width": { "name": "幅" },
+      "height": { "name": "高さ" },
+      "scale_by": { "name": "スケール比" },
+      "upscale_method": { "name": "アップスケール方法" },
+      "resize_mode": { "name": "リサイズモード" },
+      "pad_color": { "name": "パディング色" },
+      "crop_position": { "name": "クロップ位置" },
+      "divisible_by": { "name": "割り切れる" },
+      "device": { "name": "デバイス" }
+    },
+    "outputs": {
+      "0": { "name": "画像" },
+      "1": { "name": "マスク" },
+      "2": { "name": "幅" },
+      "3": { "name": "高さ" }
     }
   }
 }

@@ -1,8 +1,8 @@
 import { app } from "/scripts/app.js";
 
 const COLOR_THEMES = {
-    segment: { nodeColor: "#222e40", nodeBgColor: "#364254", width: 340},
-    utility: { nodeColor: "#2e3e57", nodeBgColor: "#4b5b73", width: 320},
+    segment: { nodeColor: "#222e40", nodeBgColor: "#364254", width: 340 },
+    utility: { nodeColor: "#2e3e57", nodeBgColor: "#4b5b73", width: 320 },
 };
 
 const NODE_COLORS = {
@@ -26,6 +26,7 @@ const NODE_COLORS = {
     "AILab_ImageMaskConvert": "utility",
     "AILab_MaskEnhancer": "utility",
     "AILab_MaskCombiner": "utility",
+    "AILab_MaskOverlay": "utility",
     "AILab_ImageCombiner": "utility",
     "AILab_MaskExtractor": "utility",
     "AILab_ImageStitch": "utility",
@@ -34,6 +35,8 @@ const NODE_COLORS = {
     "AILab_CropObject": "utility",
     "AILab_ImageCompare": "utility",
     "AILab_ColorInput": "utility",
+    "AILab_ImageMaskResize": "utility",
+    "AILab_LamaRemover": "utility",
 };
 
 function setNodeColors(node, theme) {

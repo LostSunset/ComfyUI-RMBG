@@ -1,4 +1,4 @@
-# ComfyUI-RMBG v2.4.0
+# ComfyUI-RMBG v2.5.0
 #
 # This node facilitates background removal using various models, including RMBG-2.0, INSPYRENET, BEN, BEN2, and BIREFNET-HR.
 # It utilizes advanced deep learning techniques to process images and generate accurate masks for background removal.
@@ -11,11 +11,11 @@
 #    - Preview: A universal preview tool for both images and masks.
 #    - ImagePreview: A specialized preview tool for images.
 #    - MaskPreview: A specialized preview tool for masks.
+# 
+# 2. Image and Mask Processing Nodes:
+#    - MaskOverlay: A node for overlaying a mask on an image.
 #    - LoadImage: A node for loading images with some Frequently used options.
-#
-# 2. Conversion Node:
 #    - ImageMaskConvert: Converts between image and mask formats and extracts masks from image channels.
-#    - ColorInput: A node for inputting colors in various formats.
 #
 # 3. Mask Processing Nodes:
 #    - MaskEnhancer: Refines masks through techniques such as blur, smoothing, expansion/contraction, and hole filling.
@@ -28,6 +28,9 @@
 #    - ICLoRAConcat: Concatenates images with a mask using IC LoRA.
 #    - CropObject: Crops an image to the object in the image.
 #    - ImageCompare: Compares two images and returns a mask of the differences.
+#
+# 5. Input Nodes:
+#    - ColorInput: A node for inputting colors in various formats.
 
 # These nodes are crafted to streamline common image and mask operations within ComfyUI workflows.
 
@@ -42,6 +45,9 @@ from nodes import MAX_RESOLUTION
 from PIL import Image, ImageFilter, ImageOps, ImageSequence, ImageChops, ImageDraw, ImageFont
 import torchvision.transforms.functional as T
 from comfy.utils import common_upscale
+import torch.nn.functional as F
+from comfy import model_management
+from comfy_extras.nodes_mask import ImageCompositeMasked
 from scipy import ndimage
 
 # Utility functions
@@ -212,6 +218,91 @@ class AILab_Preview(AILab_PreviewBase):
         return {
             "ui": {"images": results},
             "result": (image if image is not None else None, mask if mask is not None else None)
+        }
+
+# Mask overlay node
+class AILab_MaskOverlay(AILab_PreviewBase):
+    def __init__(self):
+        super().__init__()
+        self.prefix_append = "_preview_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
+        self.compress_level = 4
+
+    @classmethod
+    def INPUT_TYPES(s):
+        tooltips = {
+            "mask_opacity": "Control mask opacity (0.0-1.0)",
+            "mask_color": "Color for the mask overlay",
+            "image": "Input image (RGBA will be converted to RGB)",
+            "mask": "Input mask"
+        }
+        
+        return {
+            "required": {
+                "mask_opacity": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": tooltips["mask_opacity"]}),
+                "mask_color": ("COLOR", {"default": "#0000FF", "tooltip": tooltips["mask_color"]}),
+             },
+            "optional": {
+                "image": ("IMAGE", {"tooltip": tooltips["image"]}),
+                "mask": ("MASK", {"tooltip": tooltips["mask"]}),                
+            },
+            "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+        }
+    RETURN_TYPES = ("IMAGE", "MASK")
+    RETURN_NAMES = ("IMAGE", "MASK")
+    FUNCTION = "execute"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
+    OUTPUT_NODE = True
+
+    def hex_to_rgb(self, hex_color):
+        """Convert hex color code to RGB values (0-1 range)"""
+        hex_color = hex_color.lstrip('#')
+        r = int(hex_color[0:2], 16) / 255.0
+        g = int(hex_color[2:4], 16) / 255.0
+        b = int(hex_color[4:6], 16) / 255.0
+        return r, g, b
+
+    def ensure_rgb(self, image):
+        """Ensure image is RGB format, convert from RGBA if needed"""
+        if image.shape[-1] == 4:
+            rgb_image = image[..., :3]
+            return rgb_image
+        return image
+
+    def execute(self, mask_opacity, mask_color, filename_prefix="ComfyUI", image=None, mask=None, prompt=None, extra_pnginfo=None):
+        """Execute image and mask composition"""
+        if image is not None:
+            image = self.ensure_rgb(image)
+        
+        preview = None
+        
+        if mask is not None and image is None:
+            preview = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3)
+        elif mask is None and image is not None:
+            preview = image
+        elif mask is not None and image is not None:
+            mask_adjusted = mask * mask_opacity
+            mask_image = mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])).movedim(1, -1).expand(-1, -1, -1, 3).clone()
+
+            r, g, b = self.hex_to_rgb(mask_color)
+            mask_image[:, :, :, 0] = r
+            mask_image[:, :, :, 1] = g
+            mask_image[:, :, :, 2] = b
+            
+            preview, = ImageCompositeMasked.composite(self, image, mask_image, 0, 0, True, mask_adjusted)
+        
+        if preview is None:
+            preview = empty_image(64, 64)
+            
+        if mask is None:
+            mask = torch.zeros((1, 64, 64))
+
+        # Save preview for display
+        result = self.save_image(preview, filename_prefix, prompt, extra_pnginfo)
+        
+        # Return both the image and mask for further processing
+        return {
+            "ui": result["ui"] if "ui" in result else {},
+            "result": (preview, mask)
         }
 
 # Mask preview node
@@ -1334,10 +1425,222 @@ class AILab_ColorInput:
         except Exception as e:
             raise RuntimeError(f"Invalid color format: {color}. Please use format like #FF0000 or #F00")
 
+# Image Mask Resize node
+class AILab_ImageMaskResize:
+    upscale_methods = ["nearest-exact", "bilinear", "area", "bicubic", "lanczos"]
+    @classmethod
+    def INPUT_TYPES(s):
+        tooltips = {
+            "image": "Input image to resize",
+            "width": "Target width in pixels (0 to keep original width)",
+            "height": "Target height in pixels (0 to keep original height)",
+            "scale_by": "Scale image by this factor (ignored if width or height > 0)",
+            "upscale_method": "Method used for resizing the image",
+            "resize_mode": "How to handle aspect ratio: stretch (ignore ratio), resize (maintain ratio by scaling), pad/pad_edge (maintain ratio with padding), crop (maintain ratio by cropping)",
+            "pad_color": "Color to use for padding when resize_mode is set to pad",
+            "crop_position": "Position to crop from when resize_mode is set to crop",
+            "divisible_by": "Make dimensions divisible by this value (useful for some models that require specific dimensions)",
+            "mask": "Optional mask to resize along with the image",
+            "device": "Device to perform resizing on (CPU or GPU)"
+        }
+        
+        return {
+            "required": {
+                "image": ("IMAGE", {"tooltip": tooltips["image"]}),
+                "width": ("INT", { "default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1, "tooltip": tooltips["width"] }),
+                "height": ("INT", { "default": 0, "min": 0, "max": MAX_RESOLUTION, "step": 1, "tooltip": tooltips["height"] }),
+                "scale_by": ("FLOAT", { "default": 1.0, "min": 0.01, "max": 8.0, "step": 0.01, "tooltip": tooltips["scale_by"] }),
+                "upscale_method": (s.upscale_methods, {"tooltip": tooltips["upscale_method"]}),
+                "resize_mode": (["stretch", "resize", "pad", "pad_edge", "crop"], { "default": "stretch", "tooltip": tooltips["resize_mode"] }),
+                "pad_color": ("COLOR", { "default": "#FFFFFF", "tooltip": tooltips["pad_color"] }),
+                "crop_position": (["center", "top", "bottom", "left", "right"], { "default": "center", "tooltip": tooltips["crop_position"] }),
+                "divisible_by": ("INT", { "default": 2, "min": 0, "max": 512, "step": 1, "tooltip": tooltips["divisible_by"] }),
+            },
+            "optional" : {
+                "mask": ("MASK", {"tooltip": tooltips["mask"]}),
+                "device": (["cpu", "gpu"], {"default": "cpu", "tooltip": tooltips["device"]}),
+            }
+        }
+
+    RETURN_TYPES = ("IMAGE", "MASK", "INT", "INT",)
+    RETURN_NAMES = ("IMAGE", "MASK", "WIDTH", "HEIGHT",)
+    FUNCTION = "resize"
+    CATEGORY = "🧪AILab/🖼️IMAGE"
+
+    def resize(self, image, width, height, scale_by, upscale_method, resize_mode, pad_color, crop_position, divisible_by, device="cpu", mask=None):
+        B, H, W, C = image.shape
+
+        if device == "gpu":
+            if upscale_method == "lanczos":
+                raise Exception("Lanczos is not supported on the GPU")
+            device = model_management.get_torch_device()
+        else:
+            device = torch.device("cpu")
+
+        if width == 0 and height == 0:
+            if scale_by != 1.0:
+                width = int(W * scale_by)
+                height = int(H * scale_by)
+            else:
+                width = W
+                height = H
+        elif width == 0:
+            width = W
+        elif height == 0:
+            height = H
+
+        new_width = width
+        new_height = height
+        
+        if resize_mode == "resize" or resize_mode.startswith("pad"):
+            if width != W or height != H:
+                if width == W and height != H:
+                    ratio = height / H
+                    new_width = round(W * ratio)
+                    new_height = height
+                elif height == H and width != W:
+                    ratio = width / W
+                    new_height = round(H * ratio)
+                    new_width = width
+                else:
+                    ratio = min(width / W, height / H)
+                    new_width = round(W * ratio)
+                    new_height = round(H * ratio)
+
+            if resize_mode.startswith("pad"):
+                pad_left = (width - new_width) // 2
+                pad_right = width - new_width - pad_left
+                pad_top = (height - new_height) // 2
+                pad_bottom = height - new_height - pad_top
+
+            width = new_width
+            height = new_height
+
+        width = max(1, width)
+        height = max(1, height)
+        
+        if divisible_by > 1:
+            width = width - (width % divisible_by) if width >= divisible_by else divisible_by
+            height = height - (height % divisible_by) if height >= divisible_by else divisible_by
+
+        out_image = image.clone().to(device)
+        if mask is not None:
+            out_mask = mask.clone().to(device)
+        
+        if resize_mode == "crop":
+            old_width = W
+            old_height = H
+            old_aspect = old_width / old_height
+            new_aspect = width / height
+            
+            if old_aspect > new_aspect:
+                crop_w = round(old_height * new_aspect)
+                crop_h = old_height
+            else:
+                crop_w = old_width
+                crop_h = round(old_width / new_aspect)
+            
+            if crop_position == "center":
+                x = (old_width - crop_w) // 2
+                y = (old_height - crop_h) // 2
+            elif crop_position == "top":
+                x = (old_width - crop_w) // 2
+                y = 0
+            elif crop_position == "bottom":
+                x = (old_width - crop_w) // 2
+                y = old_height - crop_h
+            elif crop_position == "left":
+                x = 0
+                y = (old_height - crop_h) // 2
+            elif crop_position == "right":
+                x = old_width - crop_w
+                y = (old_height - crop_h) // 2
+            
+            out_image = out_image.narrow(-2, x, crop_w).narrow(-3, y, crop_h)
+            if mask is not None:
+                out_mask = out_mask.narrow(-1, x, crop_w).narrow(-2, y, crop_h)
+        
+        if (width != W or height != H) or (width != out_image.shape[2] or height != out_image.shape[1]):
+            out_image = common_upscale(out_image.movedim(-1,1), width, height, upscale_method, crop="disabled").movedim(1,-1)
+
+            if mask is not None:
+                if upscale_method == "lanczos":
+                    out_mask = common_upscale(out_mask.unsqueeze(1).repeat(1, 3, 1, 1), width, height, upscale_method, crop="disabled").movedim(1,-1)[:, :, :, 0]
+                else:
+                    out_mask = common_upscale(out_mask.unsqueeze(1), width, height, upscale_method, crop="disabled").squeeze(1)
+            
+        if resize_mode.startswith("pad"):
+            if pad_left > 0 or pad_right > 0 or pad_top > 0 or pad_bottom > 0:
+                padded_width = width + pad_left + pad_right
+                padded_height = height + pad_top + pad_bottom
+                if divisible_by > 1:
+                    width_remainder = padded_width % divisible_by
+                    height_remainder = padded_height % divisible_by
+                    if width_remainder > 0:
+                        extra_width = divisible_by - width_remainder
+                        pad_right += extra_width
+                    if height_remainder > 0:
+                        extra_height = divisible_by - height_remainder
+                        pad_bottom += extra_height
+                
+                hex_color = fix_color_format(pad_color)
+                r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (1, 3, 5))
+                color = f"{r}, {g}, {b}"
+                
+                B, H, W, C = out_image.shape
+                padded_width = W + pad_left + pad_right
+                padded_height = H + pad_top + pad_bottom
+                
+                bg_color = [int(x.strip())/255.0 for x in color.split(",")]
+                if len(bg_color) == 1:
+                    bg_color = bg_color * 3
+                bg_color = torch.tensor(bg_color, dtype=out_image.dtype, device=out_image.device)
+                
+                padded_image = torch.zeros((B, padded_height, padded_width, C), dtype=out_image.dtype, device=out_image.device)
+                
+                for b in range(B):
+                    if resize_mode == "pad_edge":
+                        top_edge = out_image[b, 0, :, :]
+                        bottom_edge = out_image[b, H-1, :, :]
+                        left_edge = out_image[b, :, 0, :]
+                        right_edge = out_image[b, :, W-1, :]
+
+                        padded_image[b, :pad_top, :, :] = top_edge.mean(dim=0)
+                        padded_image[b, pad_top+H:, :, :] = bottom_edge.mean(dim=0)
+                        padded_image[b, :, :pad_left, :] = left_edge.mean(dim=0)
+                        padded_image[b, :, pad_left+W:, :] = right_edge.mean(dim=0)
+                    else:
+                        padded_image[b, :, :, :] = bg_color.unsqueeze(0).unsqueeze(0)
+                    
+                    padded_image[b, pad_top:pad_top+H, pad_left:pad_left+W, :] = out_image[b]
+                
+                if mask is not None:
+                    padded_mask = F.pad(
+                        out_mask, 
+                        (pad_left, pad_right, pad_top, pad_bottom),
+                        mode='constant',
+                        value=0
+                    )
+                    out_mask = padded_mask
+                
+                out_image = padded_image
+
+        final_width = out_image.shape[2]
+        final_height = out_image.shape[1]
+        
+        # 创建默认掩码（如果没有提供）
+        if mask is None:
+            out_mask = torch.zeros((B, final_height, final_width), device=torch.device("cpu"), dtype=torch.float32)
+        else:
+            out_mask = out_mask.cpu()
+            
+        return (out_image.cpu(), out_mask, final_width, final_height)
+
 # Node class mappings
 NODE_CLASS_MAPPINGS = {
     "AILab_LoadImage": AILab_LoadImage,
     "AILab_Preview": AILab_Preview,
+    "AILab_MaskOverlay": AILab_MaskOverlay,
     "AILab_ImagePreview": AILab_ImagePreview,
     "AILab_MaskPreview": AILab_MaskPreview,
     "AILab_ImageMaskConvert": AILab_ImageMaskConvert,
@@ -1350,13 +1653,15 @@ NODE_CLASS_MAPPINGS = {
     "AILab_ICLoRAConcat": AILab_ICLoRAConcat,
     "AILab_CropObject": AILab_CropObject,
     "AILab_ImageCompare": AILab_ImageCompare,
-    "AILab_ColorInput": AILab_ColorInput
+    "AILab_ColorInput": AILab_ColorInput,
+    "AILab_ImageMaskResize": AILab_ImageMaskResize
 }
 
 # Node display name mappings
 NODE_DISPLAY_NAME_MAPPINGS = {
     "AILab_LoadImage": "Load Image (RMBG) 🖼️",
     "AILab_Preview": "Image / Mask Preview (RMBG) 🖼️🎭",
+    "AILab_MaskOverlay": "Mask Overlay (RMBG) 🖼️🎭",
     "AILab_ImagePreview": "Image Preview (RMBG) 🖼️",
     "AILab_MaskPreview": "Mask Preview (RMBG) 🎭",
     "AILab_ImageMaskConvert": "Image/Mask Converter (RMBG) 🖼️🎭",
@@ -1369,5 +1674,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "AILab_ICLoRAConcat": "IC LoRA Concat (RMBG) 🖼️🎭",
     "AILab_CropObject": "Crop To Object (RMBG) 🖼️🎭",
     "AILab_ImageCompare": "Image Compare (RMBG) 🖼️🖼️",
-    "AILab_ColorInput": "Color Input (RMBG) 🎨"
+    "AILab_ColorInput": "Color Input (RMBG) 🎨",
+    "AILab_ImageMaskResize": "Image Mask Resize (RMBG) 🖼️🎭"
 }

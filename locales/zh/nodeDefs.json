@@ -385,13 +385,35 @@
      "color": { "name": "颜色" }
    }
  },
- "AILab_ObjectRemover": {
+ "AILab_LamaRemover": {
    "display_name": "对象去除 (RMBG) 🖼️🎭",
    "inputs": {
      "images": { "name": "图像" },
      "masks": { "name": "遮罩" },
      "removal_strength": { "name": "去除强度" },
      "edge_smoothness": { "name": "边缘平滑" }
+   }
+ },
+ "AILab_ImageMaskResize": {
+   "display_name": "图像/遮罩调整大小 (RMBG) 🖼️🎭",
+   "inputs": {
+     "image": { "name": "图像" },
+     "mask": { "name": "遮罩" },
+     "width": { "name": "宽度" },
+     "height": { "name": "高度" },
+     "scale_by": { "name": "缩放比例" },
+     "upscale_method": { "name": "放大方法" },
+     "resize_mode": { "name": "调整大小模式" },
+     "pad_color": { "name": "填充颜色" },
+     "crop_position": { "name": "裁剪位置" },
+     "divisible_by": { "name": "可整除" },
+     "device": { "name": "设备" }
+   },
+   "outputs": {
+     "0": { "name": "图像" },
+     "1": { "name": "遮罩" },
+     "2": { "name": "宽度" },
+     "3": { "name": "高度" }
    }
  }
 }

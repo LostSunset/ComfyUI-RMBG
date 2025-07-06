@@ -385,13 +385,35 @@
       "color": { "name": "Couleur" }
     }
   },
-  "AILab_ObjectRemover": {
+  "AILab_LamaRemover": {
     "display_name": "Supprimer l'objet (RMBG) 🖼️🎭",
     "inputs": {
       "images": { "name": "Images" },
       "masks": { "name": "Masques" },
       "removal_strength": { "name": "Intensité de suppression" },
       "edge_smoothness": { "name": "Lissage des bords" }
+    }
+  },
+  "AILab_ImageMaskResize": {
+    "display_name": "Redimensionner l'image/masque (RMBG) 🖼️🎭",
+    "inputs": {
+      "image": { "name": "Image" },
+      "mask": { "name": "Masque" },
+      "width": { "name": "Largeur" },
+      "height": { "name": "Hauteur" },
+      "scale_by": { "name": "Échelle" },
+      "upscale_method": { "name": "Méthode de redimensionnement" },
+      "resize_mode": { "name": "Mode de redimensionnement" },
+      "pad_color": { "name": "Couleur de remplissage" },
+      "crop_position": { "name": "Position de découpe" },
+      "divisible_by": { "name": "Divisible par" },
+      "device": { "name": "Appareil" }
+    },
+    "outputs": {
+      "0": { "name": "IMAGE" },
+      "1": { "name": "MASK" },
+      "2": { "name": "LARGEUR" },
+      "3": { "name": "HAUTEUR" }
     }
   }
 }

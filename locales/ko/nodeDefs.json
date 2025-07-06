@@ -385,7 +385,7 @@
       "color": { "name": "색상" }
     }
   },
-  "AILab_ObjectRemover": {
+  "AILab_LamaRemover": {
     "display_name": "객체 제거 (RMBG) 🖼️🎭",
     "inputs": {
       "images": { "name": "이미지" },
@@ -393,5 +393,27 @@
       "removal_strength": { "name": "제거 강도" },
       "edge_smoothness": { "name": "가장자리 부드러움" }
     }
+  },
+  "AILab_ImageMaskResize": {
+    "display_name": "이미지/마스크 리사이즈 (RMBG) 🖼️🎭",
+    "inputs": {
+      "image": { "name": "이미지" },
+      "mask": { "name": "마스크" },
+      "width": { "name": "너비" },
+      "height": { "name": "높이" },
+      "scale_by": { "name": "스케일 비율" },
+      "upscale_method": { "name": "업스케일 방법" },
+      "resize_mode": { "name": "리사이즈 모드" },
+      "pad_color": { "name": "패딩 색상" },
+      "crop_position": { "name": "크롭 위치" },
+      "divisible_by": { "name": "나누어지는" },
+      "device": { "name": "장치" }
+    },
+    "outputs": {
+      "0": { "name": "이미지" },
+      "1": { "name": "마스크" },
+      "2": { "name": "너비" },
+      "3": { "name": "높이" }
+    }
   }
-}
+} 

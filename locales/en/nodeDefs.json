@@ -386,13 +386,35 @@
       "color": { "name": "Color" }
     }
   },
-  "AILab_ObjectRemover": {
-    "display_name": "Object Remover (RMBG) 🖼️🎭",
+  "AILab_LamaRemover": {
+    "display_name": "Lama Remover (RMBG) 🖼️🎭",
     "inputs": {
       "images": { "name": "Images" },
       "masks": { "name": "Masks" },
       "removal_strength": { "name": "Removal Strength" },
       "edge_smoothness": { "name": "Edge Smoothness" }
+    }
+  },
+  "AILab_ImageMaskResize": {
+    "display_name": "Image Mask Resize (RMBG) 🖼️🎭",
+    "inputs": {
+      "image": { "name": "Image" },
+      "mask": { "name": "Mask" },
+      "width": { "name": "Width" },
+      "height": { "name": "Height" },
+      "scale_by": { "name": "Scale By" },
+      "upscale_method": { "name": "Upscale Method" },
+      "resize_mode": { "name": "Resize Mode" },
+      "pad_color": { "name": "Pad Color" },
+      "crop_position": { "name": "Crop Position" },
+      "divisible_by": { "name": "Divisible By" },
+      "device": { "name": "Device" }
+    },
+    "outputs": {
+      "0": { "name": "IMAGE" },
+      "1": { "name": "MASK" },
+      "2": { "name": "WIDTH" },
+      "3": { "name": "HEIGHT" }
     }
   }
 } 

@@ -1,4 +1,13 @@
 # ComfyUI-RMBG Update Log
+## V2.5.0 (2005/07/01)
+- Introduced the `MaskOverlay` node, enabling mask overlays directly on images.
+![mask_overlay](https://github.com/user-attachments/assets/d82abb5a-9702-4d21-a5cf-e6776c7b4c06)
+- Added `ImageMaskResize` node for resizing image and mask with various options.
+![image_mask_resize](https://github.com/user-attachments/assets/32afcd17-29a2-42bf-a31c-9ea2b604d5df)
+- Implemented the LamaRemover node for object removal using the LaMa model. For a more advanced object removal solution, see our companion project: [ComfyUI-MiniMax-Remover](https://github.com/1038lab/ComfyUI-MiniMax-Remover)
+![lamaRemover](https://github.com/user-attachments/assets/7230b39c-c443-44bb-bc6e-3e9ecfd03a3d)
+- Added 2 BiRefNet models: `BiRefNet_lite-matting` and `BiRefNet_dynamic`
+- Added batch image support for `Segment_v1` and `Segment_V2` nodes
 
 ## v2.4.0 (2025/06/01)
 - Added `CropObject` node for cropping to object based on mask or alpha channel **(User request [#61](https://github.com/1038lab/ComfyUI-RMBG/issues/61) )**
