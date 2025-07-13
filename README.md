@@ -3,6 +3,11 @@
 A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, BEN2, BiRefNet-HR, SAM, and GroundingDINO.
 
 ## News & Updates
+- **2025/07/11**: Update ComfyUI-RMBG to **v2.5.2** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v252-20250711) )
+  
+![V 2 5 2](https://github.com/user-attachments/assets/4b41887a-0d8a-4a5a-9128-1e866f410b60)
+
+- **2025/07/07**: Update ComfyUI-RMBG to **v2.5.1** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v251-20250707) )
 - **2025/07/01**: Update ComfyUI-RMBG to **v2.5.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v250-20250701) )
 
 ![mask_overlay](https://github.com/user-attachments/assets/d82abb5a-9702-4d21-a5cf-e6776c7b4c06)
@@ -327,6 +332,16 @@ GroundingDINO is a model for text-prompted object detection and segmentation, of
 - Clothes Segment: https://huggingface.co/mattmdjaga/segformer_b2_clothes
 
 - Created by: [AILab](https://github.com/1038lab)
+
+## Star History
+
+<a href="https://www.star-history.com/#1038lab/comfyui-rmbg&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=1038lab/comfyui-rmbg&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=1038lab/comfyui-rmbg&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=1038lab/comfyui-rmbg&type=Date" />
+ </picture>
+</a>
 
 If this custom node helps you or you like my work, please give me ⭐ on this repo! It's a great encouragement for my efforts!
 
