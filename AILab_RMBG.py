@@ -633,7 +633,8 @@ class RMBG:
                         else:
                             raise ValueError("Invalid color format")
                         return (r, g, b, a)
-                    rgba = hex_to_rgba(params["background_color"])
+                    background_color = params.get("background_color", "#222222")
+                    rgba = hex_to_rgba(background_color)
                     bg_image = Image.new('RGBA', orig_image.size, rgba)
                     composite_image = Image.alpha_composite(bg_image, foreground)
                     processed_images.append(pil2tensor(composite_image.convert("RGB")))

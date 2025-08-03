@@ -3,8 +3,14 @@
 A ComfyUI custom node designed for advanced image background removal and object, face, clothes, and fashion segmentation, utilizing multiple models including RMBG-2.0, INSPYRENET, BEN, BEN2, BiRefNet-HR, SAM, and GroundingDINO.
 
 ## News & Updates
-- **2025/07/15**: Update ComfyUI-RMBG to **v2.6.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v260-20250715) )
+- **2025/07/27**: Update ComfyUI-RMBG to **v2.7.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v270-20250727) )
+![v2.7.0_ImageStitch](https://github.com/user-attachments/assets/3f31fe25-a453-4f86-bf3d-dc12a8affd39)
 
+  - Enhanced LoadImage into three distinct nodes to meet different needs, all supporting direct image loading from local paths or URLs
+  - Completely redesigned ImageStitch node compatible with ComfyUI's native functionality
+  - Fixed background color handling issues reported by users
+
+- **2025/07/15**: Update ComfyUI-RMBG to **v2.6.0** ( [update.md](https://github.com/1038lab/ComfyUI-RMBG/blob/main/update.md#v260-20250715) )
 ![ReferenceLatentMaskr](https://github.com/user-attachments/assets/756641b7-0833-4fe0-b32f-2b848a14574e)
 
   - Added `Kontext Refence latent Mask` node, Which uses a reference latent and mask for precise region conditioning.

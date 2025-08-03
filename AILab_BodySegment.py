@@ -213,6 +213,7 @@ class BodySegment:
                             raise ValueError("Invalid color format")
                         return (r, g, b, a)
                     rgba_image = RGB2RGBA(orig_image, mask_image)
+                    background_color = params.get("background_color", "#222222")
                     rgba = hex_to_rgba(background_color)
                     bg_image = Image.new('RGBA', orig_image.size, rgba)
                     composite_image = Image.alpha_composite(bg_image, rgba_image)

@@ -20,6 +20,8 @@ const NODE_COLORS = {
 
     // Utility nodes
     "AILab_LoadImage": "utility",
+    "AILab_LoadImageSimple": "utility",
+    "AILab_LoadImageAdvanced": "utility",
     "AILab_Preview": "utility",
     "AILab_ImagePreview": "utility",
     "AILab_MaskPreview": "utility",

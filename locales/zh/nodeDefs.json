@@ -250,14 +250,42 @@
  "AILab_LoadImage": {
    "display_name": "加载图像 (RMBG) 🖼️",
    "inputs": {
+     "image_path_or_URL": { "name": "图像路径或URL" },
      "image": { "name": "图像" },
-     "mask_channel": { "name": "遮罩通道" },
+     "upscale_method": { "name": "放大方法" },
      "scale_by": { "name": "缩放比例" },
      "resize_mode": { "name": "缩放模式" },
      "size": { "name": "缩放大小" }
    },
    "outputs": {
-     "2": { "name": "遮罩图像" },
+     "2": { "name": "宽度" },
+     "3": { "name": "高度" }
+   }
+ },
+ "AILab_LoadImageSimple": {
+   "display_name": "加载图像 简单(RMBG) 🖼️",
+   "inputs": {
+     "image_path_or_URL": { "name": "图像路径或URL" },
+     "image": { "name": "图像" }
+   },
+   "outputs": {
+     "1": { "name": "宽度" },
+     "2": { "name": "高度" }
+   }
+ },
+  "AILab_LoadImageAdvanced": {
+   "display_name": "加载图像 高级(RMBG) 🖼️",
+   "inputs": {
+     "image_path_or_URL": { "name": "图像路径或URL" },
+     "image": { "name": "图像" },
+     "mask_channel": { "name": "遮罩通道" },
+     "upscale_method": { "name": "放大方法" },
+     "scale_by": { "name": "缩放比例" },
+     "resize_mode": { "name": "缩放模式" },
+     "size": { "name": "缩放大小" }
+   },
+   "outputs": {
+     "2": { "name": "图像" },
      "3": { "name": "宽度" },
      "4": { "name": "高度" }
    }

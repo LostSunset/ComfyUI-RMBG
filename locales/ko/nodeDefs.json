@@ -250,8 +250,37 @@
   "AILab_LoadImage": {
     "display_name": "이미지 로드 (RMBG) 🖼️",
     "inputs": {
+      "image_path_or_URL": { "name": "이미지 경로 또는 URL" },
       "image": { "name": "이미지" },
       "mask_channel": { "name": "마스크 채널" },
+      "upscale_method": { "name": "업스케일 방법" },
+      "scale_by": { "name": "스케일 비율" },
+      "resize_mode": { "name": "리사이즈 모드" },
+      "size": { "name": "리사이즈 크기" }
+    },
+    "outputs": {
+      "2": { "name": "너비" },
+      "3": { "name": "높이" }
+    }
+  },
+  "AILab_LoadImageSimple": {
+    "display_name": "이미지 로드 간단 (RMBG) 🖼️",
+    "inputs": {
+      "image_path_or_URL": { "name": "이미지 경로 또는 URL" },
+      "image": { "name": "이미지" }
+    },
+    "outputs": {
+      "1": { "name": "너비" },
+      "2": { "name": "높이" }
+    }
+  },
+  "AILab_LoadImageAdvanced": {
+    "display_name": "이미지 로드 고급 (RMBG) 🖼️",
+    "inputs": {
+      "image_path_or_URL": { "name": "이미지 경로 또는 URL" },
+      "image": { "name": "이미지" },
+      "mask_channel": { "name": "마스크 채널" },
+      "upscale_method": { "name": "업스케일 방법" },
       "scale_by": { "name": "스케일 비율" },
       "resize_mode": { "name": "리사이즈 모드" },
       "size": { "name": "리사이즈 크기" }

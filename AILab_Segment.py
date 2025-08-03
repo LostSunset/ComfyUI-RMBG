@@ -188,6 +188,8 @@ class Segment:
         self.clean_state_dict = clean_state_dict
         self.SLConfig = SLConfig
         self.build_model = build_model
+        self._sam_model_cache = {}
+        self._dino_model_cache = {}
 
     def segment(self, image, prompt, sam_model, dino_model, threshold=0.35,
                 mask_blur=0, mask_offset=0, background="Alpha", 
@@ -241,6 +243,8 @@ class Segment:
         return (pil2tensor(result_image), mask_tensor, mask_image_output)
 
     def load_sam(self, model_name):
+        if model_name in self._sam_model_cache:
+            return self._sam_model_cache[model_name]
         sam_checkpoint_path = self.get_local_filepath(
             SAM_MODELS[model_name]["model_url"], "sam")
         model_type = SAM_MODELS[model_name]["model_type"]
@@ -252,9 +256,12 @@ class Segment:
         sam_device = comfy.model_management.get_torch_device()
         sam.to(device=sam_device)
         sam.eval()
+        self._sam_model_cache[model_name] = sam
         return sam
 
     def load_groundingdino(self, model_name):
+        if model_name in self._dino_model_cache:
+            return self._dino_model_cache[model_name]
         import sys
         from io import StringIO
         temp_stdout = StringIO()
@@ -279,6 +286,7 @@ class Segment:
             device = comfy.model_management.get_torch_device()
             dino.to(device=device)
             dino.eval()
+            self._dino_model_cache[model_name] = dino
             return dino
         finally:
             output = temp_stdout.getvalue()

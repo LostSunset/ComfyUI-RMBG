@@ -3,7 +3,7 @@ import sys
 import os
 import importlib.util
 
-__version__ = "2.5.0"
+__version__ = "2.7.0"
 
 # Add module directory to Python path
 current_dir = Path(__file__).parent

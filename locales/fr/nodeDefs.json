@@ -250,8 +250,36 @@
   "AILab_LoadImage": {
     "display_name": "Charger l'image (RMBG) 🖼️",
     "inputs": {
+      "image_path_or_URL": { "name": "Chemin ou URL de l'image" },
+      "image": { "name": "Image" },
+      "upscale_method": { "name": "Méthode d'agrandissement" },
+      "scale_by": { "name": "Échelle" },
+      "resize_mode": { "name": "Mode de redimensionnement" },
+      "size": { "name": "Taille" }
+    },
+    "outputs": {
+      "2": { "name": "LARGEUR" },
+      "3": { "name": "HAUTEUR" }
+    }
+  },
+  "AILab_LoadImageSimple": {
+    "display_name": "Charger l'image simple (RMBG) 🖼️",
+    "inputs": {
+      "image_path_or_URL": { "name": "Chemin ou URL de l'image" },
+      "image": { "name": "Image" }
+    },
+    "outputs": {
+      "1": { "name": "LARGEUR" },
+      "2": { "name": "HAUTEUR" }
+    }
+  },
+  "AILab_LoadImageAdvanced": {
+    "display_name": "Charger l'image avancé (RMBG) 🖼️",
+    "inputs": {
+      "image_path_or_URL": { "name": "Chemin ou URL de l'image" },
       "image": { "name": "Image" },
       "mask_channel": { "name": "Canal de masque" },
+      "upscale_method": { "name": "Méthode d'agrandissement" },
       "scale_by": { "name": "Échelle" },
       "resize_mode": { "name": "Mode de redimensionnement" },
       "size": { "name": "Taille" }

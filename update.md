@@ -1,4 +1,34 @@
 # ComfyUI-RMBG Update Log
+## V2.7.0 (2025/07/27)
+- Enhanced LoadImage node with direct URL and path support
+![v2.7.0_ImageStitch](https://github.com/user-attachments/assets/cf3b5ab3-31e7-40f8-b941-23675d0a295e)
+  - Added image_path_or_URL parameter for loading images from local paths or URLs
+  - Improved URL handling with User-Agent support for better compatibility
+  - Maintained compatibility with traditional file selection
+  - Simplified workflow for external image sources
+  - Three different LoadImage nodes for different purposes and needs:
+    - `LoadImage`: Standard image loader with commonly used options, suitable for most workflows
+    - `LoadImageSimple`: Minimalist image loader for quick and basic image loading
+    - `LoadImageAdvanced`: Advanced image loader with extended configuration for power users
+
+- Completely redesigned `ImageStitch` node with advanced features
+![v2.7.0_ImageStitch](https://github.com/user-attachments/assets/3f31fe25-a453-4f86-bf3d-dc12a8affd39)
+  - Compatible with ComfyUI's native image stitch functionality
+  - Added support for 3-image stitching with kontext_mode
+  - Improved spacing and background color options
+  - Added maximum size constraints for output images
+  - Enhanced image matching and padding options
+  - Better handling of different image sizes and aspect ratios
+  - Included commonly requested user settings for more flexibility
+
+### Demo workflow (Flux kontext + Nunchaku + ImageStitch)
+![v2.7.0_ImageStitch](https://github.com/user-attachments/assets/d73531a2-afbe-4a38-9459-86d8d55fcc91)
+
+- Fixed background color handling across all nodes
+  - Resolved errors reported by users when using color picker
+  - Fixed color application in segmentation and background removal nodes
+  - Improved color consistency across different operations
+
 ## V2.6.0 (2025/07/15)
 ![ReferenceLatentMaskr](https://github.com/user-attachments/assets/8eba03be-d139-4694-9ec4-7d99bace4a20)
 

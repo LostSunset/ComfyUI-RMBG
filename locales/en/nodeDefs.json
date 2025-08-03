@@ -251,8 +251,36 @@
   "AILab_LoadImage": {
     "display_name": "Load Image (RMBG) 🖼️",
     "inputs": {
+      "image_path_or_URL": { "name": "Image Path or URL" },
+      "image": { "name": "Image" },
+      "upscale_method": { "name": "Upscale Method" },
+      "scale_by": { "name": "Scale By" },
+      "resize_mode": { "name": "Resize Mode" },
+      "size": { "name": "Size" }
+    },
+    "outputs": {
+      "2": { "name": "WIDTH" },
+      "3": { "name": "HEIGHT" }
+    }
+  },
+  "AILab_LoadImageSimple": {
+    "display_name": "Load Image Simple (RMBG) 🖼️",
+    "inputs": {
+      "image_path_or_URL": { "name": "Image Path or URL" },
+      "image": { "name": "Image" }
+    },
+    "outputs": {
+      "1": { "name": "WIDTH" },
+      "2": { "name": "HEIGHT" }
+    }
+  },
+  "AILab_LoadImageAdvanced": {
+    "display_name": "Load Image Advanced (RMBG) 🖼️",
+    "inputs": {
+      "image_path_or_URL": { "name": "Image Path or URL" },
       "image": { "name": "Image" },
       "mask_channel": { "name": "Mask Channel" },
+      "upscale_method": { "name": "Upscale Method" },
       "scale_by": { "name": "Scale By" },
       "resize_mode": { "name": "Resize Mode" },
       "size": { "name": "Size" }
@@ -263,6 +291,7 @@
       "4": { "name": "HEIGHT" }
     }
   },
+    
   "AILab_ImageCombiner": {
     "display_name": "Image Combiner (RMBG) 🖼️",
     "inputs": {
