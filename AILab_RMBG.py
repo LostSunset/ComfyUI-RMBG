@@ -312,15 +312,8 @@ class InspyrenetModel(BaseModelLoader):
                 import transparent_background
                 self.model = transparent_background.Remover()
                 self.current_model_version = model_name
-            except ImportError:
-                try:
-                    import pip
-                    pip.main(['install', 'transparent_background'])
-                    import transparent_background
-                    self.model = transparent_background.Remover()
-                    self.current_model_version = model_name
-                except Exception as e:
-                    handle_model_error(f"Failed to install transparent_background: {str(e)}")
+            except Exception as e:
+                handle_model_error(f"Failed to initialize transparent_background: {str(e)}")
     
     def process_image(self, image, model_name, params):
         try:

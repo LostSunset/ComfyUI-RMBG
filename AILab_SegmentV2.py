@@ -16,7 +16,6 @@ from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 
 from AILab_ImageMaskTools import pil2tensor, tensor2pil
 
-# SAM model definitions (6 models)
 SAM_MODELS = {
     "sam_vit_h (2.56GB)": {
         "model_url": "https://huggingface.co/1038lab/sam/resolve/main/sam_vit_h.pth",
@@ -50,7 +49,6 @@ SAM_MODELS = {
     }
 }
 
-# GroundingDINO model definitions (2 models)
 DINO_MODELS = {
     "GroundingDINO_SwinT_OGC (694MB)": {
         "config_url": "https://huggingface.co/1038lab/GroundingDINO/resolve/main/GroundingDINO_SwinT_OGC.cfg.py",
@@ -97,7 +95,6 @@ def apply_background_color(image: Image.Image, mask_image: Image.Image,
                          background_color: str = "#222222") -> Image.Image:
     rgba_image = image.copy().convert('RGBA')
     rgba_image.putalpha(mask_image.convert('L'))
-    
     if background == "Color":
         def hex_to_rgba(hex_color):
             hex_color = hex_color.lstrip('#')
@@ -172,25 +169,18 @@ class SegmentV2:
                    background_color="#222222", invert_output=False):
         device = "cuda" if torch.cuda.is_available() else "cpu"
 
-        # 处理批量图像
         batch_size = image.shape[0] if len(image.shape) == 4 else 1
         if len(image.shape) == 3:
             image = image.unsqueeze(0)
-            
         result_images = []
         result_masks = []
         result_mask_images = []
-        
         for b in range(batch_size):
             img_pil = tensor2pil(image[b])
             img_np = np.array(img_pil.convert("RGB"))
-
-            # Load GroundingDINO config and weights
             dino_info = DINO_MODELS[dino_model]
             config_path = get_or_download_model_file(dino_info["config_filename"], dino_info["config_url"], "grounding-dino")
             weights_path = get_or_download_model_file(dino_info["model_filename"], dino_info["model_url"], "grounding-dino")
-
-            # Load and cache GroundingDINO model
             dino_key = (config_path, weights_path, device)
             if dino_key not in self.dino_model_cache:
                 args = SLConfig.fromfile(config_path)
@@ -201,16 +191,14 @@ class SegmentV2:
                 model.to(device)
                 self.dino_model_cache[dino_key] = model
             dino = self.dino_model_cache[dino_key]
-
-            # Download/check SAM weights
             sam_info = SAM_MODELS[sam_model]
             sam_ckpt_path = get_or_download_model_file(sam_info["filename"], sam_info["model_url"], "SAM")
-
-            # Load SAM model (cache to avoid reloading)
             sam_key = (sam_info["model_type"], sam_ckpt_path, device)
             if sam_key not in self.sam_model_cache:
                 try:
-                    sam = sam_model_registry[sam_info["model_type"]](checkpoint=sam_ckpt_path)
+                    sam = sam_model_registry[sam_info["model_type"]]()
+                    state_dict = torch.load(sam_ckpt_path, map_location="cpu")
+                    sam.load_state_dict(state_dict, strict=False)
                     sam.to(device)
                     self.sam_model_cache[sam_key] = SamPredictor(sam)
                 except RuntimeError as e:
@@ -228,8 +216,6 @@ class SegmentV2:
                     else:
                         raise e
             predictor = self.sam_model_cache[sam_key]
-
-            # Preprocess image for DINO
             from groundingdino.datasets.transforms import Compose, RandomResize, ToTensor, Normalize
             transform = Compose([
                 RandomResize([800], max_size=1333),
@@ -238,21 +224,13 @@ class SegmentV2:
             ])
             image_tensor, _ = transform(img_pil.convert("RGB"), None)
             image_tensor = image_tensor.unsqueeze(0).to(device)
-
-            # Prepare text prompt
             text_prompt = prompt if prompt.endswith(".") else prompt + "."
-
-            # Forward pass
             with torch.no_grad():
                 outputs = dino(image_tensor, captions=[text_prompt])
             logits = outputs["pred_logits"].sigmoid()[0]
             boxes = outputs["pred_boxes"][0]
-
-            # Filter boxes by threshold
             filt_mask = logits.max(dim=1)[0] > threshold
             boxes_filt = boxes[filt_mask]
-            
-            # Handle case with no detected boxes
             if boxes_filt.shape[0] == 0:
                 width, height = img_pil.size
                 empty_mask = torch.zeros((1, height, width), dtype=torch.float32, device="cpu")
@@ -262,14 +240,10 @@ class SegmentV2:
                 result_masks.append(empty_mask)
                 result_mask_images.append(empty_mask_rgb)
                 continue
-
-            # Convert boxes to xyxy
             H, W = img_pil.size[1], img_pil.size[0]
             boxes_xyxy = box_ops.box_cxcywh_to_xyxy(boxes_filt)
             boxes_xyxy = boxes_xyxy * torch.tensor([W, H, W, H], dtype=torch.float32, device=boxes_xyxy.device)
             boxes_xyxy = boxes_xyxy.cpu().numpy()
-
-            # Use SAM to get masks for each box
             predictor.set_image(img_np)
             boxes_tensor = torch.tensor(boxes_xyxy, dtype=torch.float32, device=predictor.device)
             transformed_boxes = predictor.transform.apply_boxes_torch(boxes_tensor, img_np.shape[:2])
@@ -279,38 +253,27 @@ class SegmentV2:
                 boxes=transformed_boxes,
                 multimask_output=False
             )
-
-            # Combine all masks into one
-            combined_mask = torch.max(masks, dim=0)[0]  # Take maximum across all masks
+            combined_mask = torch.max(masks, dim=0)[0]
             mask = combined_mask.float().cpu().numpy()
             mask = mask.squeeze(0)
             mask = (mask * 255).astype(np.uint8)
             mask_pil = Image.fromarray(mask, mode="L")
-
-            # Process mask and apply background
             mask_image = process_mask(mask_pil, invert_output, mask_blur, mask_offset)
             result_image = apply_background_color(img_pil, mask_image, background, background_color)
             if background == "Color":
                 result_image = result_image.convert("RGB")
             else:
                 result_image = result_image.convert("RGBA")
-            
-            # Convert to tensors
             mask_tensor = torch.from_numpy(np.array(mask_image).astype(np.float32) / 255.0).unsqueeze(0)
             mask_image_vis = mask_tensor.reshape((-1, 1, mask_image.height, mask_image.width)).movedim(1, -1).expand(-1, -1, -1, 3)
-            
             result_images.append(pil2tensor(result_image))
             result_masks.append(mask_tensor)
             result_mask_images.append(mask_image_vis)
-
-        # 如果没有成功处理任何图像，返回空结果
         if len(result_images) == 0:
             width, height = tensor2pil(image[0]).size
             empty_mask = torch.zeros((batch_size, 1, height, width), dtype=torch.float32, device="cpu")
             empty_mask_rgb = empty_mask.reshape((-1, 1, height, width)).movedim(1, -1).expand(-1, -1, -1, 3)
             return (image, empty_mask, empty_mask_rgb)
-            
-        # 合并所有批次的结果
         return (torch.cat(result_images, dim=0), 
                 torch.cat(result_masks, dim=0), 
                 torch.cat(result_mask_images, dim=0))
@@ -322,4 +285,3 @@ NODE_CLASS_MAPPINGS = {
 NODE_DISPLAY_NAME_MAPPINGS = {
     "SegmentV2": "Segmentation V2 (RMBG)",
 }
-

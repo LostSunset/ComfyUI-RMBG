@@ -133,7 +133,7 @@
       "sweater": { "name": "스웨터" },
       "hood": { "name": "후드" },
       "shirt, blouse": { "name": "셔츠, 블라우스" },
-      "top, t-shirt, sweatshirt": { "name": "티셔츠, 티셔츠, 스웨트셔츠" },
+      "top, t-shirt, sweatshirt": { "name": "상의, 티셔츠, 스웨트셔츠" },
       "sleeve": { "name": "소매" },
       "dress": { "name": "드레스" },
       "jumpsuit": { "name": "점프수트" },

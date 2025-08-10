@@ -133,7 +133,7 @@
       "sweater": { "name": "Свитер" },
       "hood": { "name": "Капюшон" },
       "shirt, blouse": { "name": "Рубашка, блузка" },
-      "top, t-shirt, sweatshirt": { "name": "Футболка, футболка, майка" },
+      "top, t-shirt, sweatshirt": { "name": "топ, футболка, свитшот" },
       "sleeve": { "name": "Рукав" },
       "dress": { "name": "Платье" },
       "jumpsuit": { "name": "Комбинезон" },

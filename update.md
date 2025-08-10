@@ -1,4 +1,6 @@
 # ComfyUI-RMBG Update Log
+## V2.7.1 (2025/08/06)
+- Bug fixes and improved code compatibility
 ## V2.7.0 (2025/07/27)
 - Enhanced LoadImage node with direct URL and path support
 ![v2.7.0_ImageStitch](https://github.com/user-attachments/assets/cf3b5ab3-31e7-40f8-b941-23675d0a295e)
@@ -498,3 +500,4 @@ https://github.com/user-attachments/assets/259220d3-c148-4030-93d6-c17dd5bccee1
 - Model cache is checked before each operation
 - Memory is automatically cleaned when switching models
 - Video processing supports various formats and maintains quality
+

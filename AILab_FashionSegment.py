@@ -236,8 +236,10 @@ class FashionSegmentClothing:
         except Exception as e:
             return False, f"Error downloading model files: {str(e)}"
 
-    def segment_fashion(self, images, accessories_options, process_res=512, mask_blur=0, mask_offset=0, 
+    def segment_fashion(self, images, accessories_options=None, process_res=512, mask_blur=0, mask_offset=0, 
                        background="Alpha", background_color="#222222", invert_output=False, **class_selections):
+        if accessories_options is None:
+            accessories_options = []
         try:
             # Check and download model
             cache_status, message = self.check_model_cache()
@@ -360,7 +362,7 @@ class FashionSegmentClothing:
             self.clear_model()
             raise RuntimeError(f"Error in fashion segmentation: {str(e)}")
         finally:
-            if not self.model.training:
+            if self.model is not None and not self.model.training:
                 self.clear_model()
 
     def __del__(self):

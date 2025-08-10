@@ -133,7 +133,7 @@
      "sweater": { "name": "毛衣" },
      "hood": { "name": "帽子" },
      "shirt, blouse": { "name": "衬衫, 上衣" },
-     "top, t-shirt, sweatshirt": { "name": "T恤, 卫衣, 背心" },
+     "top, t-shirt, sweatshirt": { "name": "上衣、T恤、卫衣" },
      "sleeve": { "name": "袖子" },
      "dress": { "name": "连衣裙" },
      "jumpsuit": { "name": "连体衣" },

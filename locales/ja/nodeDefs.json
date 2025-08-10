@@ -133,7 +133,7 @@
       "sweater": { "name": "セーター" },
       "hood": { "name": "フード" },
       "shirt, blouse": { "name": "シャツ, ブルゾン" },
-      "top, t-shirt, sweatshirt": { "name": "Tシャツ, Tシャツ, スウォッチ" },
+      "top, t-shirt, sweatshirt": { "name": "トップス, Tシャツ, スウォッチ" },
       "sleeve": { "name": "袖" },
       "dress": { "name": "ドレス" },
       "jumpsuit": { "name": "ジャンプスーツ" },
